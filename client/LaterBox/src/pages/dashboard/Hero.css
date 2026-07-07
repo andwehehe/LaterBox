@@ -1,0 +1,181 @@
+/* Hero mockup: a stack of overlapping "bookmark card" previews.
+   Kept out of Tailwind because the layered positioning and z-index
+   choreography is easier to read/tune as plain CSS.
+
+   Everything below is expressed in % / aspect-ratio (not fixed px) so
+   the whole stack scales fluidly with its container from a 375px
+   phone up to the 1440px capped desktop layout. */
+
+.hero-mockup {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 480 / 460;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mock-card {
+  position: absolute;
+  width: 82%;
+  border-radius: 14px;
+  background: #14141f;
+  border: 1px solid #26263a;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.mock-card__thumb {
+  height: 0;
+  padding-top: 40%;
+  width: 100%;
+  background: linear-gradient(135deg, #2c2c44 0%, #1a1a2b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.mock-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mock-card__badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.mock-card__body {
+  padding: 12px 14px 14px;
+}
+
+.mock-card__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.mock-card__title span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mock-card__url {
+  font-size: 0.72rem;
+  color: #7d7d92;
+  margin-bottom: 8px;
+}
+
+.mock-card__tags {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.mock-card__tags span {
+  font-size: 0.68rem;
+  color: var(--color-accent-light);
+}
+
+.mock-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #7d7d92;
+}
+
+.mock-card__footer .avatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #3d3d55;
+  flex-shrink: 0;
+}
+
+.mock-card__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+
+.mock-card__grid div {
+  height: 0;
+  padding-top: 12%;
+  border-radius: 6px;
+  background: #1e1e2e;
+  border: 1px solid #292940;
+}
+
+/* Cards are centered horizontally (left: 50% + translateX(-50%)) and
+   stacked straight — no rotation — so the stack reads as one tidy
+   column instead of spreading toward one side. */
+
+/* ...mock-card__thumb, __badge, __body, __title, __url, __tags,
+   __footer, __grid all stay exactly as before, unchanged... */
+
+/* Cards overlap diagonally (top-left → center → bottom-left) to match
+   the original layered mockup, but each card stays straight -- no
+   rotate() -- instead of tilted like the earlier version. */
+.mock-card--back {
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.mock-card--mid {
+  top: 28%;
+  left: 30%;
+  z-index: 2;
+}
+
+.mock-card--front {
+  top: 52%;
+  left: 3%;
+  z-index: 3;
+}
+
+@media (max-width: 639px) {
+  .hero-mockup {
+    max-width: min(360px, calc(100vw - 1.5rem));
+    aspect-ratio: 4 / 4.2;
+    min-height: 320px;
+  }
+
+  .mock-card {
+    width: 78%;
+  }
+
+  .mock-card--back {
+    left: 2%;
+  }
+
+  .mock-card--mid {
+    top: 24%;
+    left: 24%;
+  }
+
+  .mock-card--front {
+    top: 48%;
+    left: 1%;
+  }
+}
