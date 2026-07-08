@@ -46,7 +46,7 @@ function Hero() {
       {/* Left: copy */}
       <div className="max-w-2xl">
         <span className="inline-flex items-center gap-2 rounded-full border border-panel-border bg-panel px-3 py-1 text-xs font-medium text-muted">
-          MPV Version live now 🚀
+          MVP Version live now 🚀
         </span>
 
         <h1 className="mt-6 text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl xl:text-[5rem]">

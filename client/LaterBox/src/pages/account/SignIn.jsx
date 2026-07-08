@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
@@ -29,6 +30,7 @@ function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   // const [rememberMe, setRememberMe] = useState(true);
   const [status, setStatus] = useState({ loading: false, error: "" });
+  const navigate = useNavigate();
 
   const handleChange = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -41,22 +43,25 @@ function SignIn() {
       // Sent directly over HTTPS to the backend. On success, the server
       // should set an httpOnly session cookie — this component never
       // stores the credentials or a token itself.
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-          // rememberMe,
-        }),
-      });
+      
+      // const res = await fetch("/api/auth/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({
+      //     email: form.email,
+      //     password: form.password,
+      //     // rememberMe,
+      //   }),
+      // });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.message || "Invalid email or password.");
-      }
+      // if (!res.ok) {
+      //   const data = await res.json().catch(() => ({}));
+      //   throw new Error(data.message || "Invalid email or password.");
+      // }
 
       // Success: hand off to your router / redirect logic here.
+      navigate("/dashboard");
+
     } catch (err) {
       setStatus({ loading: false, error: err.message });
     } finally {
