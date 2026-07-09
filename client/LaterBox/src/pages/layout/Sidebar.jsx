@@ -9,7 +9,7 @@ import {
   Settings,
   X,
 } from "lucide-react";
-import { currentUser } from "./mockData.js";
+import { currentUser } from "../dashboard/mockData.js";
 
 // Sidebar is intentionally restricted to pages that actually appear in
 // the provided designs. Don't add extra links here unless a matching

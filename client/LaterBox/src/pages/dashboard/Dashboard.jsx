@@ -1,6 +1,6 @@
 import { Search, Plus, Bell, Bookmark, ArrowUpRight, Clock, Layers } from "lucide-react";
 import { MobileMenuButton, StatCard } from "../../components/ui.jsx";
-import AppShell from "./AppShell";
+import AppShell from "../layout/AppShell";
 import {
   currentUser,
   dashboardStats,

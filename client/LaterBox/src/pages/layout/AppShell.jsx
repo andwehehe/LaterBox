@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "../layout/Sidebar";
 
 const MobileMenuContext = createContext(() => {});
 

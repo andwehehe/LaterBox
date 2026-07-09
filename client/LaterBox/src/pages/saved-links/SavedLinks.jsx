@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 import { MobileMenuButton } from "../../components/ui.jsx";
 import { currentUser, bookmarks } from "../dashboard/mockData";
-import AppShell from "../dashboard/AppShell";
+import AppShell from "../layout/AppShell";
 
 // Maps each bookmark's platform string to an icon + accent color,
 // so adding a new platform later is a one-line change here.
@@ -49,6 +50,8 @@ export default function SavedLinks() {
       return matchesQuery && matchesFilter;
     });
   }, [query, activeFilter]);
+
+  const navigate = useNavigate();
 
   return (
     <AppShell>
@@ -129,6 +132,7 @@ export default function SavedLinks() {
                 <article
                   key={b.id}
                   className="flex h-full flex-col overflow-hidden rounded-xl2 border border-panel-border bg-panel transition hover:border-accent/50"
+                  onClick={() => navigate(`/saved-links/${b.id}`)}
                 >
                   {/* Thumbnail */}
                   <div className="relative h-36 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">

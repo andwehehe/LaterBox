@@ -4,6 +4,7 @@ import LandingPage from "./pages/landing/LandingPage";
 import CreateAccount from "./pages/account/CreateAccount";
 import SignIn from "./pages/account/SignIn";
 import SavedLinks from "./pages/saved-links/SavedLinks";
+import BookmarkDetail from "./pages/saved-links/BookmarkDetail";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<SignIn />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/saved-links" element={<SavedLinks />} />
+        <Route path="/saved-links/:id" element={<BookmarkDetail />} />
       </Routes>
     </BrowserRouter>
   );

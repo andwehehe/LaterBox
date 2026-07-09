@@ -1,5 +1,5 @@
 import { Menu } from "lucide-react";
-import { useMobileMenu } from "../pages/dashboard/AppShell";
+import { useMobileMenu } from "../pages/layout/AppShell";
 
 // Hamburger button every page header drops in on the left, hidden on
 // desktop where the sidebar is always visible.
