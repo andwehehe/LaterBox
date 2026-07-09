@@ -1,9 +1,9 @@
 {
   "name": "laterbox",
-  "homepage": "https://andwehehe.github.io/LaterBox",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://andwehehe.github.io/LaterBox",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
