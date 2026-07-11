@@ -49,7 +49,7 @@ export function ToggleSwitch({ checked, onChange, label }) {
     >
       <span
         className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-          checked ? "translate-x-5" : "translate-x-0.5"
+          checked ? "-translate-x-5" : "translate-x-0.5"
         }`}
       />
     </button>

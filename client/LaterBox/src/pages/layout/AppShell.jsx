@@ -9,6 +9,7 @@ const MobileMenuContext = createContext(() => {});
 export function useMobileMenu() {
   return useContext(MobileMenuContext);
 }
+
 function AppShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 

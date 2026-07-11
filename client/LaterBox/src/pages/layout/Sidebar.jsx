@@ -40,7 +40,7 @@ const navGroups = [
   },
 ];
 
-export default function Sidebar({ mobileOpen, onClose }) {
+function Sidebar({ mobileOpen, onClose }) {
   return (
     <>
       {/* Mobile backdrop */}
@@ -131,3 +131,5 @@ export default function Sidebar({ mobileOpen, onClose }) {
     </>
   );
 }
+
+export default Sidebar;
