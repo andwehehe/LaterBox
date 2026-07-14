@@ -152,7 +152,7 @@ export default function SavedLinks() {
                     <ExternalLink size={11} className="shrink-0" />
                     {b.url}
                   </p>
-                  <p className="mb-3 line-clamp-2 text-xs italic text-muted">"{b.quote}"</p>
+                  <p className="bookmark-description mb-3 text-xs italic text-muted">"{b.quote}"</p>
 
                   <div className="mb-3 flex flex-wrap gap-1.5">
                     {b.tags.map((tag) => (
