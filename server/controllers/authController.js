@@ -7,7 +7,7 @@ const registerAccount = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const [result] = await db.query(
-            `INSERT INTO User (Username, Email, HashedPassword) 
+            `INSERT INTO user (username, email, hashed_password) 
             VALUES (?, ?, ?)`,
             [username, email, hashedPassword]
         );
@@ -28,8 +28,8 @@ const loginAccount = async (req, res) => {
         const { email, password } = req.body;
 
         const [rows] = await db.query(
-            `SELECT * FROM User
-            WHERE Email = ?`,
+            `SELECT * FROM user
+            WHERE email = ?`,
             [email]
         );
 
@@ -39,14 +39,14 @@ const loginAccount = async (req, res) => {
             return res.status(401).json({ message: "Incorrect Email or Password" });
         }
 
-        const validPassword = await bcrypt.compare(password, user.HashedPassword);
+        const validPassword = await bcrypt.compare(password, user.hashed_password);
 
         if(!validPassword) {
             return res.status(401).json({ message: "Incorrect Email or Password" });
         }
 
-        req.session.userId = user.UserID;
-        res.status(200).json({ Username: user.Username, Email: user.Email, UserID: user.UserID })
+        req.session.userId = user.user_id;
+        res.status(200).json({ username: user.username, email: user.email, user_id: user.user_id })
     } catch(err) {
         console.error(err);
         res.status(500).json({
