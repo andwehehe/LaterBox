@@ -1,4 +1,6 @@
 import { NavLink } from "react-router-dom";
+import { useUserContext } from "../../contexts/UserContext";
+import user2 from "../../assets/images/user-2.jpg";
 import {
   LayoutDashboard,
   Bookmark,
@@ -9,7 +11,6 @@ import {
   Settings,
   X,
 } from "lucide-react";
-import { currentUser } from "../dashboard/mockData.js";
 
 // Sidebar is intentionally restricted to pages that actually appear in
 // the provided designs. Don't add extra links here unless a matching
@@ -41,6 +42,9 @@ const navGroups = [
 ];
 
 function Sidebar({ mobileOpen, onClose }) {
+
+  const { userData } = useUserContext();
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -110,20 +114,21 @@ function Sidebar({ mobileOpen, onClose }) {
         {/* User footer */}
         <div className="border-t border-panel-border p-4">
           <div className="flex items-center gap-3">
-            {currentUser.avatar ? (
+            {user2 ? (
               <img
-                src={currentUser.avatar}
-                alt={currentUser.name}
+                src={user2}
+                alt={userData.username}
                 className="h-9 w-9 rounded-full"
               />
             ) : (
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-                {currentUser.avatarInitials}
+                {/* {placeholder} */}
+                PH
               </span>
             )}
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">{currentUser.name}</p>
-              <p className="truncate text-xs text-muted">{currentUser.plan}</p>
+              <p className="truncate text-sm font-medium text-white">{userData.username}</p>
+              <p className="truncate text-xs text-muted">Id: {userData.id}</p>
             </div>
           </div>
         </div>

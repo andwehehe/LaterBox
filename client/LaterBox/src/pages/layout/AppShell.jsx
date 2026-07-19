@@ -4,8 +4,6 @@ import Sidebar from "../layout/Sidebar";
 
 const MobileMenuContext = createContext(() => {});
 
-// Lets any page's header put a hamburger button that opens the
-// mobile sidebar drawer, without prop-drilling the toggle everywhere.
 // eslint-disable-next-line react-refresh/only-export-components
 export function useMobileMenu() {
   return useContext(MobileMenuContext);

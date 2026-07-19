@@ -6,14 +6,14 @@ const registerAccount = async (req, res) => {
         const { username, email, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const [result] = await db.query(
-            `INSERT INTO user (username, email, hashed_password) 
+        const [result] = await db.promise().query(
+            `INSERT INTO users (username, email, hashed_password) 
             VALUES (?, ?, ?)`,
             [username, email, hashedPassword]
         );
 
         req.session.userId = result.insertId;
-        res.status(201).json({ message: "Account Created Successfully" });
+        res.status(201).json({ message: "Account Created Successfully. Proceed to Login Page" });
     } catch(err) {
         console.error(err);
         
@@ -27,8 +27,8 @@ const loginAccount = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const [rows] = await db.query(
-            `SELECT * FROM user
+        const [rows] = await db.promise().query(
+            `SELECT * FROM users
             WHERE email = ?`,
             [email]
         );
@@ -39,14 +39,21 @@ const loginAccount = async (req, res) => {
             return res.status(401).json({ message: "Incorrect Email or Password" });
         }
 
-        const validPassword = await bcrypt.compare(password, user.hashed_password);
+        bcrypt.compare(password, user.hashed_password, (err, result) => {
+            if(!result) {
+                return res.status(401).json({ message: "Incorrect Email or Password" });
+            }
 
-        if(!validPassword) {
-            return res.status(401).json({ message: "Incorrect Email or Password" });
-        }
+            req.session.regenerate((err) => {
+                if(err) {
+                    return res.sendStatus(500);
+                }
 
-        req.session.userId = user.user_id;
-        res.status(200).json({ username: user.username, email: user.email, user_id: user.user_id })
+                req.session.userId = user.user_id;
+                res.status(200).json({ username: user.username, email: user.email, user_id: user.user_id })
+            })
+        });
+        
     } catch(err) {
         console.error(err);
         res.status(500).json({
@@ -55,7 +62,20 @@ const loginAccount = async (req, res) => {
     }
 }
 
+const getUsers = async(req, res) => {
+    try {
+        const [rows] = await db.promise().query(
+            'SELECT * FROM users'
+        )
+
+        res.status(200).json(rows);
+    } catch(err) {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
 export const authControllers = {
     registerAccount,
-    loginAccount
+    loginAccount,
+    getUsers
 };

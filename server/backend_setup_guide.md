@@ -71,3 +71,13 @@ session({
 - create a router object using expres.Router() then use it to http methods
 - import the function from the controllers then use them as callback to the http method
 - export the router object then use it in app.js
+
+>> .env <<
+- created in backend folder
+- contains some secret values
+- must contain the SESSION_SECRET, PORT, DB_INFO, NODE_ENV, etc.
+- must be inside the .gitignore so it does not get tracked in commit
+
+>> .gitignore <<
+- created in project folder
+- put the .env and the node_modules/ here

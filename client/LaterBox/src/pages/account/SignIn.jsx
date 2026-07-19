@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
+import { loginAccount } from "../../services/authService.js";
+import { useUserContext } from "../../contexts/UserContext.jsx";
 
 /**
  * SECURITY / DATA HANDLING NOTES
@@ -30,6 +32,7 @@ function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   // const [rememberMe, setRememberMe] = useState(true);
   const [status, setStatus] = useState({ loading: false, error: "" });
+  const { setUserData } = useUserContext();
   const navigate = useNavigate();
 
   const handleChange = (field) => (e) =>
@@ -39,29 +42,12 @@ function SignIn() {
     e.preventDefault();
     setStatus({ loading: true, error: "" });
 
-    try {
-      // Sent directly over HTTPS to the backend. On success, the server
-      // should set an httpOnly session cookie — this component never
-      // stores the credentials or a token itself.
-      
-      // const res = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     email: form.email,
-      //     password: form.password,
-      //     // rememberMe,
-      //   }),
-      // });
-
-      // if (!res.ok) {
-      //   const data = await res.json().catch(() => ({}));
-      //   throw new Error(data.message || "Invalid email or password.");
-      // }
+    try {      
+      const data = await loginAccount(form.email, form.password);
+      setUserData({ email: data.email, username: data.username, id: data.user_id })
 
       // Success: hand off to your router / redirect logic here.
       navigate("/dashboard");
-
     } catch (err) {
       setStatus({ loading: false, error: err.message });
     } finally {

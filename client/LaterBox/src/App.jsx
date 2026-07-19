@@ -7,22 +7,25 @@ import SavedLinks from "./pages/saved-links/SavedLinks";
 import BookmarkDetail from "./pages/saved-links/BookmarkDetail";
 import Settings from "./pages/settings/Settings";
 import AppShell from "./pages/layout/AppShell";
+import UserProvider from "./contexts/UserContext";
 
 function App() {
   return (
-    <BrowserRouter basename="/LaterBox">
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<CreateAccount />} />
-        <Route path="/login" element={<SignIn />} />
-        <Route element={<AppShell />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/saved-links" element={<SavedLinks />} />
-          <Route path="/saved-links/:id" element={<BookmarkDetail />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter basename="/LaterBox">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/signup" element={<CreateAccount />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route element={<AppShell />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/saved-links" element={<SavedLinks />} />
+            <Route path="/saved-links/:id" element={<BookmarkDetail />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 

@@ -1,14 +1,12 @@
 // Placeholder data only — swap every array/object here for real API
 // responses once the backend exists. Nothing in this file is fetched
 // or persisted; it just gives the UI something realistic to render.
-import user2 from "../../assets/images/user-2.jpg";
 
 export const currentUser = {
   name: "Alberto Du Bist Gut Genug",
   email: "albertoSundotSammy67@gmail.com",
-  plan: "Free Plan",
-  avatarInitials: "JR",
-  avatar: user2,
+  plan: "ID: 1000",
+  avatarInitials: "JR"
 };
 
 export const bookmarks = [

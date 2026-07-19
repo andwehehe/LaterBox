@@ -1,8 +1,9 @@
 import { Search, Plus, Bell, Bookmark, ArrowUpRight, Clock, Layers } from "lucide-react";
 import { MobileMenuButton, StatCard } from "../../components/ui.jsx";
+import { useUserContext } from "../../contexts/UserContext.jsx";
+import user2 from "../../assets/images/user-2.jpg";
 
 import {
-  currentUser,
   dashboardStats,
   recentSaves,
   recentActivity,
@@ -12,6 +13,9 @@ import {
 const statIcons = [Bookmark, ArrowUpRight, Clock, Layers];
 
 function Dashboard() {
+
+  const { userData } = useUserContext();
+
   return (
     <div>
         {/* Top bar */}
@@ -38,20 +42,21 @@ function Dashboard() {
           <Bell size={16} />
         </button>
         <div className="hidden items-center gap-2 md:flex">
-          {currentUser.avatar ? (
+          {user2 ? (
             <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
+              src={user2}
+              alt={userData.username}
               className="h-9 w-9 rounded-full"
             />
           ) : (
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-              {currentUser.avatarInitials}
+              {/* {placeholder} */}
+              PH
             </span>
           )}
           <div className="leading-tight">
-            <p className="text-sm font-medium text-white">{currentUser.name}</p>
-            <p className="text-xs text-muted">{currentUser.plan}</p>
+            <p className="text-sm font-medium text-white">{userData.username}</p>
+            <p className="text-xs text-muted">Id: {userData.id}</p>
           </div>
         </div>
       </header>
@@ -64,7 +69,7 @@ function Dashboard() {
               Quick Save
             </span>
             <h1 className="mt-3 text-2xl font-bold text-white sm:text-3xl">
-              Welcome back, {currentUser.name.split(" ")[0]}!
+              Welcome back, {userData.username.split(" ")[0]}!
             </h1>
             <p className="mt-1 text-sm text-white/80">
               You've saved <span className="font-semibold text-white">12 new links</span> this
