@@ -21,7 +21,7 @@ export const bookmarks = [
     date: "Oct 12, 2023",
     status: "Visited",
     starred: true,
-    private: false,
+    private: false, 
   },
   {
     id: "b2",
