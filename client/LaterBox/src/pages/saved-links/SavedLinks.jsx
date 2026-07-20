@@ -1,20 +1,16 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Search,
-  Plus,
-  ChevronDown,
-  Star,
-  Video,
-  Code2,
-  MessageCircle,
-  FileText,
-  Lock,
-  ExternalLink,
-  Clock,
+  Search, Plus, ChevronDown, Star, Video,
+  Code2, MessageCircle, FileText, Lock,
+  ExternalLink, Clock,
 } from "lucide-react";
 import { MobileMenuButton } from "../../components/ui.jsx";
-import { currentUser, bookmarks } from "../dashboard/mockData";
+// import { bookmarks } from "../dashboard/mockData";
+import user2 from "../../assets/images/user-2.jpg";
+import { useUserContext } from "../../contexts/UserContext.jsx";
+import AddBookmarkModal from "./AddBookmarkModal.jsx";
+import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 
 // Maps each bookmark's platform string to an icon + accent color,
 // so adding a new platform later is a one-line change here.
@@ -33,6 +29,12 @@ export default function SavedLinks() {
   const [activeFilter, setActiveFilter] = useState("All Links");
   const [query, setQuery] = useState("");
 
+  const navigate = useNavigate();
+
+  const { userData } = useUserContext();
+  const { bookmarks, setBookmarks } = useBookmarkContext();
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
+
   const filtered = useMemo(() => {
     return bookmarks.filter((b) => {
       const matchesQuery =
@@ -42,15 +44,20 @@ export default function SavedLinks() {
 
       const matchesFilter =
         activeFilter === "All Links" ||
-        (activeFilter === "Unvisited" && b.status !== "Visited") ||
-        (activeFilter === "Favorites" && b.starred) ||
+        (activeFilter === "Unvisited" && !b.is_visited) ||
+        (activeFilter === "Favorites" && b.is_starred) ||
         b.platform === activeFilter;
 
       return matchesQuery && matchesFilter;
     });
-  }, [query, activeFilter]);
+  }, [bookmarks, query, activeFilter]);
 
-  const navigate = useNavigate();
+  const onClose = () => {
+    setIsModalOpen(false);
+  }
+  const onSave = ({ url, title, note, tags }) => {
+    setBookmarks({ url, title, note, tags });
+  }
 
   return (
     <div>
@@ -75,15 +82,16 @@ export default function SavedLinks() {
         </button>
 
         <div className="hidden items-center gap-2 md:flex">
-          {currentUser.avatar ? (
+          {user2 ? (
             <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
+              src={user2}
+              alt={userData.username}
               className="h-9 w-9 rounded-full"
             />
           ) : (
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-              {currentUser.avatarInitials}
+              {/* {placeholder} */}
+              PH
             </span>
           )}
         </div>
@@ -128,9 +136,9 @@ export default function SavedLinks() {
             const Icon = meta.icon;
             return (
               <article
-                key={b.id}
+                key={b.bookmark_id}
                 className="flex h-full flex-col overflow-hidden rounded-xl2 border border-panel-border bg-panel transition hover:border-accent/50"
-                onClick={() => navigate(`/saved-links/${b.id}`)}
+                onClick={() => navigate(`/saved-links/${b.bookmark_id}`)}
               >
                 {/* Thumbnail */}
                 <div className="relative h-36 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
@@ -139,10 +147,10 @@ export default function SavedLinks() {
                     {b.platform}
                   </span>
                   <button
-                    aria-label={b.starred ? "Unstar bookmark" : "Star bookmark"}
+                    aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
                     className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white"
                   >
-                    <Star size={14} fill={b.starred ? "currentColor" : "none"} />
+                    <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
                   </button>
                 </div>
 
@@ -152,7 +160,7 @@ export default function SavedLinks() {
                     <ExternalLink size={11} className="shrink-0" />
                     {b.url}
                   </p>
-                  <p className="bookmark-description mb-3 text-xs italic text-muted">"{b.quote}"</p>
+                  <p className="bookmark-description mb-3 text-xs italic text-muted">"{b.note}"</p>
 
                   <div className="mb-3 flex flex-wrap gap-1.5">
                     {b.tags.map((tag) => (
@@ -165,11 +173,11 @@ export default function SavedLinks() {
                   <div className="mt-auto flex items-center justify-between text-[11px] text-muted">
                     <span className="flex items-center gap-1">
                       <Clock size={11} />
-                      {b.date}
+                      {b.saved_at}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      {b.status}
-                      {b.private && <Lock size={11} />}
+                      {b.is_visited ? "Visited" : "Unvisited"}
+                      {b.is_private && <Lock size={11} />}
                     </span>
                   </div>
                 </div>
@@ -178,7 +186,12 @@ export default function SavedLinks() {
           })}
 
           {/* Add-new tile */}
-          <button className="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-xl2 border border-dashed border-panel-border bg-panel/40 p-6 text-center transition hover:border-accent">
+          <button className="
+            flex min-h-[220px] flex-col items-center justify-center 
+            gap-2 rounded-xl2 border border-dashed border-panel-border 
+            bg-panel/40 p-6 text-center transition hover:border-accent"
+            onClick={() => setIsModalOpen(true)}
+          >
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-panel-border text-white">
               <Plus size={18} />
             </span>
@@ -187,9 +200,17 @@ export default function SavedLinks() {
             <span className="mt-1 rounded-md border border-panel-border px-2 py-1 text-[11px] text-muted">
               Shortcut: Alt + N
             </span>
-          </button>
+          </button> 
         </div>
       </main>
+
+      {isModalOpen && 
+        <AddBookmarkModal 
+          isOpen={isModalOpen} 
+          onClose={onClose} 
+          onSave={onSave} 
+        />
+      }
     </div>
   );
 }
