@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { getUserData } from "../services/authService.js";
 
 const UserContext = createContext(() => {});
 
@@ -15,8 +16,37 @@ function UserProvider({ children }) {
         id: "",
     })
 
+    const [ isUserLoading, setIsUserLoading ] = useState(true);
+
+    useEffect(() => {
+        const fetchUserData = async() => {
+            try {
+                const data = await getUserData();
+                setUserData({
+                    id: data.user_id,
+                    username: data.username,
+                    email: data.email
+                })
+            } catch {
+                setUserData({
+                    email: "",
+                    username: "",
+                    id: "",
+                });
+            } finally {
+                setIsUserLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
     return(
-        <UserContext.Provider value={{ userData, setUserData }}>
+        <UserContext.Provider value={{ 
+            userData, 
+            setUserData, 
+            isUserLoading
+        }}>
             {children}
         </UserContext.Provider>
     );
