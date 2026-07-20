@@ -31,3 +31,16 @@ export const loginAccount = async (email, password) => {
         );
     }
 }
+
+export const getUserData = async () => {
+    try {
+        const res = await base.get('/auth/me');
+        return res.data;
+    } catch(err) {
+        throw new Error(
+            err.response?.data?.message ||
+            "Something went wrong",
+            { cause: err }
+        )
+    }
+}
