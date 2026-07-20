@@ -1,5 +1,8 @@
 import db from '../config/laterboxDB.js';
 import bcrypt from 'bcrypt';
+import { authQueries } from '../queries/authQueries.js';
+
+const { registerAccount_query, loginAccount_query, getUserData_query } = authQueries;
 
 const registerAccount = async (req, res) => {
     try {
@@ -7,8 +10,7 @@ const registerAccount = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const [result] = await db.promise().query(
-            `INSERT INTO users (username, email, hashed_password) 
-            VALUES (?, ?, ?)`,
+            registerAccount_query,
             [username, email, hashedPassword]
         );
 
@@ -28,8 +30,7 @@ const loginAccount = async (req, res) => {
         const { email, password } = req.body;
 
         const [rows] = await db.promise().query(
-            `SELECT * FROM users
-            WHERE email = ?`,
+            loginAccount_query,
             [email]
         );
 
@@ -62,20 +63,33 @@ const loginAccount = async (req, res) => {
     }
 }
 
-const getUsers = async(req, res) => {
+const getUserData = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
-            'SELECT * FROM users'
+            getUserData_query,
+            [req.session.userId]
         )
 
-        res.status(200).json(rows);
+        if(rows.length === 0) {
+            console.log("user not found")
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const { user_id, username, email } = rows[0];
+
+        res.status(200).json({ 
+            user_id,
+            username,
+            email
+         });
     } catch(err) {
-        res.status(500).json({ message: "Internal Server Error" });
+        console.error(err);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
 export const authControllers = {
     registerAccount,
     loginAccount,
-    getUsers
+    getUserData
 };
