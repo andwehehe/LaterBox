@@ -3,6 +3,7 @@ import cors from "cors";
 import session from 'express-session';
 import dotenv from 'dotenv';
 import authRouter from "./routes/authRoute.js";
+import bookmarkRouter from "./routes/bookmarkRoute.js";
 
 dotenv.config();
 
@@ -30,5 +31,6 @@ app.use(
 );
 
 app.use('/auth', authRouter);
+app.use('/bookmarks', bookmarkRouter);
 
 export default app;
