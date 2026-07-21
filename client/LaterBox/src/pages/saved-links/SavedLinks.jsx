@@ -9,8 +9,9 @@ import { MobileMenuButton } from "../../components/ui.jsx";
 // import { bookmarks } from "../dashboard/mockData";
 import user2 from "../../assets/images/user-2.jpg";
 import { useUserContext } from "../../contexts/UserContext.jsx";
-import AddBookmarkModal from "./AddBookmarkModal.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
+import AddBookmarkModal from "./AddBookmarkModal.jsx";
+import { PopupMessage } from "../../components/ui.jsx";
 
 // Maps each bookmark's platform string to an icon + accent color,
 // so adding a new platform later is a one-line change here.
@@ -28,11 +29,12 @@ const filterOptions = ["All Links", "Unvisited", "Favorites", "YouTube", "GitHub
 export default function SavedLinks() {
   const [activeFilter, setActiveFilter] = useState("All Links");
   const [query, setQuery] = useState("");
+  const [bookmarkStatus, setBookmarkStatus] = useState({ isAdded: false, message: "Unsuccessful" });
 
   const navigate = useNavigate();
 
   const { userData } = useUserContext();
-  const { bookmarks, setBookmarks } = useBookmarkContext();
+  const { bookmarks } = useBookmarkContext();
   const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   const filtered = useMemo(() => {
@@ -51,13 +53,6 @@ export default function SavedLinks() {
       return matchesQuery && matchesFilter;
     });
   }, [bookmarks, query, activeFilter]);
-
-  const onClose = () => {
-    setIsModalOpen(false);
-  }
-  const onSave = ({ url, title, note, tags }) => {
-    setBookmarks({ url, title, note, tags });
-  }
 
   return (
     <div>
@@ -206,11 +201,16 @@ export default function SavedLinks() {
 
       {isModalOpen && 
         <AddBookmarkModal 
-          isOpen={isModalOpen} 
-          onClose={onClose} 
-          onSave={onSave} 
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen} 
+          setBookmarkStatus={setBookmarkStatus}
         />
       }
+
+      <PopupMessage 
+        isSuccessful={bookmarkStatus.isAdded}
+        message={bookmarkStatus.message}
+      />
     </div>
   );
 }
