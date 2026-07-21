@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
-import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon, CheckMark } from "../../assets/icons/icons";
+import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
 import { registerAccount } from "../../services/authService.js";
+import { PopupMessage } from "../../components/ui.jsx";
 
 /**
  * SECURITY / DATA HANDLING NOTES — read before wiring this up
@@ -208,22 +209,10 @@ function CreateAccount() {
         </form>
       </AuthLayout>
 
-      <p
-        className={`
-          fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 
-          items-center gap-2 rounded-lg border border-panel-border 
-          bg-panel px-4 py-3 text-sm text-white shadow-lg transition-all 
-          duration-[1000ms] 
-          ${
-            registerStatus.isSuccessful
-              ? "translate-y-0 opacity-100"
-              : "pointer-events-none translate-y-2 opacity-0"
-          }`
-        }
-      >
-        <CheckMark />
-        {registerStatus.message}
-      </p>
+      <PopupMessage 
+        isSuccessful={registerStatus.isSuccessful} 
+        message={registerStatus.message}
+      />
     </>
   );
 }
