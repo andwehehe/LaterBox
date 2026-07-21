@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { X, Link2, Type, FileText, Tag as TagIcon, CheckCircle2 } from "lucide-react";
 import { TagChip } from "../../components/ui.jsx";
+import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
+import { addBookmark } from "../../services/bookmarkService.js";
 
 // Very small heuristic just to show a "detected platform" badge next to
 // the URL field, matching the design. Extend this list as needed —
@@ -13,14 +15,20 @@ function detectPlatform(url) {
   return null;
 }
 
-function AddBookmarkModal({ isOpen, onClose, onSave }) {
+function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
+  const { setBookmarks } = useBookmarkContext();
+  const currentDate = new Date().toLocaleString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
 
-  if (!isOpen) return null;
+  if (!isModalOpen) return null;
 
   const platform = detectPlatform(url);
 
@@ -51,11 +59,37 @@ function AddBookmarkModal({ isOpen, onClose, onSave }) {
     setTagInput("");
   };
 
-  const handleSubmit = (e) => {
+  const onClose = () => {
+    setIsModalOpen(false);
+  }
+  
+  const onSave = ({ bookmark_id, title, url, platform, note, tags }) => {
+    setBookmarks(prev => [...prev, { 
+      bookmark_id, 
+      title, 
+      url, 
+      platform, 
+      note, 
+      saved_at: currentDate,
+      is_visited: false,
+      is_starred: false,
+      is_private:  false,
+      tags: [...tags]
+    }]);
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave({ url, title, note, tags });
+    
+    const data = await addBookmark(title, url, platform, note, tags);
+    onSave({ bookmark_id: data.bookmark_id, title, url, platform, note, tags });
+    setBookmarkStatus({ isAdded: true, message: data.message });
     resetForm();
     onClose();
+
+    setTimeout(() => {
+      setBookmarkStatus({isAdded: false, message: data.message });
+    }, 3000)
   };
 
   const handleCancel = () => {
