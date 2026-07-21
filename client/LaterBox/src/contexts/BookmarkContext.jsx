@@ -19,7 +19,9 @@ function BookmarkProvider({ children }) {
     //     bookmark_id: "",
     //     title: "",
     //     url: "",
+    //     platform: "",
     //     note: "",
+    //     saved_at: "",
     //     is_visited: false,
     //     is_starred: false,
     //     is_private:  false,
@@ -43,7 +45,7 @@ function BookmarkProvider({ children }) {
         }
 
         fetchBookmarks();
-    })
+    }, [isUserLoading, userData])
 
     return(
         <BookmarkContext.Provider value={{ 
