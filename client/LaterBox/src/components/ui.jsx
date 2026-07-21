@@ -1,5 +1,6 @@
 import { Menu } from "lucide-react";
 import { useMobileMenu } from "../pages/layout/AppShell";
+import { CheckMark } from "../assets/icons/icons";
 
 // Hamburger button every page header drops in on the left, hidden on
 // desktop where the sidebar is always visible.
@@ -66,5 +67,26 @@ export function TagChip({ children, onRemove }) {
         </button>
       )}
     </span>
+  );
+}
+
+export function PopupMessage({ isSuccessful, message }) {
+  return(
+    <p
+      className={`
+        fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 
+        items-center gap-2 rounded-lg border border-panel-border 
+        bg-panel px-4 py-3 text-sm text-white shadow-lg transition-all 
+        duration-[1000ms] 
+        ${
+          isSuccessful
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-2 opacity-0"
+        }`
+      }
+    >
+      <CheckMark />
+      {message}
+    </p>
   );
 }
