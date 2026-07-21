@@ -12,3 +12,23 @@ export const getBookmarks = async () => {
         )
     }
 }
+
+export const addBookmark = async (title, url, platform, note, tags) => {
+    try {
+        const res = await base.post('/bookmarks/addbookmark', {
+            title,
+            url, 
+            platform,
+            note,
+            tags: [...tags]
+        })
+
+        return res.data;
+    } catch(err) {
+        throw new Error(
+            err.response?.data?.message ||
+            "Something went wrong",
+            { cause: err }
+        )
+    }
+}
