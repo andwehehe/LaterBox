@@ -13,6 +13,7 @@ function BookmarkProvider({ children }) {
 
     const [ bookmarks, setBookmarks ] = useState([])
     const [ isBookmarkLoading, setIsBookmarkLoading ] = useState(true);
+    const [ targetBookmark, setTargetBookmark ] = useState({});
     const { isUserLoading, userData } = useUserContext();
 
     // {
@@ -21,7 +22,7 @@ function BookmarkProvider({ children }) {
     //     url: "",
     //     platform: "",
     //     note: "",
-    //     saved_at: "",
+    //     saved_on: "",
     //     is_visited: false,
     //     is_starred: false,
     //     is_private:  false,
@@ -45,13 +46,15 @@ function BookmarkProvider({ children }) {
         }
 
         fetchBookmarks();
-    }, [isUserLoading, userData])
+    }, [isUserLoading, userData]);
 
     return(
         <BookmarkContext.Provider value={{ 
             bookmarks, 
             setBookmarks, 
-            isBookmarkLoading 
+            isBookmarkLoading,
+            targetBookmark,
+            setTargetBookmark 
         }}>
             {children}
         </BookmarkContext.Provider>
