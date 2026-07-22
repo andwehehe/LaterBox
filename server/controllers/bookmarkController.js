@@ -28,6 +28,14 @@ const getBookmarks = async (req, res) => {
 }
 
 const addBookmark = async (req, res) => {
+
+    // modify later: add another query that returns the whole thing
+    const currentDate = new Date().toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+    });
+
     try {
         const { title, url, platform, note, tags } = req.body;
 
@@ -56,7 +64,7 @@ const addBookmark = async (req, res) => {
             );
         }
 
-        return res.status(201).json({ message: "Bookmark added", bookmark_id: result.insertId });
+        return res.status(201).json({ message: "Bookmark added", bookmark_id: result.insertId, saved_on: currentDate });
     } catch(err) {
         console.error(err);
         return res.status(500).json({ message: "Internal server error" });
