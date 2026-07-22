@@ -1,23 +1,21 @@
 import {
-  ChevronLeft,
-  Search,
-  Plus,
-  ExternalLink,
-  Copy,
-  Calendar,
-  CheckCircle2,
-  Star,
-  Pencil,
-  Trash2,
-  Globe,
-  Share2,
+  ChevronLeft, Search, Plus,
+  ExternalLink, Copy, Calendar,
+  CheckCircle2, Star, Pencil,
+  Trash2
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { MobileMenuButton } from "../../components/ui.jsx";
-import { bookmarkDetail as bm, relatedBookmarks } from "../dashboard/mockData.js";
+import { bookmarkDetail as bm } from "../dashboard/mockData.js";
+import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 
-export default function BookmarkDetail() {
+function BookmarkDetail() {
+
+  const { targetBookmark, bookmarks } = useBookmarkContext();
+  const navigate = useNavigate();
+
   return (
-    <div>
+    <section>
       {/* Top bar */}
       <header className="flex items-center gap-3 border-b border-panel-border px-4 py-4 sm:px-6">
         <MobileMenuButton />
@@ -25,11 +23,16 @@ export default function BookmarkDetail() {
         <button
           aria-label="Back to Saved Links"
           className="hidden shrink-0 items-center gap-1 text-sm text-muted hover:text-white sm:flex"
+          onClick={() => navigate('/saved-links')}
         >
           <ChevronLeft size={16} />
         </button>
         <p className="hidden truncate text-sm text-muted sm:block">
-          Saved Links / <span className="font-medium text-white">{bm.title.slice(0, 28)}…</span>
+          Saved Links / <span className="font-medium text-white">{
+            targetBookmark.title?.length > 28
+            ? `${targetBookmark.title.slice(0, 28)}…`
+            : targetBookmark.title
+        }</span>
         </p>
 
         <div className="relative ml-auto hidden max-w-xs flex-1 md:block">
@@ -48,7 +51,7 @@ export default function BookmarkDetail() {
       </header>
 
       <main className="p-4 sm:p-6">
-        {/* Hero banner */}
+        {/* Thumbnail */}
         <div className="relative h-48 overflow-hidden rounded-t-xl2 border border-b-0 border-panel-border bg-gradient-to-br from-[#1c2340] via-[#2a1f4f] to-[#191927] sm:h-56">
           <div
             aria-hidden
@@ -63,18 +66,22 @@ export default function BookmarkDetail() {
         {/* Title row */}
         <div className="flex flex-col gap-4 border border-t-0 border-panel-border bg-panel px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="flex items-start gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-xl">
-              🎨
+            <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-xl bg-white text-xl">
+              {/* Edit later (customizable icons) */}
+              🎨 
             </span>
             <div>
               <span className="mb-1 inline-block rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-white">
-                {bm.category}
+                {targetBookmark.platform}
               </span>
-              <h1 className="text-lg font-bold text-white sm:text-xl">{bm.title}</h1>
+              <h1 className="text-lg font-bold text-white sm:text-xl">{targetBookmark.title}</h1>
             </div>
           </div>
           <a
-            href={`https://${bm.originalUrl}`}
+            href={targetBookmark.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            // onclick PATCH is_visited
             className="flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-panel-border px-3 py-2 text-sm font-medium text-white hover:border-muted sm:self-center"
           >
             <ExternalLink size={14} />
@@ -87,18 +94,18 @@ export default function BookmarkDetail() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted">
             <span className="flex items-center gap-1.5">
               <Copy size={13} />
-              <span className="font-semibold uppercase tracking-wide">Original URL</span>
-              <span className="text-white">{bm.originalUrl}</span>
+              <span className="font-semibold uppercase tracking-wide">URL</span>
+              <span className="text-white">{targetBookmark.url}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <Calendar size={13} />
               <span className="font-semibold uppercase tracking-wide">Saved On</span>
-              <span className="text-white">{bm.savedOn}</span>
+              <span className="text-white">{targetBookmark.saved_on}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 size={13} />
               <span className="font-semibold uppercase tracking-wide">Status</span>
-              <span className="text-white">{bm.status}</span>
+              <span className="text-white">{targetBookmark.is_visted === 1 ? "Visited" : "Unvisited"}</span>
             </span>
           </div>
 
@@ -106,8 +113,9 @@ export default function BookmarkDetail() {
             <button
               aria-label="Starred"
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-yellow-400"
+              // PATCH is_starred
             >
-              <Star size={16} fill="currentColor" />
+              <Star size={16} fill={targetBookmark.is_starred ? "currentColor" : "none"} />
             </button>
             <button
               aria-label="Edit bookmark"
@@ -127,18 +135,22 @@ export default function BookmarkDetail() {
         {/* Notes + sidebar */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
-            <div className="rounded-xl2 border border-panel-border bg-panel p-5 sm:p-6">
+            {/* Personal Notes (Might add see more... function) */}
+            <div className="rounded-xl2 border border-panel-border bg-panel p-5 sm:p-6 h-full">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-base font-semibold text-white">
                   <span className="h-2 w-2 rounded-full bg-accent" />
-                  Personal Notes
+                  Why did I save this?
                 </h2>
-                <button className="text-sm font-medium text-accent-light hover:underline">Edit Notes</button>
+                <button 
+                  className="text-sm font-medium text-accent-light hover:underline"
+                  // onclick PATCH note
+                >Edit Notes</button>
               </div>
 
-              <p className="text-sm leading-relaxed text-muted">{bm.notes}</p>
+              <p className="text-sm leading-relaxed text-muted">{targetBookmark.note}</p>
 
-              <p className="mt-4 mb-2 text-sm font-semibold text-white">Key Points to Research Further:</p>
+              {/* <p className="mt-4 mb-2 text-sm font-semibold text-white">Key Points to Research Further:</p>
               <ul className="mb-4 space-y-2 text-sm text-muted">
                 {bm.keyPoints.map((point) => (
                   <li key={point} className="flex gap-2">
@@ -148,11 +160,11 @@ export default function BookmarkDetail() {
                 ))}
               </ul>
 
-              <p className="text-sm leading-relaxed text-muted">{bm.followUp}</p>
+              <p className="text-sm leading-relaxed text-muted">{bm.followUp}</p> */}
             </div>
 
-            {/* Web archive */}
-            <div className="flex flex-col gap-3 rounded-xl2 border border-panel-border bg-panel p-4 sm:flex-row sm:items-center sm:justify-between">
+            {/* Web archive (Might Replace Later) */}
+            {/* <div className="flex flex-col gap-3 rounded-xl2 border border-panel-border bg-panel p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/15 text-accent-light">
                   <Globe size={16} />
@@ -165,31 +177,38 @@ export default function BookmarkDetail() {
               <button className="shrink-0 self-start rounded-lg border border-panel-border px-4 py-2 text-sm font-medium text-white hover:border-muted sm:self-auto">
                 View Archive
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <aside className="space-y-6">
             <div className="rounded-xl2 border border-panel-border bg-panel p-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Tags</p>
               <div className="flex flex-wrap gap-2">
-                {bm.tags.map((tag) => (
+                {targetBookmark.tags.map((tag) => (
                   <span key={tag} className="rounded-full bg-dark px-3 py-1 text-xs font-medium text-accent-light">
                     #{tag}
                   </span>
                 ))}
-                <button className="rounded-full border border-dashed border-panel-border px-3 py-1 text-xs font-medium text-muted hover:text-white">
+                <button 
+                  className="
+                    rounded-full border border-dashed border-panel-border 
+                    px-3 py-1 text-xs font-medium text-muted hover:text-white
+                  "
+                  // onclick add or remove tag
+                >
                   + Add Tag
                 </button>
               </div>
             </div>
 
+            {/* Platform info (might change the infos later) */}
             <div className="rounded-xl2 border border-panel-border bg-panel p-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Platform Details</p>
               <dl className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <dt className="text-muted">Source</dt>
-                  <dd className="font-medium text-white">{bm.source}</dd>
+                  <dt className="text-muted">Platform:</dt>
+                  <dd className="font-medium text-white">{targetBookmark.platform}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted">Author</dt>
@@ -200,7 +219,7 @@ export default function BookmarkDetail() {
                   <dd className="font-medium text-white">{bm.readingTime}</dd>
                 </div>
                 <div className="flex items-center justify-between">
-                  <dt className="text-muted">Public</dt>
+                  <dt className="text-muted">Privacy:</dt>
                   <dd>
                     <span className="rounded-full bg-panel-border px-2.5 py-0.5 text-xs font-medium text-white">
                       {bm.isPublic ? "Public" : "Private"}
@@ -210,7 +229,7 @@ export default function BookmarkDetail() {
               </dl>
             </div>
 
-            <div className="rounded-xl2 border border-accent/40 bg-accent/10 p-5">
+            {/* <div className="rounded-xl2 border border-accent/40 bg-accent/10 p-5">
               <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-accent-light">
                 <Star size={14} fill="currentColor" />
                 Pro Tip
@@ -222,37 +241,48 @@ export default function BookmarkDetail() {
                 <Share2 size={15} />
                 Share Link
               </button>
-            </div>
-          </div>
+            </div> */}
+          </aside>
         </div>
 
         {/* Related bookmarks */}
-        <div className="mt-8">
-          <div className="mb-1 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Related Bookmarks</h2>
-            <a href="#related" className="text-sm font-medium text-accent-light hover:underline">
-              See all matches →
-            </a>
+        <section className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">Other Saved Bookmarks</h2>
+            <div 
+              className="text-sm font-medium text-accent-light hover:underline"
+              onClick={() => navigate('/saved-links')}
+            >
+              See all bookmarks →
+            </div>
           </div>
-          <p className="mb-4 text-sm text-muted">
-            Based on "{bm.tags[0]}" and "{bm.tags[3]}" tags
-          </p>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {relatedBookmarks.map((item) => (
-              <div key={item.title} className="overflow-hidden rounded-xl2 border border-panel-border bg-panel">
-                <div className="relative h-24 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
-                  <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
-                    {item.source}
-                  </span>
+          {/* <p className="mb-4 text-sm text-muted">
+            Based on "{bm.tags[0]}" and "{bm.tags[3]}" tags
+          </p> */}
+
+          <article className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {bookmarks.filter(bookmark => {
+              return !(bookmark.bookmark_id === targetBookmark.bookmark_id);
+            }).map((bookmark, index) => {
+              if(index >= 4) return;
+              return(
+                <div key={bookmark.title} className="overflow-hidden rounded-xl2 border border-panel-border bg-panel">
+                  <div className="relative h-24 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
+                    <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
+                      {bookmark.platform}
+                    </span>
+                  </div>
+                  <p className="p-3 text-xs font-medium leading-snug text-white">{bookmark.title}</p>
                 </div>
-                <p className="p-3 text-xs font-medium leading-snug text-white">{item.title}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+              );
+            })}
+          </article>
+        </section>
       </main>
-    </div>
+    </section>
 
   );
 }
+
+export default BookmarkDetail;
