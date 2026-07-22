@@ -22,11 +22,6 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const { setBookmarks } = useBookmarkContext();
-  const currentDate = new Date().toLocaleString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
 
   if (!isModalOpen) return null;
 
@@ -63,14 +58,14 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
     setIsModalOpen(false);
   }
   
-  const onSave = ({ bookmark_id, title, url, platform, note, tags }) => {
+  const onSave = ({ bookmark_id, title, url, platform, note, tags, saved_on }) => {
     setBookmarks(prev => [...prev, { 
       bookmark_id, 
       title, 
       url, 
       platform, 
       note, 
-      saved_at: currentDate,
+      saved_on,
       is_visited: false,
       is_starred: false,
       is_private:  false,
@@ -82,7 +77,7 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
     e.preventDefault();
     
     const data = await addBookmark(title, url, platform, note, tags);
-    onSave({ bookmark_id: data.bookmark_id, title, url, platform, note, tags });
+    onSave({ bookmark_id: data.bookmark_id, title, url, platform, note, tags, saved_on: data.saved_on });
     setBookmarkStatus({ isAdded: true, message: data.message });
     resetForm();
     onClose();
