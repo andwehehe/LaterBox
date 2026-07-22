@@ -8,7 +8,7 @@ const getBookmarks_query = `
         b.is_visited,
         b.is_starred,
         b.is_private,
-        DATE_FORMAT(b.saved_at, '%M %d, %Y') AS saved_at,
+        DATE_FORMAT(b.saved_on, '%M %d, %Y') AS saved_on,
         GROUP_CONCAT(t.tag ORDER BY t.tag_id SEPARATOR ',') AS tags
     FROM bookmarks b 
     LEFT JOIN bookmark_tags bt
