@@ -34,7 +34,7 @@ export default function SavedLinks() {
   const navigate = useNavigate();
 
   const { userData } = useUserContext();
-  const { bookmarks } = useBookmarkContext();
+  const { bookmarks, setTargetBookmark } = useBookmarkContext();
   const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   const filtered = useMemo(() => {
@@ -53,6 +53,15 @@ export default function SavedLinks() {
       return matchesQuery && matchesFilter;
     });
   }, [bookmarks, query, activeFilter]);
+
+  const navigateToMoreDetails = (bookmark_id) => {
+    const [targetBookmark] = bookmarks.filter(bookmark => {
+      return bookmark.bookmark_id === bookmark_id;
+    });
+
+    setTargetBookmark(prev => ({...prev, ...targetBookmark}));
+    navigate(`/saved-links/${targetBookmark.title.replaceAll(" ", "-")}`);
+  };
 
   return (
     <div>
@@ -133,7 +142,7 @@ export default function SavedLinks() {
               <article
                 key={b.bookmark_id}
                 className="flex h-full flex-col overflow-hidden rounded-xl2 border border-panel-border bg-panel transition hover:border-accent/50"
-                onClick={() => navigate(`/saved-links/${b.bookmark_id}`)}
+                onClick={() => navigateToMoreDetails(b.bookmark_id)}
               >
                 {/* Thumbnail */}
                 <div className="relative h-36 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
@@ -143,7 +152,7 @@ export default function SavedLinks() {
                   </span>
                   <button
                     aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
-                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white"
+                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white text-yellow-400"
                   >
                     <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
                   </button>
@@ -168,7 +177,7 @@ export default function SavedLinks() {
                   <div className="mt-auto flex items-center justify-between text-[11px] text-muted">
                     <span className="flex items-center gap-1">
                       <Clock size={11} />
-                      {b.saved_at}
+                      {b.saved_on}
                     </span>
                     <span className="flex items-center gap-1.5">
                       {b.is_visited ? "Visited" : "Unvisited"}
