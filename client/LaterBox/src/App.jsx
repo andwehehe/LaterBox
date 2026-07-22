@@ -22,7 +22,7 @@ function App() {
             <Route element={<AppShell />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/saved-links" element={<SavedLinks />} />
-              <Route path="/saved-links/:id" element={<BookmarkDetail />} />
+              <Route path="/saved-links/:title" element={<BookmarkDetail />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           </Routes>
