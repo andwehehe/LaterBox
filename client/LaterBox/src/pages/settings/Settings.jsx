@@ -12,7 +12,7 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
-import { MobileMenuButton, ToggleSwitch } from "../../components/ui.jsx";
+import { MobileMenuButton, ToggleSwitch } from "../../components/components.jsx";
 import { currentUser } from "../dashboard/mockData.js";
 
 const themes = [
