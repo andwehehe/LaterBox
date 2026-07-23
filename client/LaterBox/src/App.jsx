@@ -9,6 +9,7 @@ import Settings from "./pages/settings/Settings";
 import AppShell from "./pages/layout/AppShell";
 import UserProvider from "./contexts/UserContext";
 import BookmarkProvider from "./contexts/BookmarkContext";
+import Profile from "./pages/profile/Profile";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/saved-links" element={<SavedLinks />} />
               <Route path="/saved-links/:title" element={<BookmarkDetail />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
           </Routes>
         </BrowserRouter>
