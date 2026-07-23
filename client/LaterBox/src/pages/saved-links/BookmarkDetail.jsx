@@ -4,15 +4,66 @@ import {
   CheckCircle2, Star, Pencil,
   Trash2
 } from "lucide-react";
+import { TagChip } from "../../components/components.jsx";
 import { useNavigate } from "react-router-dom";
-import { MobileMenuButton } from "../../components/ui.jsx";
+import { useState, useEffect, useRef } from "react";
+import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 
 function BookmarkDetail() {
 
-  const { targetBookmark, bookmarks } = useBookmarkContext();
+  const { targetBookmark, bookmarks, setTargetBookmark } = useBookmarkContext();
   const navigate = useNavigate();
+
+  const [ isEditingTag, setIsEditingTag ] = useState(false);
+  const [ targetTags, setTargetTags ] = useState(targetBookmark.tags ?? []);
+  const [ tagInput, setTagInput ] = useState("");
+  const tagInputRef = useRef(null);
+
+  useEffect(() => {
+    if(isEditingTag) {
+      tagInputRef.current.focus();
+    }
+  }, [isEditingTag])
+
+  const removeTag = (tagToRemove) => {
+    setTargetTags(prev => prev.filter((tag) => tag !== tagToRemove));
+  };
+
+  // can be in util file
+  const handleTagKeyDown = (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault(); // stop it from submitting the form
+
+    const newTag = tagInput.trim();
+    if (!newTag) return;
+    if (targetTags.includes(newTag)) {
+      setTagInput("");
+      return; // no duplicates
+    }
+
+    setTargetTags((prev) => [...prev, newTag]);
+    setTagInput("");
+  };
+
+  const startEditing = () => {
+    setTargetTags(targetBookmark.tags);
+    setIsEditingTag(true);
+  };
+
+  const finishEditing = () => {
+    setTargetBookmark(prev => ({
+        ...prev,
+        tags: targetTags
+    }));
+    setIsEditingTag(false);
+  };
+
+  const cancelEditing = () => {
+    setTargetTags(targetBookmark.tags ?? []);
+    setIsEditingTag(false);
+  };
 
   return (
     <section>
@@ -112,20 +163,20 @@ function BookmarkDetail() {
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               aria-label="Starred"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-yellow-400"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border hover:text-yellow-400 cursor-pointer"
               // PATCH is_starred
             >
               <Star size={16} fill={targetBookmark.is_starred ? "currentColor" : "none"} />
             </button>
             <button
               aria-label="Edit bookmark"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-white cursor-pointer"
             >
               <Pencil size={16} />
             </button>
             <button
               aria-label="Delete bookmark"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-red-400"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-red-400 cursor-pointer"
             >
               <Trash2 size={16} />
             </button>
@@ -185,20 +236,42 @@ function BookmarkDetail() {
             <div className="rounded-xl2 border border-panel-border bg-panel p-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Tags</p>
               <div className="flex flex-wrap gap-2">
-                {targetBookmark.tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-dark px-3 py-1 text-xs font-medium text-accent-light">
-                    #{tag}
-                  </span>
-                ))}
-                <button 
-                  className="
-                    rounded-full border border-dashed border-panel-border 
-                    px-3 py-1 text-xs font-medium text-muted hover:text-white
-                  "
-                  // onclick add or remove tag
-                >
-                  + Add Tag
-                </button>
+                {targetTags.map((tag) =>
+                isEditingTag
+                  ? (
+                    <TagChip key={tag} onRemove={() => removeTag(tag)}>
+                      {tag}
+                    </TagChip>
+                  ) : (
+                    <span key={tag} className="rounded-full bg-dark px-3 py-1 text-xs font-medium text-accent-light">
+                      #{tag}
+                    </span>
+                  )
+                )}
+
+                {isEditingTag && 
+                  <input
+                    ref={tagInputRef}
+                    id="bookmark-tags"
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagKeyDown}
+                    placeholder={"Type tag and press Enter..."}
+                    className="min-w-[120px] flex-1 bg-transparent text-sm text-white placeholder:text-muted/70 focus:outline-none border-b-1 border-white pb-1"
+                  />
+                } 
+
+                {isEditingTag ||
+                  <TagBTN handleClick={startEditing} text={"Edit tags"} />
+                }
+                
+                {isEditingTag && 
+                  <div className="flex gap-2">
+                    <TagBTN handleClick={finishEditing} text={"save"} />
+                    <TagBTN handleClick={cancelEditing} text={"cancel"} />
+                  </div>
+                }
               </div>
             </div>
 
@@ -263,7 +336,7 @@ function BookmarkDetail() {
 
           <article className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {bookmarks.filter(bookmark => {
-              return !(bookmark.bookmark_id === targetBookmark.bookmark_id);
+              return bookmark.bookmark_id !== targetBookmark.bookmark_id;
             }).map((bookmark, index) => {
               if(index >= 4) return;
               return(
