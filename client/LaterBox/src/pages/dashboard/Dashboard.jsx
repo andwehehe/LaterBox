@@ -1,5 +1,5 @@
 import { Search, Plus, Bell, Bookmark, ArrowUpRight, Clock, Layers } from "lucide-react";
-import { MobileMenuButton, StatCard } from "../../components/ui.jsx";
+import { MobileMenuButton, StatCard } from "../../components/components.jsx";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 import user2 from "../../assets/images/user-2.jpg";
 

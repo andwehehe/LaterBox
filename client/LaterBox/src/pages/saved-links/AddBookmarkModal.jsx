@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Link2, Type, FileText, Tag as TagIcon, CheckCircle2 } from "lucide-react";
-import { TagChip } from "../../components/ui.jsx";
+import { TagChip } from "../../components/components.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import { addBookmark } from "../../services/bookmarkService.js";
 

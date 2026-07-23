@@ -5,13 +5,13 @@ import {
   Code2, MessageCircle, FileText, Lock,
   ExternalLink, Clock,
 } from "lucide-react";
-import { MobileMenuButton } from "../../components/ui.jsx";
+import { MobileMenuButton } from "../../components/components.jsx";
 // import { bookmarks } from "../dashboard/mockData";
 import user2 from "../../assets/images/user-2.jpg";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import AddBookmarkModal from "./AddBookmarkModal.jsx";
-import { PopupMessage } from "../../components/ui.jsx";
+import { PopupMessage } from "../../components/components.jsx";
 
 // Maps each bookmark's platform string to an icon + accent color,
 // so adding a new platform later is a one-line change here.
@@ -152,7 +152,7 @@ export default function SavedLinks() {
                   </span>
                   <button
                     aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
-                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white text-yellow-400"
+                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white hover:text-yellow-400"
                   >
                     <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
                   </button>

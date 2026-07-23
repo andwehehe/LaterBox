@@ -4,7 +4,7 @@ import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
 import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
 import { registerAccount } from "../../services/authService.js";
-import { PopupMessage } from "../../components/ui.jsx";
+import { PopupMessage } from "../../components/components.jsx";
 
 /**
  * SECURITY / DATA HANDLING NOTES — read before wiring this up
