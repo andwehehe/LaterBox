@@ -5,27 +5,47 @@ import {
   Trash2
 } from "lucide-react";
 import { TagChip } from "../../components/components.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
+import { getTargetBookmark, updateTags } from "../../services/bookmarkService.js";
 
 function BookmarkDetail() {
 
-  const { targetBookmark, bookmarks, setTargetBookmark } = useBookmarkContext();
+  const { bookmarks, targetBookmark, setTargetBookmark } = useBookmarkContext();
   const navigate = useNavigate();
 
   const [ isEditingTag, setIsEditingTag ] = useState(false);
   const [ targetTags, setTargetTags ] = useState(targetBookmark.tags ?? []);
   const [ tagInput, setTagInput ] = useState("");
   const tagInputRef = useRef(null);
+  const { bookmark_id } = useParams();
 
   useEffect(() => {
     if(isEditingTag) {
       tagInputRef.current.focus();
     }
   }, [isEditingTag])
+
+  useEffect(() => {
+    const fetchTargetBookmark = async () => {
+      if(!bookmark_id) return;
+
+      try {
+          const data = await getTargetBookmark(+bookmark_id);
+          setTargetBookmark(data);
+          setTargetTags(data.tags);
+      } catch {
+          setTargetBookmark({});
+      }
+    }
+
+    fetchTargetBookmark();
+  }, [bookmark_id, setTargetBookmark]);
+
+
 
   const removeTag = (tagToRemove) => {
     setTargetTags(prev => prev.filter((tag) => tag !== tagToRemove));
@@ -34,13 +54,13 @@ function BookmarkDetail() {
   // can be in util file
   const handleTagKeyDown = (e) => {
     if (e.key !== "Enter") return;
-    e.preventDefault(); // stop it from submitting the form
+    e.preventDefault();
 
     const newTag = tagInput.trim();
     if (!newTag) return;
     if (targetTags.includes(newTag)) {
       setTagInput("");
-      return; // no duplicates
+      return;
     }
 
     setTargetTags((prev) => [...prev, newTag]);
@@ -58,6 +78,7 @@ function BookmarkDetail() {
         tags: targetTags
     }));
     setIsEditingTag(false);
+    updateTags(+bookmark_id, targetTags);
   };
 
   const cancelEditing = () => {
@@ -249,6 +270,13 @@ function BookmarkDetail() {
                   )
                 )}
 
+                {isEditingTag ||
+                  <TagBTN handleClick={startEditing} text={"Edit tags"} />
+                }
+                
+              </div>
+
+              <div className="flex flex mt-2">
                 {isEditingTag && 
                   <input
                     ref={tagInputRef}
@@ -262,10 +290,6 @@ function BookmarkDetail() {
                   />
                 } 
 
-                {isEditingTag ||
-                  <TagBTN handleClick={startEditing} text={"Edit tags"} />
-                }
-                
                 {isEditingTag && 
                   <div className="flex gap-2">
                     <TagBTN handleClick={finishEditing} text={"save"} />
@@ -273,6 +297,7 @@ function BookmarkDetail() {
                   </div>
                 }
               </div>
+
             </div>
 
             {/* Platform info (might change the infos later) */}
