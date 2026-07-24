@@ -11,7 +11,7 @@ export const useBookmarkContext = () => {
 
 function BookmarkProvider({ children }) {
 
-    const [ bookmarks, setBookmarks ] = useState([])
+    const [ bookmarks, setBookmarks ] = useState([]);
     const [ isBookmarkLoading, setIsBookmarkLoading ] = useState(true);
     const [ targetBookmark, setTargetBookmark ] = useState({});
     const { isUserLoading, userData } = useUserContext();
@@ -37,7 +37,6 @@ function BookmarkProvider({ children }) {
             try {
                 const data = await getBookmarks();
                 setBookmarks(data);
-                console.log(data)
             } catch {
                 setBookmarks([]);
             } finally {
@@ -54,7 +53,7 @@ function BookmarkProvider({ children }) {
             setBookmarks, 
             isBookmarkLoading,
             targetBookmark,
-            setTargetBookmark 
+            setTargetBookmark,
         }}>
             {children}
         </BookmarkContext.Provider>
