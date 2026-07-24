@@ -55,12 +55,14 @@ export default function SavedLinks() {
   }, [bookmarks, query, activeFilter]);
 
   const navigateToMoreDetails = (bookmark_id) => {
-    const [targetBookmark] = bookmarks.filter(bookmark => {
+    const targetBookmark = bookmarks.find(bookmark => {
       return bookmark.bookmark_id === bookmark_id;
     });
 
+    if (!targetBookmark) return;
+
     setTargetBookmark(prev => ({...prev, ...targetBookmark}));
-    navigate(`/saved-links/${targetBookmark.title.replaceAll(" ", "-")}`);
+    navigate(`/saved-links/${targetBookmark.bookmark_id}/${targetBookmark.title.replaceAll(" ", "-")}`);
   };
 
   return (
