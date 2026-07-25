@@ -139,23 +139,41 @@ const updateTags = async (req, res) => {
             );
         }
 
+        let tagIdsToRemove = [];
+
         if(removedTags.length > 0) {
             const [tagsToRemove] = await db.promise().query(
                 `SELECT tag_id FROM tags
-                WHERE tag IN (?)`,
+                 WHERE tag IN (?)`,
                 [removedTags]
             );
 
-            const tagIdsToRemove = tagsToRemove.map(tag => tag.tag_id);
-
-            await db.promise().query(
-                `DELETE FROM bookmark_tags
-                WHERE bookmark_id = ?
-                AND tag_id IN (?)`,
-                [+bookmark_id, tagIdsToRemove]
-            );
+            tagIdsToRemove = tagsToRemove.map(tag => tag.tag_id);
         }
 
+        if(tagIdsToRemove.length > 0) {
+            await db.promise().query(
+                `DELETE FROM bookmark_tags
+                 WHERE bookmark_id = ?
+                 AND tag_id IN (?)`,
+                [+bookmark_id, tagIdsToRemove]
+            );
+
+            const [activeTags] = await db.promise().query(
+                `SELECT tag_id FROM bookmark_tags
+                 WHERE tag_id IN (?)`,
+                [tagIdsToRemove]
+            );
+
+            const activeTagsIds = activeTags?.map(t => t.tag_id) ?? [];
+            const inactiveTagsIds = tagIdsToRemove.filter(t => !activeTagsIds.includes(t));
+
+            await db.promise().query(
+                `DELETE FROM tags
+                 WHERE tag_id IN (?)`,
+                 [inactiveTagsIds]
+            );
+        }
         
         return res.status(200).json({ message: "Tags updated" });
     } catch(err) {
