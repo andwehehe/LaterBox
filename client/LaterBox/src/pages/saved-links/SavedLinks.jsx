@@ -154,7 +154,7 @@ export default function SavedLinks() {
                   </span>
                   <button
                     aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
-                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white hover:text-yellow-400"
+                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white"
                   >
                     <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
                   </button>
