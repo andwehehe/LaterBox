@@ -12,7 +12,8 @@ function detectPlatform(url) {
   if (url.includes("github.com")) return "GitHub";
   if (url.includes("youtube.com")) return "YouTube";
   if (url.includes("twitter.com") || url.includes("x.com")) return "X";
-  return null;
+  if (url.includes("benthingdahan.com")) return "Benthingdahan";
+  return "Website";
 }
 
 function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
@@ -29,13 +30,13 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
 
   const handleTagKeyDown = (e) => {
     if (e.key !== "Enter") return;
-    e.preventDefault(); // stop it from submitting the form
+    e.preventDefault();
 
     const newTag = tagInput.trim();
     if (!newTag) return;
     if (tags.includes(newTag)) {
       setTagInput("");
-      return; // no duplicates
+      return;
     }
 
     setTags((prev) => [...prev, newTag]);
