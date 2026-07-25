@@ -14,7 +14,7 @@ import { getTargetBookmark, updateTags } from "../../services/bookmarkService.js
 
 function BookmarkDetail() {
 
-  const { bookmarks, targetBookmark, setTargetBookmark } = useBookmarkContext();
+  const { bookmarks, setBookmarks, targetBookmark, setTargetBookmark } = useBookmarkContext();
   const navigate = useNavigate();
 
   const [ isEditingTag, setIsEditingTag ] = useState(false);
@@ -77,6 +77,20 @@ function BookmarkDetail() {
         ...prev,
         tags: targetTags
     }));
+
+    const updatedBookmarks = bookmarks.map(b => {
+      if(b.bookmark_id === targetBookmark.bookmark_id) {
+        return {
+          ...b,
+          tags: targetTags
+        };
+      }
+
+      return b;
+    });
+
+    setBookmarks(updatedBookmarks);
+
     setIsEditingTag(false);
     updateTags(+bookmark_id, targetTags);
   };
