@@ -8,6 +8,6 @@ const { getBookmarks, addBookmark, getTargetBookmark, updateTags } = bookmarkCon
 bookmarkRouter.get('/', requireAuth, getBookmarks);
 bookmarkRouter.post('/addbookmark', requireAuth, addBookmark);
 bookmarkRouter.get('/:bookmark_id', requireAuth, getTargetBookmark);
-bookmarkRouter.patch('/:bookmark_id', requireAuth, updateTags);
+bookmarkRouter.patch('/tags/:bookmark_id', requireAuth, updateTags);
 
 export default bookmarkRouter;
