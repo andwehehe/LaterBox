@@ -151,6 +151,8 @@ const updateTags = async (req, res) => {
             tagIdsToRemove = tagsToRemove.map(tag => tag.tag_id);
         }
 
+        let inactiveTagsIds = [];
+
         if(tagIdsToRemove.length > 0) {
             await db.promise().query(
                 `DELETE FROM bookmark_tags
@@ -166,12 +168,14 @@ const updateTags = async (req, res) => {
             );
 
             const activeTagsIds = activeTags?.map(t => t.tag_id) ?? [];
-            const inactiveTagsIds = tagIdsToRemove.filter(t => !activeTagsIds.includes(t));
+            inactiveTagsIds = tagIdsToRemove.filter(t => !activeTagsIds.includes(t));
+        }
 
+        if(inactiveTagsIds.length > 0) {
             await db.promise().query(
                 `DELETE FROM tags
                  WHERE tag_id IN (?)`,
-                 [inactiveTagsIds]
+                [inactiveTagsIds]
             );
         }
         
