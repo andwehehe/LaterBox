@@ -98,10 +98,9 @@ const addBookmark = async (req, res) => {
 
 const updateTags = async (req, res) => {
     const { tags } = req.body;
-    const { bookmark_id } = req.params;
+    const bookmark_id = req.params.bookmark_id;
 
     try {
-
         const [rows] = await db.promise().query(
             `SELECT GROUP_CONCAT(t.tag ORDER BY t.tag_id SEPARATOR ',') AS tags
             FROM bookmarks b
@@ -186,9 +185,28 @@ const updateTags = async (req, res) => {
     }
 }
 
+const updateNote = async (req, res) => {
+    const bookmark_id = req.params.bookmark_id;
+    const { note } = req.body;
+
+    try {
+        const [result] = await db.promise().query(
+            `UPDATE bookmarks
+             SET note = ?
+             WHERE bookmark_id = ?`,
+            [note, +bookmark_id]
+        );
+
+        return res.status(200).json({ message: "Note updated" });
+    } catch(err) {
+        return res.status(500).json({ message: "Internal server error." });
+    }
+}
+
 export const bookmarkControllers = {
     getBookmarks,
     addBookmark,
     getTargetBookmark,
-    updateTags
+    updateTags,
+    updateNote
 }

@@ -9,7 +9,7 @@ export const getBookmarks = async () => {
             err.response?.data?.message ||
             "Something went wrong",
             { cause: err }
-        )
+        );
     }
 }
 
@@ -22,7 +22,7 @@ export const getTargetBookmark = async (bookmark_id) => {
             err.response?.data?.message ||
             "Something went wrong",
             { cause: err }
-        )
+        );
     }
 }
 
@@ -42,13 +42,13 @@ export const addBookmark = async (title, url, platform, note, tags) => {
             err.response?.data?.message ||
             "Something went wrong",
             { cause: err }
-        )
+        );
     }
 }
 
 export const updateTags = async (bookmark_id, tags) => {
     try {
-        const res = await base.patch(`/bookmarks/${bookmark_id}`, {
+        const res = await base.patch(`/bookmarks/tags/${bookmark_id}`, {
             tags
         })
 
@@ -58,6 +58,22 @@ export const updateTags = async (bookmark_id, tags) => {
             err.response?.data?.message ||
             "Something went wrong.",
             { cause: err }
-        )
+        );
+    }
+}
+
+export const updateNote = async (bookmark_id, note) => {
+    try {
+        const res = await base.patch(`/bookmarks/note/${bookmark_id}`, {
+            note
+        });
+        
+        return res.data;
+    } catch(err) {
+        throw new Error(
+            err.response?.data?.message ||
+            "Something went wrong",
+            { cause: err }
+        );
     }
 }
