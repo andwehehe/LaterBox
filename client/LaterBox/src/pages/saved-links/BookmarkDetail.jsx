@@ -4,13 +4,13 @@ import {
   CheckCircle2, Star, Pencil,
   Trash2
 } from "lucide-react";
-import { TagChip } from "../../components/components.jsx";
+import { TagChip, PopupMessage } from "../../components/components.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
-import { getTargetBookmark, updateTags } from "../../services/bookmarkService.js";
+import { getTargetBookmark, updateTags, updateNote } from "../../services/bookmarkService.js";
 
 function BookmarkDetail() {
 
@@ -18,16 +18,29 @@ function BookmarkDetail() {
   const navigate = useNavigate();
 
   const [ isEditingTag, setIsEditingTag ] = useState(false);
+  const [ isEditingNote, setIsEditingNote ] = useState(false);
+
   const [ targetTags, setTargetTags ] = useState(targetBookmark.tags ?? []);
-  const [ tagInput, setTagInput ] = useState("");
+  const [ targetNote, setTargetNote ] = useState(targetBookmark.note ?? "");
+
   const tagInputRef = useRef(null);
+  const noteInputRef = useRef(null);
+
+  const [ tagInput, setTagInput ] = useState("");
+  const [ editingStatus, setIsEditingStatus ] = useState({ isSuccessful: false, message: "" });
   const { bookmark_id } = useParams();
 
   useEffect(() => {
     if(isEditingTag) {
       tagInputRef.current.focus();
     }
-  }, [isEditingTag])
+
+    if(isEditingNote) {
+      noteInputRef.current.focus();
+      const length = noteInputRef.current.value.length;
+      noteInputRef.current.setSelectionRange(length, length);
+    }
+  }, [isEditingTag, isEditingNote])
 
   useEffect(() => {
     const fetchTargetBookmark = async () => {
@@ -67,22 +80,22 @@ function BookmarkDetail() {
     setTagInput("");
   };
 
-  const startEditing = () => {
-    setTargetTags(targetBookmark.tags);
-    setIsEditingTag(true);
+  const startEditing = ({ setTargetProp, setIsEditingProp, value }) => {
+    setTargetProp(value);
+    setIsEditingProp(true);
   };
 
-  const finishEditing = () => {
+  const finishEditing = async ({ prop, value, setIsEditingProp }) => {
     setTargetBookmark(prev => ({
         ...prev,
-        tags: targetTags
+        [prop]: value
     }));
 
     const updatedBookmarks = bookmarks.map(b => {
       if(b.bookmark_id === targetBookmark.bookmark_id) {
         return {
           ...b,
-          tags: targetTags
+          [prop]: value
         };
       }
 
@@ -90,14 +103,32 @@ function BookmarkDetail() {
     });
 
     setBookmarks(updatedBookmarks);
+    setIsEditingProp(false);
 
-    setIsEditingTag(false);
-    updateTags(+bookmark_id, targetTags);
-  };
+    let result = '';
+    
+    try {
+      if(prop === 'tags') {
+        result = await updateTags(+bookmark_id, value);
+      } else if(prop === 'note') {
+        result = await updateNote(+bookmark_id, value);
+      }
 
-  const cancelEditing = () => {
-    setTargetTags(targetBookmark.tags ?? []);
-    setIsEditingTag(false);
+      setIsEditingStatus({ isSuccessful: true, message: result.message });
+
+      setTimeout(() => {
+        setIsEditingStatus(prev => ({ ...prev, isSuccessful: false }));
+      }, 3000)
+    } catch {
+      setIsEditingStatus({ isSuccessful: false, message: result.message });
+    } finally {
+      setIsEditingStatus(prev => ({ ...prev, isSuccessful: false }));
+    }
+  }; 
+
+  const cancelEditing = ({ setTargetProp, value, setIsEditingProp }) => {
+    setTargetProp(value);
+    setIsEditingProp(false);
   };
 
   return (
@@ -191,7 +222,7 @@ function BookmarkDetail() {
             <span className="flex items-center gap-1.5">
               <CheckCircle2 size={13} />
               <span className="font-semibold uppercase tracking-wide">Status</span>
-              <span className="text-white">{targetBookmark.is_visted === 1 ? "Visited" : "Unvisited"}</span>
+              <span className="text-white">{targetBookmark.is_visited ? "Visited" : "Unvisited"}</span>
             </span>
           </div>
 
@@ -228,13 +259,59 @@ function BookmarkDetail() {
                   <span className="h-2 w-2 rounded-full bg-accent" />
                   Why did I save this?
                 </h2>
-                <button 
-                  className="text-sm font-medium text-accent-light hover:underline"
-                  // onclick PATCH note
-                >Edit Notes</button>
+
+                <div className="flex gap-4">
+                  {isEditingNote ||
+                    <button 
+                      className="text-sm font-medium text-accent-light hover:underline"
+                      onClick={() => startEditing({
+                        setTargetProp: setTargetNote, 
+                        setIsEditingProp: setIsEditingNote, 
+                        value: targetBookmark.note
+                      })}
+                    >Edit Notes</button>
+                  }
+
+                  {isEditingNote &&
+                    <button 
+                      className="text-sm font-medium text-accent-light hover:underline"
+                      onClick={() => finishEditing({
+                        prop: "note",
+                        value: targetNote,
+                        setIsEditingProp: setIsEditingNote,
+                      })}
+                    >Save</button>
+                  }
+
+                  {isEditingNote &&
+                    <button 
+                      className="text-sm font-medium text-accent-light hover:underline"
+                      onClick={() => cancelEditing({
+                        setTargetProp: setTargetNote,
+                        value: targetBookmark.note,
+                        setIsEditingProp: setIsEditingNote,
+                      })}
+                    >Cancel</button>
+                  }
+                </div>
               </div>
 
-              <p className="text-sm leading-relaxed text-muted">{targetBookmark.note}</p>
+              {isEditingNote 
+                ? (
+                  // <p className="text-sm leading-relaxed text-muted">{targetBookmark.note}</p>
+                  <textarea 
+                    type="text" 
+                    name="textInput" 
+                    id="textInput" 
+                    onChange={(e) => setTargetNote(e.target.value)}
+                    ref={noteInputRef} 
+                    defaultValue={targetNote} 
+                    className="text-sm leading-relaxed text-muted w-full border-1 resize-none p-2" 
+                  />
+                ) : (
+                  <p className="text-sm leading-relaxed text-muted">{targetBookmark.note}</p>
+                )
+              }
 
               {/* <p className="mt-4 mb-2 text-sm font-semibold text-white">Key Points to Research Further:</p>
               <ul className="mb-4 space-y-2 text-sm text-muted">
@@ -285,7 +362,15 @@ function BookmarkDetail() {
                 )}
 
                 {isEditingTag ||
-                  <TagBTN handleClick={startEditing} text={"Edit tags"} />
+                  <TagBTN 
+                    handleClick={() => (
+                      startEditing({
+                        setTargetProp: setTargetTags, 
+                        setIsEditingProp: setIsEditingTag, 
+                        value: targetBookmark.tags
+                      })
+                    )} 
+                    text={"Edit tags"} />
                 }
                 
               </div>
@@ -306,8 +391,27 @@ function BookmarkDetail() {
 
                 {isEditingTag && 
                   <div className="flex gap-2">
-                    <TagBTN handleClick={finishEditing} text={"save"} />
-                    <TagBTN handleClick={cancelEditing} text={"cancel"} />
+                    <TagBTN
+                      handleClick={() =>
+                        finishEditing({
+                          prop: "tags",
+                          value: targetTags,
+                          setIsEditingProp: setIsEditingTag,
+                        })
+                      }
+                      text="Save"
+                    />
+
+                    <TagBTN
+                      handleClick={() =>
+                        cancelEditing({
+                          setTargetProp: setTargetTags,
+                          value: targetBookmark.tags,
+                          setIsEditingProp: setIsEditingTag,
+                        })
+                      }
+                      text="Cancel"
+                    />
                   </div>
                 }
               </div>
@@ -392,6 +496,11 @@ function BookmarkDetail() {
           </article>
         </section>
       </main>
+
+      <PopupMessage 
+        isSuccessful={editingStatus.isSuccessful} 
+        message={editingStatus.message}
+      />
     </section>
 
   );
