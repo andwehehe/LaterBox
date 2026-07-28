@@ -203,10 +203,30 @@ const updateNote = async (req, res) => {
     }
 }
 
+const updateIsStarred = async (req, res) => {
+    const bookmark_id = req.params.bookmark_id;
+    const { is_starred } = req.body;
+    const message = is_starred ? 'Added to favorites' : 'Removed from favorites';
+
+    try {
+        const [result] = await db.promise().query(
+            `UPDATE bookmarks
+             SET is_starred = ?
+             WHERE bookmark_id = ?`,
+             [is_starred, +bookmark_id]
+        );
+
+        return res.status(200).json({ message: message });
+    } catch(err) {
+        return res.status(500).json({ message: "Internal server error." });
+    }
+}
+
 export const bookmarkControllers = {
     getBookmarks,
     addBookmark,
     getTargetBookmark,
     updateTags,
-    updateNote
+    updateNote,
+    updateIsStarred
 }

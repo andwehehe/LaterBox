@@ -77,3 +77,19 @@ export const updateNote = async (bookmark_id, note) => {
         );
     }
 }
+
+export const updateIsStarred = async (bookmark_id, is_starred) => {
+    try {
+        const res = await base.patch(`/bookmarks/is_starred/${bookmark_id}`, {
+            is_starred
+        });
+        
+        return res.data;
+    } catch(err) {
+        throw new Error(
+            err.response?.data?.message ||
+            "Something went wrong",
+            { cause: err }
+        );
+    }
+}
