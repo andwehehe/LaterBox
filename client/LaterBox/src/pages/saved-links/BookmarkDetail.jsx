@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
-import { getTargetBookmark, updateTags, updateNote } from "../../services/bookmarkService.js";
+import { getTargetBookmark, updateTags, updateNote, updateIsStarred } from "../../services/bookmarkService.js";
 
 function BookmarkDetail() {
 
@@ -121,8 +121,6 @@ function BookmarkDetail() {
       }, 3000)
     } catch {
       setIsEditingStatus({ isSuccessful: false, message: result.message });
-    } finally {
-      setIsEditingStatus(prev => ({ ...prev, isSuccessful: false }));
     }
   }; 
 
@@ -130,6 +128,36 @@ function BookmarkDetail() {
     setTargetProp(value);
     setIsEditingProp(false);
   };
+
+  const flipStatus = async () => {
+    setTargetBookmark(prev => ({ ...prev, is_starred: !prev.is_starred }));
+
+    const updatedBookmarks = bookmarks.map(b => {
+      if(b.bookmark_id === targetBookmark.bookmark_id) {
+        return {
+          ...b,
+          is_starred: !targetBookmark.is_starred
+        };
+      }
+
+      return b;
+    });
+
+    setBookmarks(updatedBookmarks);
+
+    let result = '';
+
+    try {
+      result = await updateIsStarred(bookmark_id, !targetBookmark.is_starred);
+      setIsEditingStatus({ isSuccessful: true, message: result.message });
+
+      setTimeout(() => {
+        setIsEditingStatus(prev => ({ ...prev, isSuccessful: false }));
+      }, 3000)
+    } catch {
+      setIsEditingStatus({ isSuccessful: false, message: result.message });
+    }
+  }
 
   return (
     <section>
@@ -229,8 +257,13 @@ function BookmarkDetail() {
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               aria-label="Starred"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border hover:text-yellow-400 cursor-pointer"
+              className={`
+                flex h-9 w-9 items-center justify-center rounded-lg 
+                border border-panel-border hover:text-yellow-400 cursor-pointer
+                ${targetBookmark.is_starred && "text-yellow-400"}
+              `}
               // PATCH is_starred
+              onClick={flipStatus}
             >
               <Star size={16} fill={targetBookmark.is_starred ? "currentColor" : "none"} />
             </button>
@@ -483,7 +516,13 @@ function BookmarkDetail() {
             }).map((bookmark, index) => {
               if(index >= 4) return;
               return(
-                <div key={bookmark.title} className="overflow-hidden rounded-xl2 border border-panel-border bg-panel">
+                <div 
+                  key={bookmark.title}
+                  onClick={() => {
+                    setTargetBookmark({ ...bookmark });
+                    setTargetTags(bookmark.tags);
+                  }} 
+                  className="overflow-hidden rounded-xl2 border border-panel-border bg-panel">
                   <div className="relative h-24 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
                     <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
                       {bookmark.platform}
