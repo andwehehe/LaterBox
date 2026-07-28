@@ -144,6 +144,7 @@ export default function SavedLinks() {
               <article
                 key={b.bookmark_id}
                 className="flex h-full flex-col overflow-hidden rounded-xl2 border border-panel-border bg-panel transition hover:border-accent/50"
+                // use this function in Other saved bookmarks
                 onClick={() => navigateToMoreDetails(b.bookmark_id)}
               >
                 {/* Thumbnail */}
@@ -154,7 +155,10 @@ export default function SavedLinks() {
                   </span>
                   <button
                     aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
-                    className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white"
+                    className={`
+                        absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white
+                        ${b.is_starred && "text-yellow-400"}
+                    `}
                   >
                     <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
                   </button>
