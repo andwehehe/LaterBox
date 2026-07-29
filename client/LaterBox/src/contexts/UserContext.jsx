@@ -19,6 +19,7 @@ function UserProvider({ children }) {
     const [ isUserLoading, setIsUserLoading ] = useState(true);
 
     useEffect(() => {
+
         const fetchUserData = async() => {
             try {
                 const data = await getUserData();
@@ -27,12 +28,10 @@ function UserProvider({ children }) {
                     username: data.username,
                     email: data.email
                 })
-            } catch {
-                setUserData({
-                    email: "",
-                    username: "",
-                    id: "",
-                });
+            } catch(err) {
+                if (err.response?.status === 401) {
+                    setUserData(null);
+                }
             } finally {
                 setIsUserLoading(false);
             }
@@ -45,7 +44,7 @@ function UserProvider({ children }) {
         <UserContext.Provider value={{ 
             userData, 
             setUserData, 
-            isUserLoading
+            isUserLoading,
         }}>
             {children}
         </UserContext.Provider>

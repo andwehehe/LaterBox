@@ -7,26 +7,6 @@ import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../asset
 import { loginAccount } from "../../services/authService.js";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 
-/**
- * SECURITY / DATA HANDLING NOTES
- * -------------------------------
- * - Email and password only live in this component's React state while
- *   the user is typing. Nothing here is written to localStorage,
- *   sessionStorage, or a cookie by this component.
- * 
- * - On submit, credentials are sent ONCE, directly to the backend over
- *   HTTPS (see the fetch call below). Swap the placeholder endpoint for
- *   your real login route.
- * 
- * - "Remember me" is intentionally disabled in this UI. If needed later,
- *   it should be implemented server-side (e.g. a longer-lived, httpOnly,
- *   Secure, SameSite cookie issued by the backend), NOT by saving a token
- *   or the password in browser storage.
- * 
- * - This component clears the password field from state immediately
- *   after a submit attempt (success or failure).
- */
-
 function SignIn() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -44,9 +24,8 @@ function SignIn() {
 
     try {      
       const data = await loginAccount(form.email, form.password);
-      setUserData({ email: data.email, username: data.username, id: data.user_id })
+      setUserData({ email: data.email, username: data.username, id: data.user_id });
 
-      // Success: hand off to your router / redirect logic here.
       navigate("/dashboard");
     } catch (err) {
       setStatus({ loading: false, error: err.message });
