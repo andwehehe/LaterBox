@@ -1,22 +1,18 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Search, Plus, ChevronDown, Star, Video,
   Code2, MessageCircle, FileText, Lock,
   ExternalLink, Clock,
 } from "lucide-react";
+
+import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { MobileMenuButton } from "../../components/components.jsx";
-// import { bookmarks } from "../dashboard/mockData";
 import user2 from "../../assets/images/user-2.jpg";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import AddBookmarkModal from "./AddBookmarkModal.jsx";
 import { PopupMessage } from "../../components/components.jsx";
 
-// Maps each bookmark's platform string to an icon + accent color,
-// so adding a new platform later is a one-line change here.
-// Note: lucide-react no longer ships brand/logo icons (no Youtube,
-// Github, Twitter, etc.) — these are generic stand-ins instead.
 const platformMeta = {
   YouTube: { icon: Video, color: "text-red-400" },
   Article: { icon: FileText, color: "text-sky-400" },
@@ -27,15 +23,12 @@ const platformMeta = {
 const filterOptions = ["All Links", "Unvisited", "Favorites", "YouTube", "GitHub", "Twitter"];
 
 export default function SavedLinks() {
-  const [activeFilter, setActiveFilter] = useState("All Links");
-  const [query, setQuery] = useState("");
-  const [bookmarkStatus, setBookmarkStatus] = useState({ isAdded: false, message: "Unsuccessful" });
-
-  const navigate = useNavigate();
-
+  const [ activeFilter, setActiveFilter ] = useState("All Links");
+  const [ query, setQuery ] = useState("");
   const { userData } = useUserContext();
-  const { bookmarks, setTargetBookmark } = useBookmarkContext();
+  const { bookmarks, setTargetBookmark, bookmarkStatus, setBookmarkStatus } = useBookmarkContext();
   const [ isModalOpen, setIsModalOpen ] = useState(false);
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     return bookmarks.filter((b) => {
@@ -223,7 +216,7 @@ export default function SavedLinks() {
       }
 
       <PopupMessage 
-        isSuccessful={bookmarkStatus.isAdded}
+        isSuccessful={bookmarkStatus.isSuccessful}
         message={bookmarkStatus.message}
       />
     </div>
