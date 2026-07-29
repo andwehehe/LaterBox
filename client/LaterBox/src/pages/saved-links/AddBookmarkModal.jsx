@@ -79,7 +79,7 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
     
     const data = await addBookmark(title, url, platform, note, tags);
     onSave({ bookmark_id: data.bookmark_id, title, url, platform, note, tags, saved_on: data.saved_on });
-    setBookmarkStatus({ isAdded: true, message: data.message });
+    setBookmarkStatus({ isSuccessful: true, message: data.message });
     resetForm();
     onClose();
 
