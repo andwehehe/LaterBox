@@ -6,12 +6,14 @@ const bookmarkRouter = express.Router();
 const { 
     getBookmarks, addBookmark, 
     getTargetBookmark, updateTags, 
-    updateNote, updateIsStarred 
+    updateNote, updateIsStarred,
+    deleteBookmark 
 } = bookmarkControllers;
 
 bookmarkRouter.get('/', requireAuth, getBookmarks);
 bookmarkRouter.post('/addbookmark', requireAuth, addBookmark);
 bookmarkRouter.get('/:bookmark_id', requireAuth, getTargetBookmark);
+bookmarkRouter.delete('/delete/:bookmark_id', requireAuth, deleteBookmark);
 
 bookmarkRouter.patch('/tags/:bookmark_id', requireAuth, updateTags);
 bookmarkRouter.patch('/note/:bookmark_id', requireAuth, updateNote);

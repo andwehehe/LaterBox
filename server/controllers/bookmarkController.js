@@ -222,11 +222,62 @@ const updateIsStarred = async (req, res) => {
     }
 }
 
+const deleteBookmark = async (req, res) => {
+    const bookmark_id = req.params.bookmark_id;
+    const { tags } = req.body;
+
+    try {
+        const [result] = await db.promise().query(
+            `DELETE FROM bookmarks
+             WHERE bookmark_id = ?`,
+             [+bookmark_id]
+        );
+
+        let tagsIds = [];
+
+        if(tags.length > 0) {
+            const [ids] = await db.promise().query(
+                `SELECT tag_id FROM tags
+                 WHERE tag IN (?)`,
+                 [tags]
+            );
+
+            tagsIds = ids.map(tag => tag.tag_id);
+        }
+
+        let inactiveTags = [];
+
+        if(tagsIds.length > 0) {
+            const [activeTags] = await db.promise().query(
+                `SELECT tag_id FROM bookmark_tags
+                 WHERE tag_id IN (?)`,
+                 [tagsIds]
+            );
+
+            let activeTagsIds = activeTags.map(tag => tag.tag_id);
+            inactiveTags = tagsIds.filter(tag => !activeTagsIds.includes(tag));
+        }
+
+        if(inactiveTags.length > 0) {
+            const [deleted] = await db.promise().query(
+                `DELETE FROM tags
+                 WHERE tag_id IN (?)`,
+                 [inactiveTags]
+            );
+        }
+
+        return res.status(200).json({ message: "Bookmark deleted" });
+    } catch(err) {
+        return res.status(500).json({ message: "Internal server error." });
+    }
+}
+
 export const bookmarkControllers = {
     getBookmarks,
     addBookmark,
     getTargetBookmark,
     updateTags,
     updateNote,
-    updateIsStarred
+    updateIsStarred,
+    deleteBookmark
 }

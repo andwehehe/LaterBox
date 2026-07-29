@@ -4,17 +4,28 @@ import {
   CheckCircle2, Star, Pencil,
   Trash2
 } from "lucide-react";
+
+import { 
+  getTargetBookmark, updateTags, 
+  updateNote, updateIsStarred, 
+  deleteBookmark 
+} from "../../services/bookmarkService.js";
+
 import { TagChip, PopupMessage } from "../../components/components.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
-import { getTargetBookmark, updateTags, updateNote, updateIsStarred } from "../../services/bookmarkService.js";
 
 function BookmarkDetail() {
 
-  const { bookmarks, setBookmarks, targetBookmark, setTargetBookmark } = useBookmarkContext();
+  const { 
+    bookmarks, setBookmarks, 
+    targetBookmark, setTargetBookmark,  
+    bookmarkStatus, setBookmarkStatus,
+    DEFAULT_BOOKMARK
+  } = useBookmarkContext();
   const navigate = useNavigate();
 
   const [ isEditingTag, setIsEditingTag ] = useState(false);
@@ -27,7 +38,6 @@ function BookmarkDetail() {
   const noteInputRef = useRef(null);
 
   const [ tagInput, setTagInput ] = useState("");
-  const [ editingStatus, setIsEditingStatus ] = useState({ isSuccessful: false, message: "" });
   const { bookmark_id } = useParams();
 
   useEffect(() => {
@@ -114,13 +124,13 @@ function BookmarkDetail() {
         result = await updateNote(+bookmark_id, value);
       }
 
-      setIsEditingStatus({ isSuccessful: true, message: result.message });
+      setBookmarkStatus({ isSuccessful: true, message: result.message });
 
       setTimeout(() => {
-        setIsEditingStatus(prev => ({ ...prev, isSuccessful: false }));
+        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }));
       }, 3000)
     } catch {
-      setIsEditingStatus({ isSuccessful: false, message: result.message });
+      setBookmarkStatus({ isSuccessful: false, message: result.message });
     }
   }; 
 
@@ -129,6 +139,7 @@ function BookmarkDetail() {
     setIsEditingProp(false);
   };
 
+  // make it reusable for is_private and is_visited
   const flipStatus = async () => {
     setTargetBookmark(prev => ({ ...prev, is_starred: !prev.is_starred }));
 
@@ -149,13 +160,38 @@ function BookmarkDetail() {
 
     try {
       result = await updateIsStarred(bookmark_id, !targetBookmark.is_starred);
-      setIsEditingStatus({ isSuccessful: true, message: result.message });
+      setBookmarkStatus({ isSuccessful: true, message: result.message });
 
       setTimeout(() => {
-        setIsEditingStatus(prev => ({ ...prev, isSuccessful: false }));
+        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }));
       }, 3000)
     } catch {
-      setIsEditingStatus({ isSuccessful: false, message: result.message });
+      setBookmarkStatus({ isSuccessful: false, message: result.message });
+    }
+  }
+
+  const handleDelete = async () => {
+    setBookmarks(prev => {
+      return prev.filter(b => b.bookmark_id !== +bookmark_id)
+    });
+
+    let result = '';
+
+    try {
+      result = await deleteBookmark(bookmark_id, targetTags);
+
+      setBookmarkStatus({ isSuccessful: true, message: result.message });
+      setTargetBookmark(DEFAULT_BOOKMARK);
+      setTargetTags([]);
+      setTargetNote("");
+
+      navigate('/saved-links');
+
+      setTimeout(() => {
+        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }));
+      }, 3000)
+    } catch {
+      setBookmarkStatus({ isSuccessful: false, message: result.message });
     }
   }
 
@@ -267,14 +303,17 @@ function BookmarkDetail() {
             >
               <Star size={16} fill={targetBookmark.is_starred ? "currentColor" : "none"} />
             </button>
+
             <button
               aria-label="Edit bookmark"
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-white cursor-pointer"
             >
               <Pencil size={16} />
             </button>
+
             <button
               aria-label="Delete bookmark"
+              onClick={handleDelete}
               className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-red-400 cursor-pointer"
             >
               <Trash2 size={16} />
@@ -537,8 +576,8 @@ function BookmarkDetail() {
       </main>
 
       <PopupMessage 
-        isSuccessful={editingStatus.isSuccessful} 
-        message={editingStatus.message}
+        isSuccessful={bookmarkStatus.isSuccessful} 
+        message={bookmarkStatus.message}
       />
     </section>
 
