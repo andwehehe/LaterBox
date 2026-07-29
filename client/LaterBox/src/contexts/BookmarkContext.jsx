@@ -14,20 +14,21 @@ function BookmarkProvider({ children }) {
     const [ bookmarks, setBookmarks ] = useState([]);
     const [ isBookmarkLoading, setIsBookmarkLoading ] = useState(true);
     const [ targetBookmark, setTargetBookmark ] = useState({});
+    const [ bookmarkStatus, setBookmarkStatus ] = useState({ isSuccessful: false, message: "" });
     const { isUserLoading, userData } = useUserContext();
 
-    // {
-    //     bookmark_id: "",
-    //     title: "",
-    //     url: "",
-    //     platform: "",
-    //     note: "",
-    //     saved_on: "",
-    //     is_visited: false,
-    //     is_starred: false,
-    //     is_private:  false,
-    //     tags: []
-    // }
+    const DEFAULT_BOOKMARK = {
+        bookmark_id: "",
+        title: "",
+        url: "",
+        platform: "",
+        note: "",
+        saved_on: "",
+        is_visited: false,
+        is_starred: false,
+        is_private:  false,
+        tags: []
+    }
 
     useEffect(() => {
         if(isUserLoading) return;
@@ -54,6 +55,9 @@ function BookmarkProvider({ children }) {
             isBookmarkLoading,
             targetBookmark,
             setTargetBookmark,
+            DEFAULT_BOOKMARK,
+            bookmarkStatus,
+            setBookmarkStatus
         }}>
             {children}
         </BookmarkContext.Provider>
