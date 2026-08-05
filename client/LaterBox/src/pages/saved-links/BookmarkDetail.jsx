@@ -8,7 +8,7 @@ import {
 import { 
   getTargetBookmark, updateTags, 
   updateNote, updateIsStarred, 
-  deleteBookmark 
+  deleteBookmark, updateIsVisited 
 } from "../../services/bookmarkService.js";
 
 import { TagChip, PopupMessage } from "../../components/components.jsx";
@@ -17,6 +17,10 @@ import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
+
+// TASKS: 
+//  - Fix the case where you add no title/note/tags
+//  - Cut the long url and replace the tail with 3 dots and a fade effect
 
 function BookmarkDetail() {
 
@@ -96,6 +100,11 @@ function BookmarkDetail() {
   };
 
   const finishEditing = async ({ prop, value, setIsEditingProp }) => {
+    if(targetBookmark.note === targetNote) {
+      setIsEditingProp(false);
+      return;
+    }
+    
     setTargetBookmark(prev => ({
         ...prev,
         [prop]: value
@@ -140,14 +149,14 @@ function BookmarkDetail() {
   };
 
   // make it reusable for is_private and is_visited
-  const flipStatus = async () => {
-    setTargetBookmark(prev => ({ ...prev, is_starred: !prev.is_starred }));
+  const flipStatus = async ({ prop, value }) => {
+    setTargetBookmark(prev => ({ ...prev, [prop]: value }));
 
     const updatedBookmarks = bookmarks.map(b => {
       if(b.bookmark_id === targetBookmark.bookmark_id) {
         return {
           ...b,
-          is_starred: !targetBookmark.is_starred
+          [prop]: value
         };
       }
 
@@ -159,7 +168,12 @@ function BookmarkDetail() {
     let result = '';
 
     try {
-      result = await updateIsStarred(bookmark_id, !targetBookmark.is_starred);
+      if(prop === "is_starred") {
+        result = await updateIsStarred(bookmark_id, value);
+      } else if(prop === "is_visited") {
+        result = await updateIsVisited(bookmark_id, value);
+      }
+
       setBookmarkStatus({ isSuccessful: true, message: result.message });
 
       setTimeout(() => {
@@ -263,6 +277,7 @@ function BookmarkDetail() {
             target="_blank"
             rel="noopener noreferrer"
             // onclick PATCH is_visited
+            onClick={() => flipStatus({ prop: "is_visited", value: !targetBookmark.is_visited })}
             className="flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-panel-border px-3 py-2 text-sm font-medium text-white hover:border-muted sm:self-center"
           >
             <ExternalLink size={14} />
@@ -299,14 +314,17 @@ function BookmarkDetail() {
                 ${targetBookmark.is_starred && "text-yellow-400"}
               `}
               // PATCH is_starred
-              onClick={flipStatus}
+              onClick={() => flipStatus({ prop: "is_starred", value: !targetBookmark.is_starred })}
             >
               <Star size={16} fill={targetBookmark.is_starred ? "currentColor" : "none"} />
             </button>
 
             <button
               aria-label="Edit bookmark"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-white cursor-pointer"
+              className="
+                flex h-9 w-9 items-center justify-center rounded-lg border 
+                border-panel-border text-muted hover:text-lime-500 cursor-pointer 
+              "
             >
               <Pencil size={16} />
             </button>
@@ -314,7 +332,10 @@ function BookmarkDetail() {
             <button
               aria-label="Delete bookmark"
               onClick={handleDelete}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-red-400 cursor-pointer"
+              className="
+                flex h-9 w-9 items-center justify-center rounded-lg border 
+                border-panel-border text-muted hover:text-red-400 cursor-pointer
+              "
             >
               <Trash2 size={16} />
             </button>

@@ -94,6 +94,22 @@ export const updateIsStarred = async (bookmark_id, is_starred) => {
     }
 }
 
+export const updateIsVisited = async (bookmark_id, is_visited) => {
+    try {
+        const res = await base.patch(`/bookmarks/is_visited/${bookmark_id}`, {
+            is_visited
+        })
+
+        return res.data;
+    } catch(err) {
+        throw new Error(
+            err.response?.data?.message ||
+            "Something went wrong",
+            { cause: err }
+        )
+    }
+}
+
 export const deleteBookmark = async (bookmark_id, tags) => {
     try {
         const res = await base.delete(`/bookmarks/delete/${bookmark_id}`, {

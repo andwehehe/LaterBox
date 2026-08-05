@@ -7,7 +7,7 @@ const {
     getBookmarks, addBookmark, 
     getTargetBookmark, updateTags, 
     updateNote, updateIsStarred,
-    deleteBookmark 
+    deleteBookmark, updateIsVisited 
 } = bookmarkControllers;
 
 bookmarkRouter.get('/', requireAuth, getBookmarks);
@@ -18,5 +18,6 @@ bookmarkRouter.delete('/delete/:bookmark_id', requireAuth, deleteBookmark);
 bookmarkRouter.patch('/tags/:bookmark_id', requireAuth, updateTags);
 bookmarkRouter.patch('/note/:bookmark_id', requireAuth, updateNote);
 bookmarkRouter.patch('/is_starred/:bookmark_id', requireAuth, updateIsStarred);
+bookmarkRouter.patch('/is_visited/:bookmark_id', requireAuth, updateIsVisited);
 
 export default bookmarkRouter;

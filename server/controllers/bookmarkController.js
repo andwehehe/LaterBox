@@ -23,7 +23,7 @@ const getBookmarks = async (req, res) => {
         );
     } catch(err) {
         console.error(err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Failed to get bookmarks" });
     }
 }
 
@@ -48,7 +48,7 @@ const getTargetBookmark = async (req, res) => {
         );
     } catch(err) {
         console.error(err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Failed to get bookmark" });
     }
 }
 
@@ -92,7 +92,7 @@ const addBookmark = async (req, res) => {
         return res.status(201).json({ message: "Bookmark added", bookmark_id: result.insertId, saved_on: currentDate });
     } catch(err) {
         console.error(err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Failed to add bookmark" });
     }
 }
 
@@ -181,7 +181,7 @@ const updateTags = async (req, res) => {
         return res.status(200).json({ message: "Tags updated" });
     } catch(err) {
         console.error(err);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Update failed" });
     }
 }
 
@@ -190,7 +190,7 @@ const updateNote = async (req, res) => {
     const { note } = req.body;
 
     try {
-        const [result] = await db.promise().query(
+        await db.promise().query(
             `UPDATE bookmarks
              SET note = ?
              WHERE bookmark_id = ?`,
@@ -199,7 +199,7 @@ const updateNote = async (req, res) => {
 
         return res.status(200).json({ message: "Note updated" });
     } catch(err) {
-        return res.status(500).json({ message: "Internal server error." });
+        return res.status(500).json({ message: "Update failed" });
     }
 }
 
@@ -209,7 +209,7 @@ const updateIsStarred = async (req, res) => {
     const message = is_starred ? 'Added to favorites' : 'Removed from favorites';
 
     try {
-        const [result] = await db.promise().query(
+        await db.promise().query(
             `UPDATE bookmarks
              SET is_starred = ?
              WHERE bookmark_id = ?`,
@@ -218,7 +218,7 @@ const updateIsStarred = async (req, res) => {
 
         return res.status(200).json({ message: message });
     } catch(err) {
-        return res.status(500).json({ message: "Internal server error." });
+        return res.status(500).json({ message: "Update failed" });
     }
 }
 
@@ -268,7 +268,23 @@ const deleteBookmark = async (req, res) => {
 
         return res.status(200).json({ message: "Bookmark deleted" });
     } catch(err) {
-        return res.status(500).json({ message: "Internal server error." });
+        return res.status(500).json({ message: "Delete failed" });
+    }
+}
+
+const updateIsVisited = async (req, res) => {
+    const bookmark_id = req.params.bookmark_id;
+    const { is_visited } = req.body;
+
+    try {
+        await db.promise().query(
+            `UPDATE FROM bookmarks
+             SET is_visited = ?
+             WHERE bookmark_id = ?`,
+             [is_visited, +bookmark_id]
+        );
+    } catch(err) {
+        return res.status(500).json({ message: "Update failed" })
     }
 }
 
@@ -279,5 +295,6 @@ export const bookmarkControllers = {
     updateTags,
     updateNote,
     updateIsStarred,
-    deleteBookmark
+    deleteBookmark,
+    updateIsVisited
 }
