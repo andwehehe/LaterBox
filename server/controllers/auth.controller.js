@@ -28,7 +28,7 @@ const loginAccount = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await authService.loginAccount({ 
+        const user = await authServices.loginAccount({ 
             email, 
             password 
         });
