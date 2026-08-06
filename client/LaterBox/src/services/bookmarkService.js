@@ -114,7 +114,7 @@ export const deleteBookmark = async (bookmark_id, tags) => {
     try {
         const res = await base.delete(`/bookmarks/delete/${bookmark_id}`, {
             data: {
-                tags
+                tags: tags ?? []
             }
         });
 
