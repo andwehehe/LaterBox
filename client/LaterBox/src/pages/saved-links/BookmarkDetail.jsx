@@ -19,8 +19,6 @@ import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 
 // TASKS: 
-//  - Fix the case where you add no title/note/tags
-//  - Cut the long url and replace the tail with 3 dots and a fade effect
 
 function BookmarkDetail() {
 
@@ -209,6 +207,18 @@ function BookmarkDetail() {
     }
   }
 
+  // can be in a util
+  const navigateToMoreDetails = (bookmark_id) => {
+    const targetBookmark = bookmarks.find(bookmark => {
+      return bookmark.bookmark_id === bookmark_id;
+    });
+
+    if (!targetBookmark) return;
+
+    setTargetBookmark(prev => ({...prev, ...targetBookmark}));
+    navigate(`/saved-links/${targetBookmark.bookmark_id}/${targetBookmark.title.replaceAll(" ", "-")}`);
+  };
+
   return (
     <section>
       {/* Top bar */}
@@ -235,11 +245,19 @@ function BookmarkDetail() {
           <input
             type="text"
             placeholder="Search your library..."
-            className="w-full rounded-lg border border-panel-border bg-panel py-2 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none"
+            className="
+              w-full rounded-lg border border-panel-border bg-panel 
+              py-2 pl-10 pr-3 text-sm text-white placeholder:text-muted 
+              focus:border-accent focus:outline-none
+            "
           />
         </div>
 
-        <button className="ml-auto flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light md:ml-0">
+        <button className="
+          ml-auto flex items-center gap-2 rounded-lg bg-accent 
+          px-4 py-2 text-sm font-semibold text-white transition 
+          hover:bg-accent-light md:ml-0
+        ">
           <Plus size={16} />
           <span className="hidden sm:inline">Add New</span>
         </button>
@@ -247,19 +265,28 @@ function BookmarkDetail() {
 
       <main className="p-4 sm:p-6">
         {/* Thumbnail */}
-        <div className="relative h-48 overflow-hidden rounded-t-xl2 border border-b-0 border-panel-border bg-gradient-to-br from-[#1c2340] via-[#2a1f4f] to-[#191927] sm:h-56">
+        <div className="
+          relative h-48 overflow-hidden rounded-t-xl2 border border-b-0 
+          border-panel-border bg-gradient-to-br from-[#1c2340] via-[#2a1f4f] 
+          to-[#191927] sm:h-56
+        ">
           <div
             aria-hidden
             className="absolute inset-0 opacity-70"
             style={{
               background:
-                "radial-gradient(circle at 30% 40%, rgba(139,133,247,0.35), transparent 55%), radial-gradient(circle at 70% 60%, rgba(91,82,240,0.3), transparent 50%)",
+                `radial-gradient(circle at 30% 40%, rgba(139,133,247,0.35), 
+                transparent 55%), radial-gradient(circle at 70% 60%, 
+                rgba(91,82,240,0.3), transparent 50%)`,
             }}
           />
         </div>
 
         {/* Title row */}
-        <div className="flex flex-col gap-4 border border-t-0 border-panel-border bg-panel px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="
+          flex flex-col gap-4 border border-t-0 border-panel-border sm:px-6
+          bg-panel px-4 py-5 sm:flex-row sm:items-center sm:justify-between
+        ">
           <div className="flex items-start gap-3">
             <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-xl bg-white text-xl">
               {/* Edit later (customizable icons) */}
@@ -276,9 +303,12 @@ function BookmarkDetail() {
             href={targetBookmark.url}
             target="_blank"
             rel="noopener noreferrer"
-            // onclick PATCH is_visited
             onClick={() => flipStatus({ prop: "is_visited", value: !targetBookmark.is_visited })}
-            className="flex shrink-0 items-center gap-1.5 self-start rounded-lg border border-panel-border px-3 py-2 text-sm font-medium text-white hover:border-muted sm:self-center"
+            className="
+              flex shrink-0 items-center gap-1.5 self-start rounded-lg border 
+              border-panel-border px-3 py-2 text-sm font-medium text-white 
+              hover:border-muted sm:self-center
+            "
           >
             <ExternalLink size={14} />
             Visit Site
@@ -286,12 +316,16 @@ function BookmarkDetail() {
         </div>
 
         {/* Meta row */}
-        <div className="flex flex-col gap-4 rounded-b-xl2 border border-t-0 border-panel-border bg-panel px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="
+          flex flex-col gap-4 rounded-b-xl2 border border-t-0 
+          border-panel-border bg-panel px-4 py-4 sm:flex-row 
+          sm:items-center sm:justify-between sm:px-6
+        ">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted">
             <span className="flex items-center gap-1.5">
               <Copy size={13} />
               <span className="font-semibold uppercase tracking-wide">URL</span>
-              <span className="text-white">{targetBookmark.url}</span>
+              <span className="bookmark-url text-white">{targetBookmark.url}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <Calendar size={13} />
@@ -362,7 +396,7 @@ function BookmarkDetail() {
                         setIsEditingProp: setIsEditingNote, 
                         value: targetBookmark.note
                       })}
-                    >Edit Notes</button>
+                    >Edit Note</button>
                   }
 
                   {isEditingNote &&
@@ -391,7 +425,6 @@ function BookmarkDetail() {
 
               {isEditingNote 
                 ? (
-                  // <p className="text-sm leading-relaxed text-muted">{targetBookmark.note}</p>
                   <textarea 
                     type="text" 
                     name="textInput" 
@@ -399,10 +432,11 @@ function BookmarkDetail() {
                     onChange={(e) => setTargetNote(e.target.value)}
                     ref={noteInputRef} 
                     defaultValue={targetNote} 
+                    placeholder="Add note..."
                     className="text-sm leading-relaxed text-muted w-full border-1 resize-none p-2" 
                   />
                 ) : (
-                  <p className="text-sm leading-relaxed text-muted">{targetBookmark.note}</p>
+                  <p className="text-sm leading-relaxed text-muted">{targetBookmark.note || "Click 'Edit Note' to a add note..."}</p>
                 )
               }
 
@@ -441,7 +475,7 @@ function BookmarkDetail() {
             <div className="rounded-xl2 border border-panel-border bg-panel p-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Tags</p>
               <div className="flex flex-wrap gap-2">
-                {targetTags.map((tag) =>
+                {targetTags?.map((tag) =>
                 isEditingTag
                   ? (
                     <TagChip key={tag} onRemove={() => removeTag(tag)}>
@@ -478,7 +512,10 @@ function BookmarkDetail() {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleTagKeyDown}
                     placeholder={"Type tag and press Enter..."}
-                    className="min-w-[120px] flex-1 bg-transparent text-sm text-white placeholder:text-muted/70 focus:outline-none border-b-1 border-white pb-1"
+                    className="
+                      min-w-[120px] flex-1 bg-transparent text-sm text-white border-white
+                      placeholder:text-muted/70 focus:outline-none border-b-1  pb-1
+                    "
                   />
                 } 
 
@@ -578,10 +615,7 @@ function BookmarkDetail() {
               return(
                 <div 
                   key={bookmark.title}
-                  onClick={() => {
-                    setTargetBookmark({ ...bookmark });
-                    setTargetTags(bookmark.tags);
-                  }} 
+                  onClick={() => navigateToMoreDetails(bookmark.bookmark_id)}
                   className="overflow-hidden rounded-xl2 border border-panel-border bg-panel">
                   <div className="relative h-24 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
                     <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
