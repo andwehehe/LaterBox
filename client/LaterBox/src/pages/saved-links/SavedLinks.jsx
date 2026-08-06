@@ -47,6 +47,7 @@ export default function SavedLinks() {
     });
   }, [bookmarks, query, activeFilter]);
 
+  // can be in utils
   const navigateToMoreDetails = (bookmark_id) => {
     const targetBookmark = bookmarks.find(bookmark => {
       return bookmark.bookmark_id === bookmark_id;
@@ -71,11 +72,16 @@ export default function SavedLinks() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search bookmarks, tags, or notes..."
-            className="w-full rounded-lg border border-panel-border bg-panel py-2 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none"
-          />
+            className="
+              w-full rounded-lg border border-panel-border bg-panel py-2 pl-10 pr-3 
+              text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none
+          "/>
         </div>
 
-        <button className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light">
+        <button className="
+          flex items-center gap-2 rounded-lg bg-accent px-4 py-2 
+          text-sm font-semibold text-white transition hover:bg-accent-light
+        ">
           <Plus size={16} />
           <span className="hidden sm:inline">Add Bookmark</span>
         </button>
@@ -88,7 +94,10 @@ export default function SavedLinks() {
               className="h-9 w-9 rounded-full"
             />
           ) : (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
+            <span className="
+              flex h-9 w-9 items-center justify-center rounded-full 
+              bg-accent/20 text-xs font-semibold text-accent-light
+            ">
               {/* {placeholder} */}
               PH
             </span>
@@ -102,7 +111,10 @@ export default function SavedLinks() {
             <h1 className="text-2xl font-bold text-white sm:text-3xl">Saved Links</h1>
             <p className="mt-1 text-sm text-muted">Manage and discover your digital archive.</p>
           </div>
-          <button className="flex items-center gap-2 self-start rounded-lg border border-panel-border px-3 py-2 text-sm text-muted hover:text-white sm:self-auto">
+          <button className="
+            flex items-center gap-2 self-start rounded-lg border border-panel-border 
+            px-3 py-2 text-sm text-muted hover:text-white sm:self-auto
+          ">
             Sort by: <span className="font-medium text-white">Recently Added</span>
             <ChevronDown size={14} />
           </button>
@@ -123,7 +135,10 @@ export default function SavedLinks() {
               {label}
             </button>
           ))}
-          <button className="rounded-full border border-dashed border-panel-border px-3 py-1.5 text-xs font-medium text-muted hover:text-white">
+          <button className="
+            rounded-full border border-dashed border-panel-border px-3 
+            py-1.5 text-xs font-medium text-muted hover:text-white
+          ">
             + Add Tag
           </button>
         </div>
@@ -136,21 +151,25 @@ export default function SavedLinks() {
             return (
               <article
                 key={b.bookmark_id}
-                className="flex h-full flex-col overflow-hidden rounded-xl2 border border-panel-border bg-panel transition hover:border-accent/50"
-                // use this function in Other saved bookmarks
+                className="
+                  flex h-full flex-col overflow-hidden rounded-xl2 border 
+                  border-panel-border bg-panel transition hover:border-accent/50"
                 onClick={() => navigateToMoreDetails(b.bookmark_id)}
               >
                 {/* Thumbnail */}
                 <div className="relative h-36 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
-                  <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-md bg-black/50 px-2 py-1 text-xs font-medium text-white">
+                  <span className="
+                    absolute left-3 top-3 flex items-center gap-1.5 rounded-md 
+                    bg-black/50 px-2 py-1 text-xs font-medium text-white
+                  ">
                     <Icon size={13} className={meta.color} />
                     {b.platform}
                   </span>
                   <button
                     aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
                     className={`
-                        absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white
-                        ${b.is_starred && "text-yellow-400"}
+                        absolute right-3 top-3 flex h-7 w-7 items-center justify-center 
+                        rounded-full bg-black/50 text-white ${b.is_starred && "text-yellow-400"}
                     `}
                   >
                     <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
@@ -159,14 +178,16 @@ export default function SavedLinks() {
 
                 <div className="flex grow flex-col p-4">
                   <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-white">{b.title}</h3>
-                  <p className="mb-2 flex items-center gap-1 truncate text-xs text-muted">
+                  <p className="bookmark-url mb-2 flex items-center gap-1 truncate text-xs text-muted">
                     <ExternalLink size={11} className="shrink-0" />
                     {b.url}
                   </p>
-                  <p className="bookmark-description mb-3 text-xs italic text-muted">"{b.note}"</p>
+                  <p className="bookmark-description mb-3 text-xs italic text-muted">
+                    "{b.note}"
+                  </p>
 
                   <div className="mb-3 flex flex-wrap gap-1.5">
-                    {b.tags.map((tag) => (
+                    {b.tags?.map((tag) => (
                       <span key={tag} className="rounded-md bg-dark px-2 py-0.5 text-[11px] font-medium text-muted">
                         #{tag}
                       </span>
@@ -188,7 +209,7 @@ export default function SavedLinks() {
             );
           })}
 
-          {/* Add-new tile */}
+          {/* Add-new bookmark */}
           <button className="
             flex min-h-[220px] flex-col items-center justify-center 
             gap-2 rounded-xl2 border border-dashed border-panel-border 
