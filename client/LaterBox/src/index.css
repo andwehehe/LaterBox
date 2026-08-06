@@ -130,13 +130,24 @@ ol {
   padding-right: 1.5rem;
 }
 
-.bookmark-description::after {
-  content: "";
+.description-tail {
   position: absolute;
   top: 0;
   right: 0;
+  left: 10%;
   height: 100%;
-  width: 3rem;
+  width: 10rem;
   pointer-events: none;
   background: linear-gradient(to left, var(--color-panel), rgba(18, 18, 32, 0));
+}
+
+.bookmark-url {
+  position: relative;
+  display: -webkit-box;
+  width: 100%;
+  max-width: 20rem;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: normal;
 }
