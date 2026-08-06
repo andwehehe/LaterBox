@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import session from 'express-session';
 import dotenv from 'dotenv';
-import authRouter from "./routes/authRoute.js";
-import bookmarkRouter from "./routes/bookmarkRoute.js";
+import authRouter from "./routes/auth.route.js";
+import bookmarkRouter from "./routes/bookmark.route.js";
 
 dotenv.config();
 
