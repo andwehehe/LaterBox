@@ -70,8 +70,6 @@ function BookmarkDetail() {
     fetchTargetBookmark();
   }, [bookmark_id, setTargetBookmark]);
 
-
-
   const removeTag = (tagToRemove) => {
     setTargetTags(prev => prev.filter((tag) => tag !== tagToRemove));
   };
@@ -82,8 +80,8 @@ function BookmarkDetail() {
     e.preventDefault();
 
     const newTag = tagInput.trim();
-    if (!newTag) return;
-    if (targetTags.includes(newTag)) {
+    if(!newTag) return;
+    if(targetTags.includes(newTag)) {
       setTagInput("");
       return;
     }
@@ -98,7 +96,15 @@ function BookmarkDetail() {
   };
 
   const finishEditing = async ({ prop, value, setIsEditingProp }) => {
-    if(targetBookmark.note === targetNote) {
+    if(prop === "note" && targetBookmark.note === targetNote) {
+      setIsEditingProp(false);
+      return;
+    }
+
+    if(
+      prop === "tags" && 
+      JSON.stringify([...targetBookmark.tags].sort()) === JSON.stringify([...targetTags].sort())
+    ) {
       setIsEditingProp(false);
       return;
     }
