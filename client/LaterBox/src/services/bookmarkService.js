@@ -50,7 +50,7 @@ export const updateTags = async (bookmark_id, tags) => {
     try {
         const res = await base.patch(`/bookmarks/tags/${bookmark_id}`, {
             tags
-        })
+        });
 
         return res.data;
     } catch(err) {
