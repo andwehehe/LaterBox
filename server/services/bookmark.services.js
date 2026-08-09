@@ -1,30 +1,50 @@
-import { bookmarks } from "../../client/LaterBox/src/pages/dashboard/mockData.js";
 import db from "../config/laterbox.db.js";
+import { getMetadata } from "../utils/utility.metadata.js";
 import * as bookmarkRepository from '../repositories/bookmark.repository.js';
 
 export const getBookmarks = async (user_id) => {
     const bookmarks = await bookmarkRepository.getByUserId(user_id);
 
-    return bookmarks.map(bookmark => {
-        return {
-            ...bookmark,
-            is_visited: bookmark.is_visited === 1,
-            is_starred: bookmark.is_starred === 1,
-            is_private: bookmark.is_private === 1,
-            tags: bookmark.tags?.split(',')
-        }
-    });
+    return Promise.all(
+        bookmarks.map(async (bookmark) => {
+            const metadata = await getMetadata(bookmark.url)
+
+            return {
+                ...bookmark,
+                is_visited: bookmark.is_visited === 1,
+                is_starred: bookmark.is_starred === 1,
+                is_private: bookmark.is_private === 1,
+                tags: bookmark.tags?.split(','),
+                metadata
+            }
+        })
+    );
+
+    // return bookmarks.map((bookmark) => {
+    //     // const metadata = await getMetadata(bookmark.url)
+    //     // console.log(metadata)
+    //     return {
+    //         ...bookmark,
+    //         is_visited: bookmark.is_visited === 1,
+    //         is_starred: bookmark.is_starred === 1,
+    //         is_private: bookmark.is_private === 1,
+    //         tags: bookmark.tags?.split(',')
+    //     }
+    // })
 }
 
 export const getTargetBookmark = async (bookmark_id) => {
     const targetBookmark = await bookmarkRepository.getByBookmarkId(bookmark_id);
+
+    const metadata = await getMetadata(targetBookmark[0].url)
 
     return {
         ...targetBookmark[0],
         is_visited: targetBookmark[0].is_visited === 1,
         is_starred: targetBookmark[0].is_starred === 1,
         is_private: targetBookmark[0].is_private === 1,
-        tags: targetBookmark[0].tags?.split(',') ?? []
+        tags: targetBookmark[0].tags?.split(',') ?? [],
+        metadata
     }
 }
 
@@ -61,7 +81,6 @@ export const addBookmark = async ({ title, url, platform, note, tags, user_id })
     }
 }
 
-// should not be called if there is not changes in the tags (must be handled in the frontend)
 export const updateTags = async (bookmark_id, tags) => {
     const transaction = await db.getConnection();
 
