@@ -143,7 +143,7 @@ ol {
 
 .bookmark-url {
   position: relative;
-  display: -webkit-box;
+  /* display: -webkit-box; */
   width: 100%;
   max-width: 20rem;
   overflow: hidden;
