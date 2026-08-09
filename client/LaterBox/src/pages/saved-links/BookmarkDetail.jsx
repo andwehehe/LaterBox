@@ -17,8 +17,7 @@ import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
-
-// TASKS: 
+import CardSkeleton from "../../shared/CardSkeleton.jsx";
 
 function BookmarkDetail() {
 
@@ -26,7 +25,7 @@ function BookmarkDetail() {
     bookmarks, setBookmarks, 
     targetBookmark, setTargetBookmark,  
     bookmarkStatus, setBookmarkStatus,
-    DEFAULT_BOOKMARK
+    DEFAULT_BOOKMARK, isBookmarkLoading
   } = useBookmarkContext();
   const navigate = useNavigate();
 
@@ -60,6 +59,7 @@ function BookmarkDetail() {
 
       try {
           const data = await getTargetBookmark(+bookmark_id);
+          console.log(data)
           setTargetBookmark(data);
           setTargetTags(data.tags);
       } catch {
@@ -152,8 +152,9 @@ function BookmarkDetail() {
     setIsEditingProp(false);
   };
 
-  // make it reusable for is_private and is_visited
   const flipStatus = async ({ prop, value }) => {
+    if(prop === 'is_visited' && targetBookmark.is_visited) return;
+
     setTargetBookmark(prev => ({ ...prev, [prop]: value }));
 
     const updatedBookmarks = bookmarks.map(b => {
@@ -271,21 +272,33 @@ function BookmarkDetail() {
 
       <main className="p-4 sm:p-6">
         {/* Thumbnail */}
-        <div className="
-          relative h-48 overflow-hidden rounded-t-xl2 border border-b-0 
-          border-panel-border bg-gradient-to-br from-[#1c2340] via-[#2a1f4f] 
-          to-[#191927] sm:h-56
-        ">
-          <div
-            aria-hidden
-            className="absolute inset-0 opacity-70"
-            style={{
-              background:
-                `radial-gradient(circle at 30% 40%, rgba(139,133,247,0.35), 
-                transparent 55%), radial-gradient(circle at 70% 60%, 
-                rgba(91,82,240,0.3), transparent 50%)`,
-            }}
-          />
+        <div className={`
+          relative overflow-hidden rounded-t-xl2 border border-b-0
+          border-panel-border bg-gradient-to-br from-[#1c2340] via-[#2a1f4f]
+          to-[#191927] max-h-90
+          ${targetBookmark.metadata?.thumbnail ?? 'sm:h-56'}
+        `}>
+          {targetBookmark.metadata?.thumbnail
+            ? (
+              <img
+                src={targetBookmark.metadata?.thumbnail}
+                alt="thumbnail"
+                className="w-full rounded-lg bg-gray-100"
+              />
+            )
+            : (
+              <div
+                aria-hidden
+                className="absolute inset-0 opacity-70"
+                style={{
+                  background:
+                    `radial-gradient(circle at 30% 40%, rgba(139,133,247,0.35),
+                    transparent 55%), radial-gradient(circle at 70% 60%,
+                    rgba(91,82,240,0.3), transparent 50%)`,
+                }}
+              />
+            )
+          }
         </div>
 
         {/* Title row */}
@@ -294,9 +307,19 @@ function BookmarkDetail() {
           bg-panel px-4 py-5 sm:flex-row sm:items-center sm:justify-between
         ">
           <div className="flex items-start gap-3">
-            <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-xl bg-white text-xl">
+            <span className="
+              flex h-13 w-13 shrink-0 items-center justify-center rounded-xl 
+              bg-white text-xl overflow-hidden p-2
+            ">
               {/* Edit later (customizable icons) */}
-              🎨 
+              {targetBookmark.metadata?.icon
+                ? <img 
+                    src={targetBookmark.metadata.icon} 
+                    alt="icon" 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                : <span>❓</span>
+              }
             </span>
             <div>
               <span className="mb-1 inline-block rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-white">
@@ -614,24 +637,45 @@ function BookmarkDetail() {
           </p> */}
 
           <article className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {bookmarks.filter(bookmark => {
-              return bookmark.bookmark_id !== targetBookmark.bookmark_id;
-            }).map((bookmark, index) => {
-              if(index >= 4) return;
-              return(
-                <div 
-                  key={bookmark.title}
-                  onClick={() => navigateToMoreDetails(bookmark.bookmark_id)}
-                  className="overflow-hidden rounded-xl2 border border-panel-border bg-panel">
-                  <div className="relative h-24 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
-                    <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
-                      {bookmark.platform}
-                    </span>
-                  </div>
-                  <p className="p-3 text-xs font-medium leading-snug text-white">{bookmark.title}</p>
-                </div>
-              );
-            })}
+            {isBookmarkLoading
+              ? (
+                <CardSkeleton instance={4} />
+              )
+              : (
+                bookmarks.filter(bookmark => {
+                  return bookmark.bookmark_id !== targetBookmark.bookmark_id;
+                }).map((bookmark, index) => {
+                  if(index >= 4) return;
+                  return(
+                    <div 
+                      key={bookmark.title}
+                      onClick={() => navigateToMoreDetails(bookmark.bookmark_id)}
+                      className="overflow-hidden rounded-xl2 border border-panel-border bg-panel"
+                    >
+                      <div className="relative h-35 overflow-hidden bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
+
+                        <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
+                          {bookmark.platform}
+                        </span>
+
+                        {(bookmark.metadata?.thumbnail || bookmark.metadata?.icon)
+                          && <img 
+                              src={bookmark.metadata?.thumbnail || bookmark.metadata.icon} 
+                              alt="thumbnail"
+                              className="h-full w-full object-cover object-top" 
+                            />
+                        }
+
+                      </div>
+                      
+                      <p className="p-3 text-xs font-medium leading-snug text-white">
+                        {bookmark.title}
+                      </p>
+                    </div>
+                  );
+                })
+              )
+            }
           </article>
         </section>
       </main>

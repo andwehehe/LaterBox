@@ -12,6 +12,7 @@ import { useUserContext } from "../../contexts/UserContext.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import AddBookmarkModal from "./AddBookmarkModal.jsx";
 import { PopupMessage } from "../../components/components.jsx";
+import CardSkeleton from "../../shared/CardSkeleton.jsx";
 
 const platformMeta = {
   YouTube: { icon: Video, color: "text-red-400" },
@@ -26,7 +27,7 @@ export default function SavedLinks() {
   const [ activeFilter, setActiveFilter ] = useState("All Links");
   const [ query, setQuery ] = useState("");
   const { userData } = useUserContext();
-  const { bookmarks, setTargetBookmark, bookmarkStatus, setBookmarkStatus } = useBookmarkContext();
+  const { bookmarks, setTargetBookmark, bookmarkStatus, setBookmarkStatus, isBookmarkLoading } = useBookmarkContext();
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const navigate = useNavigate();
 
@@ -145,69 +146,105 @@ export default function SavedLinks() {
 
         {/* Bookmark grid */}
         <div className="grid grid-cols-1 gap-5 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((b) => {
-            const meta = platformMeta[b.platform] ?? { icon: FileText, color: "text-muted" };
-            const Icon = meta.icon;
-            return (
-              <article
-                key={b.bookmark_id}
-                className="
-                  flex h-full flex-col overflow-hidden rounded-xl2 border 
-                  border-panel-border bg-panel transition hover:border-accent/50"
-                onClick={() => navigateToMoreDetails(b.bookmark_id)}
-              >
-                {/* Thumbnail */}
-                <div className="relative h-36 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
-                  <span className="
-                    absolute left-3 top-3 flex items-center gap-1.5 rounded-md 
-                    bg-black/50 px-2 py-1 text-xs font-medium text-white
+          {isBookmarkLoading ? (
+            <CardSkeleton instance={5} />
+          ) : (
+            filtered.map((b) => {
+              const meta = platformMeta[b.platform] ?? {
+                icon: FileText,
+                color: "text-muted"
+              };
+
+              const Icon = meta.icon;
+
+              return (
+                <article
+                  key={b.bookmark_id}
+                  className="
+                    flex h-full flex-col overflow-hidden rounded-xl2 border
+                    border-panel-border bg-panel transition hover:border-accent/50
+                  "
+                  onClick={() => navigateToMoreDetails(b.bookmark_id)}
+                >
+                  {/* Thumbnail */}
+                  <div className="
+                    relative h-36 bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b] 
+                    flex items-center justify-center
                   ">
-                    <Icon size={13} className={meta.color} />
-                    {b.platform}
-                  </span>
-                  <button
-                    aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
-                    className={`
-                        absolute right-3 top-3 flex h-7 w-7 items-center justify-center 
-                        rounded-full bg-black/50 text-white ${b.is_starred && "text-yellow-400"}
-                    `}
-                  >
-                    <Star size={14} fill={b.is_starred ? "currentColor" : "none"} />
-                  </button>
-                </div>
+                    <span className="
+                      absolute left-3 top-3 flex items-center gap-1.5 rounded-md
+                      bg-black/50 px-2 py-1 text-xs font-medium text-white
+                    ">
+                      <Icon size={13} className={meta.color} />
+                      {b.platform}
+                    </span>
 
-                <div className="flex grow flex-col p-4">
-                  <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-white">{b.title}</h3>
-                  <p className="bookmark-url mb-2 flex items-center gap-1 truncate text-xs text-muted">
-                    <ExternalLink size={11} className="shrink-0" />
-                    {b.url}
-                  </p>
-                  <p className="bookmark-description mb-3 text-xs italic text-muted">
-                    "{b.note}"
-                  </p>
+                    <span
+                      aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
+                      className={`
+                        absolute right-3 top-3 flex h-7 w-7 items-center justify-center
+                        rounded-full bg-black/50 text-white
+                        ${b.is_starred && "text-yellow-400"}
+                      `}
+                    >
+                      <Star
+                        size={14}
+                        fill={b.is_starred ? "currentColor" : "none"}
+                      />
+                    </span>
 
-                  <div className="mb-3 flex flex-wrap gap-1.5">
-                    {b.tags?.map((tag) => (
-                      <span key={tag} className="rounded-md bg-dark px-2 py-0.5 text-[11px] font-medium text-muted">
-                        #{tag}
+                    {b.metadata?.thumbnail 
+                      ? <img
+                          src={b.metadata?.thumbnail}
+                          alt="thumbnail"
+                          className="h-full w-full object-cover object-top"
+                        />
+                      : <img src={b.metadata?.icon} alt="thumbnail" className="w-20" />
+                    }
+                    
+                  </div>
+
+                  <div className="flex grow flex-col p-4">
+                    <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-white">
+                      {b.title}
+                    </h3>
+
+                    <p className="bookmark-url mb-2 flex items-center gap-1 truncate text-xs text-muted">
+                      <ExternalLink size={11} className="shrink-0" />
+                      {b.url}
+                    </p>
+
+                    <p className="bookmark-description mb-3 text-xs italic text-muted">
+                      "{b.note}"
+                    </p>
+
+                    <div className="mb-3 flex flex-wrap gap-1.5">
+                      {b.tags?.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-md bg-dark px-2 py-0.5 text-[11px] font-medium text-muted"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="mt-auto flex items-center justify-between text-[11px] text-muted">
+                      <span className="flex items-center gap-1">
+                        <Clock size={11} />
+                        {b.saved_on}
                       </span>
-                    ))}
-                  </div>
 
-                  <div className="mt-auto flex items-center justify-between text-[11px] text-muted">
-                    <span className="flex items-center gap-1">
-                      <Clock size={11} />
-                      {b.saved_on}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      {b.is_visited ? "Visited" : "Unvisited"}
-                      {b.is_private && <Lock size={11} />}
-                    </span>
+                      <span className="flex items-center gap-1.5">
+                        {b.is_visited ? "Visited" : "Unvisited"}
+                        {b.is_private && <Lock size={11} />}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
+                </article>
+              );
+            })
+          )}
 
           {/* Add-new bookmark */}
           <button className="
