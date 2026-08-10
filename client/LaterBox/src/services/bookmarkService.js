@@ -26,12 +26,11 @@ export const getTargetBookmark = async (bookmark_id) => {
     }
 }
 
-export const addBookmark = async (title, url, platform, note, tags) => {
+export const addBookmark = async (title, url, note, tags) => {
     try {
         const res = await base.post('/bookmarks/addbookmark', {
             title,
             url, 
-            platform,
             note,
             tags: [...tags]
         })
