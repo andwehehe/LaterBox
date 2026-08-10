@@ -21,7 +21,6 @@ function BookmarkProvider({ children }) {
         bookmark_id: "",
         title: "",
         url: "",
-        platform: "",
         note: "",
         saved_on: "",
         is_visited: false,

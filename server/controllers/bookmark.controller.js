@@ -97,8 +97,6 @@ const deleteBookmark = async (req, res) => {
     }
 }
 
-// Problem: remains unvisited even after visit
-// Solution: return if already visited (handle in frontend)
 const updateIsVisited = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;

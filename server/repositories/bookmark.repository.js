@@ -2,13 +2,13 @@ import { act } from "react";
 import db from "../config/laterbox.db.js";
 
 // getBookmarks
+// try the query in mysql and experiment with joins
 export const getByUserId = async (user_id) => {
     const [bookmarks] = await db.query(
         `SELECT  
             b.bookmark_id,
             b.title,
             b.url,
-            b.platform,
             b.note,
             b.is_visited,
             b.is_starred,
@@ -26,7 +26,6 @@ export const getByUserId = async (user_id) => {
             b.title,
             b.url,
             b.note,
-            b.platform,
             b.is_visited,
             b.is_starred,
             b.is_private;
@@ -44,7 +43,6 @@ export const getByBookmarkId = async (bookmark_id) => {
             b.bookmark_id,
             b.title,
             b.url,
-            b.platform,
             b.note,
             b.is_visited,
             b.is_starred,
@@ -62,7 +60,6 @@ export const getByBookmarkId = async (bookmark_id) => {
             b.title,
             b.url,
             b.note,
-            b.platform,
             b.is_visited,
             b.is_starred,
             b.is_private;
@@ -76,9 +73,9 @@ export const getByBookmarkId = async (bookmark_id) => {
 // addBookmark
 export const createBookmark = async ({ user_id, title, url, platform, note, transaction }) => {
     const [newBookmark] = await transaction.query(
-        `INSERT INTO bookmarks (user_id, title, url, platform, note) 
-         VALUES (?, ?, ?, ?, ?)`,
-        [user_id, title, url, platform, note]
+        `INSERT INTO bookmarks (user_id, title, url, note) 
+         VALUES (?, ?, ?, ?)`,
+        [user_id, title, url, note]
     );
     
     return newBookmark.insertId;

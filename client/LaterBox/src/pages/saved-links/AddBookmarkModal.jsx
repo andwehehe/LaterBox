@@ -1,20 +1,8 @@
 import { useState } from "react";
-import { X, Link2, Type, FileText, Tag as TagIcon, CheckCircle2 } from "lucide-react";
+import { X, Link2, Type, FileText, Tag as TagIcon } from "lucide-react";
 import { TagChip } from "../../components/components.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import { addBookmark } from "../../services/bookmarkService.js";
-
-// Very small heuristic just to show a "detected platform" badge next to
-// the URL field, matching the design. Extend this list as needed —
-// it's just string matching, nothing fancy.
-function detectPlatform(url) {
-  if (!url) return null;
-  if (url.includes("github.com")) return "GitHub";
-  if (url.includes("youtube.com")) return "YouTube";
-  if (url.includes("twitter.com") || url.includes("x.com")) return "X";
-  if (url.includes("benthingdahan.com")) return "Benthingdahan";
-  return "Website";
-}
 
 function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const [url, setUrl] = useState("");
@@ -25,8 +13,6 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const { setBookmarks } = useBookmarkContext();
 
   if (!isModalOpen) return null;
-
-  const platform = detectPlatform(url);
 
   const handleTagKeyDown = (e) => {
     if (e.key !== "Enter") return;
@@ -59,12 +45,11 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
     setIsModalOpen(false);
   }
   
-  const onSave = ({ bookmark_id, title, url, platform, note, tags, saved_on }) => {
+  const onSave = ({ bookmark_id, title, url, note, tags, saved_on }) => {
     setBookmarks(prev => [...prev, { 
       bookmark_id, 
       title, 
       url, 
-      platform, 
       note, 
       saved_on,
       is_visited: false,
@@ -77,8 +62,8 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const data = await addBookmark(title, url, platform, note, tags);
-    onSave({ bookmark_id: data.bookmark_id, title, url, platform, note, tags, saved_on: data.saved_on });
+    const data = await addBookmark(title, url, note, tags);
+    onSave({ bookmark_id: data.bookmark_id, title, url, note, tags, saved_on: data.saved_on });
     setBookmarkStatus({ isSuccessful: true, message: data.message });
     resetForm();
     onClose();
@@ -134,12 +119,6 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
                 placeholder="https://github.com/shadcn-ui/ui"
                 className="w-full rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 pr-28 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none"
               />
-              {platform && (
-                <span className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-full bg-panel-border px-2.5 py-1 text-xs font-medium text-white">
-                  <CheckCircle2 size={12} className="text-green-400" />
-                  {platform}
-                </span>
-              )}
             </div>
           </div>
 

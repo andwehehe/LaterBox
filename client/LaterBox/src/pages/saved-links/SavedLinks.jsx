@@ -1,8 +1,10 @@
 import {
   Search, Plus, ChevronDown, Star, Video,
   Code2, MessageCircle, FileText, Lock,
-  ExternalLink, Clock,
+  ExternalLink, Clock
 } from "lucide-react";
+
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa"
 
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +21,9 @@ const platformMeta = {
   Article: { icon: FileText, color: "text-sky-400" },
   GitHub: { icon: Code2, color: "text-white" },
   Twitter: { icon: MessageCircle, color: "text-sky-300" },
+  Facebook: { icon: FaFacebook, color: "text-blue-500" },
+  Instagram: { icon: FaInstagram, color: "text-pink-400" },
+  Tiktok: { icon: FaTiktok, color: "text-cyan-300" }
 };
 
 const filterOptions = ["All Links", "Unvisited", "Favorites", "YouTube", "GitHub", "Twitter"];
@@ -42,7 +47,7 @@ export default function SavedLinks() {
         activeFilter === "All Links" ||
         (activeFilter === "Unvisited" && !b.is_visited) ||
         (activeFilter === "Favorites" && b.is_starred) ||
-        b.platform === activeFilter;
+        b.metadata?.platform === activeFilter;
 
       return matchesQuery && matchesFilter;
     });
@@ -150,7 +155,7 @@ export default function SavedLinks() {
             <CardSkeleton instance={5} />
           ) : (
             filtered.map((b) => {
-              const meta = platformMeta[b.platform] ?? {
+              const meta = platformMeta[b.metadata?.platform] ?? {
                 icon: FileText,
                 color: "text-muted"
               };
@@ -176,11 +181,10 @@ export default function SavedLinks() {
                       bg-black/50 px-2 py-1 text-xs font-medium text-white
                     ">
                       <Icon size={13} className={meta.color} />
-                      {b.platform}
+                      {b.metadata?.platform || "Website"}
                     </span>
 
                     <span
-                      aria-label={b.is_starred ? "Unstar bookmark" : "Star bookmark"}
                       className={`
                         absolute right-3 top-3 flex h-7 w-7 items-center justify-center
                         rounded-full bg-black/50 text-white
@@ -194,12 +198,12 @@ export default function SavedLinks() {
                     </span>
 
                     {b.metadata?.thumbnail 
-                      ? <img
+                      && <img
                           src={b.metadata?.thumbnail}
                           alt="thumbnail"
                           className="h-full w-full object-cover object-top"
                         />
-                      : <img src={b.metadata?.icon} alt="thumbnail" className="w-20" />
+                      
                     }
                     
                   </div>
