@@ -13,6 +13,10 @@ export const getMetadata = async (url) => {
         : null;
 
     return {
+        platform: 
+            scrape('meta[property="og:site_name"]').attr("content") ||
+            scrape("title").text() ||
+            null,
         title:
             scrape('meta[property="og:title"]').attr("content") ||
             scrape("title").text() ||
