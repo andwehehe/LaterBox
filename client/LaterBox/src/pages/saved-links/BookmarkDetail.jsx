@@ -59,7 +59,6 @@ function BookmarkDetail() {
 
       try {
           const data = await getTargetBookmark(+bookmark_id);
-          console.log(data)
           setTargetBookmark(data);
           setTargetTags(data.tags);
       } catch {
@@ -275,15 +274,15 @@ function BookmarkDetail() {
         <div className={`
           relative overflow-hidden rounded-t-xl2 border border-b-0
           border-panel-border bg-gradient-to-br from-[#1c2340] via-[#2a1f4f]
-          to-[#191927] max-h-90
-          ${targetBookmark.metadata?.thumbnail ?? 'sm:h-56'}
+          to-[#191927] h-90
+          ${targetBookmark.metadata?.thumbnail ? '' : 'sm:h-56'}
         `}>
           {targetBookmark.metadata?.thumbnail
             ? (
               <img
                 src={targetBookmark.metadata?.thumbnail}
                 alt="thumbnail"
-                className="w-full rounded-lg bg-gray-100"
+                className="w-full rounded-lg bg-gray-100 object-contain"
               />
             )
             : (
@@ -323,7 +322,7 @@ function BookmarkDetail() {
             </span>
             <div>
               <span className="mb-1 inline-block rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-white">
-                {targetBookmark.platform}
+                {targetBookmark.metadata?.platform || 'Website'}
               </span>
               <h1 className="text-lg font-bold text-white sm:text-xl">{targetBookmark.title}</h1>
             </div>
@@ -658,7 +657,7 @@ function BookmarkDetail() {
                           {bookmark.platform}
                         </span>
 
-                        {(bookmark.metadata?.thumbnail || bookmark.metadata?.icon)
+                        {bookmark.metadata?.thumbnail
                           && <img 
                               src={bookmark.metadata?.thumbnail || bookmark.metadata.icon} 
                               alt="thumbnail"
