@@ -103,7 +103,8 @@ export const addBookmarkTagRelation = async (bookmark_id, tag_id, transaction) =
 
 export const getSaveTime = async (bookmark_id, transaction) => {
     const [saved_on] = await transaction.query(
-        `SELECT saved_on FROM bookmarks
+        `SELECT DATE_FORMAT(saved_on, '%M %d, %Y') AS saved_on 
+         FROM bookmarks
          WHERE bookmark_id = ?`,
          [bookmark_id]
     )
