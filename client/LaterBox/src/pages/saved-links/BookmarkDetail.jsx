@@ -12,6 +12,7 @@ import {
 } from "../../services/bookmarkService.js";
 
 import { TagChip, PopupMessage } from "../../components/components.jsx";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
@@ -40,6 +41,7 @@ function BookmarkDetail() {
 
   const [ tagInput, setTagInput ] = useState("");
   const { bookmark_id } = useParams();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     if(isEditingTag) {
@@ -52,6 +54,16 @@ function BookmarkDetail() {
       noteInputRef.current.setSelectionRange(length, length);
     }
   }, [isEditingTag, isEditingNote])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      } catch {
+        window.scrollTo(0, 0);
+      }
+    }
+  }, [bookmark_id, targetBookmark?.bookmark_id]);
 
   useEffect(() => {
     const fetchTargetBookmark = async () => {
@@ -393,7 +405,7 @@ function BookmarkDetail() {
 
             <button
               aria-label="Delete bookmark"
-              onClick={handleDelete}
+              onClick={() => setIsDeleteModalOpen(true)}
               className="
                 flex h-9 w-9 items-center justify-center rounded-lg border 
                 border-panel-border text-muted hover:text-red-400 cursor-pointer
@@ -654,7 +666,7 @@ function BookmarkDetail() {
                       <div className="relative h-35 overflow-hidden bg-gradient-to-br from-[#2c2c44] to-[#1a1a2b]">
 
                         <span className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-0.5 text-[10px] font-medium text-white">
-                          {bookmark.platform}
+                          {bookmark.metadata?.platform}
                         </span>
 
                         {bookmark.metadata?.thumbnail
@@ -682,6 +694,16 @@ function BookmarkDetail() {
       <PopupMessage 
         isSuccessful={bookmarkStatus.isSuccessful} 
         message={bookmarkStatus.message}
+      />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="Delete Bookmark"
+        message="Are you sure you want to delete this bookmark? This action cannot be undone."
+        onCancel={() => setIsDeleteModalOpen(false)}
+        onConfirm={async () => {
+          setIsDeleteModalOpen(false);
+          await handleDelete();
+        }}
       />
     </section>
 
