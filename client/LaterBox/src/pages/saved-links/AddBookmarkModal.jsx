@@ -1,16 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, Link2, Type, FileText, Tag as TagIcon } from "lucide-react";
 import { TagChip } from "../../components/components.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
-import { addBookmark } from "../../services/bookmarkService.js";
+import { addBookmark, fetchDetailsSuggestion } from "../../services/bookmarkService.js";
 
 function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
+
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const { setBookmarks } = useBookmarkContext();
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [suggestion, setSuggestion] = useState({ title: "", description: "" });
+  const [titleSuggested, setTitleSuggested] = useState(false);
+  const [descriptionSuggested, setDescriptionSuggested] = useState(false);
+
+  // Suggest details when URL changes (debounced)
+  const lastRequestedUrlRef = useRef(null);
+
+  useEffect(() => {
+    if (!url) {
+      lastRequestedUrlRef.current = null;
+      return;
+    }
+
+    if (lastRequestedUrlRef.current === url) return;
+
+    lastRequestedUrlRef.current = url;
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        setIsSuggesting(true);
+        setSuggestion({ title: "", description: "" });
+        const data = await fetchDetailsSuggestion(url);
+        
+        if (cancelled) return;
+
+        setSuggestion({ title: data.title || "", description: data.description || "" });
+
+        // Show suggestion as placeholder instead of autofilling inputs.
+        if (!title && data.title) {
+          setTitleSuggested(true);
+        }
+
+        if (!note && data.description) {
+          setDescriptionSuggested(true);
+        }
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!cancelled) setIsSuggesting(false);
+      }
+    }, 700);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [url, title, note]);
 
   if (!isModalOpen) return null;
 
@@ -73,6 +124,20 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
     }, 3000)
   };
 
+  const applyTitleSuggestion = () => {
+    if (suggestion.title) {
+      setTitle(suggestion.title);
+      setTitleSuggested(false);
+    }
+  }
+
+  const applyDescriptionSuggestion = () => {
+    if (suggestion.description) {
+      setNote(suggestion.description);
+      setDescriptionSuggested(false);
+    }
+  }
+
   const handleCancel = () => {
     resetForm();
     onClose();
@@ -80,12 +145,11 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
-      onClick={handleCancel} // click on the backdrop closes it
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"  
     >
       <div
         className="w-full max-w-lg rounded-2xl border border-panel-border bg-panel p-6 sm:p-7"
-        onClick={(e) => e.stopPropagation()} // don't let clicks inside the modal bubble to the backdrop
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-start justify-between">
           <div>
@@ -116,9 +180,18 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
                 required
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://github.com/shadcn-ui/ui"
+                placeholder="Enter a URL to save"
                 className="w-full rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 pr-28 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none"
               />
+              {isSuggesting && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <svg className="h-4 w-4 animate-spin text-muted" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  <span className="text-xs text-muted">Suggesting...</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -128,15 +201,29 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
               <Type size={14} />
               Title
             </label>
-            <input
+              <input
               id="bookmark-title"
               type="text"
               required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="shadcn/ui: Beautifully designed components"
-              className="w-full rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none"
+              onChange={(e) => { 
+                const val = e.target.value;
+                setTitle(val);
+
+                if (val === "" && suggestion.title) {
+                  setTitleSuggested(true);
+                } else {
+                  setTitleSuggested(false);
+                } 
+              }}
+              placeholder={title || (titleSuggested && suggestion.title) || "Enter a title for your bookmark"}
+              className={`w-full rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none ${titleSuggested && !title ? 'opacity-60' : ''}`}
             />
+            {suggestion.title && !isSuggesting && !title && (
+              <div className="mt-1 flex items-center justify-end">
+                <button type="button" onClick={applyTitleSuggestion} className="text-xs text-accent underline">Apply title</button>
+              </div>
+            )}
           </div>
 
           {/* Note */}
@@ -149,10 +236,24 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
               id="bookmark-note"
               rows={3}
               value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Essential UI library for the new project. Reusable, accessible, and clean code."
-              className="w-full resize-none rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none"
+              onChange={(e) => {
+                const val = e.target.value;
+                setNote(val);
+
+                if (val === "" && suggestion.description) {
+                  setDescriptionSuggested(true);
+                } else {
+                  setDescriptionSuggested(false);
+                }
+              }}
+              placeholder={note || (descriptionSuggested && suggestion.description) || "Describe why you saved this link..."}
+              className={`w-full resize-none rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none ${descriptionSuggested && !note ? 'opacity-60' : ''}`}
             />
+            {suggestion.description && !isSuggesting && !note && (
+              <div className="mt-1 flex items-center justify-end">
+                <button type="button" onClick={applyDescriptionSuggestion} className="text-xs text-accent underline">Apply description</button>
+              </div>
+            )}
           </div>
 
           {/* Tags */}
