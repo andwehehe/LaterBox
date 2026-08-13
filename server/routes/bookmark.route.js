@@ -7,11 +7,12 @@ const {
     getBookmarks, addBookmark, 
     getTargetBookmark, updateTags, 
     updateNote, updateIsStarred,
-    deleteBookmark, updateIsVisited 
+    deleteBookmark, updateIsVisited, suggestDetails
 } = bookmarkControllers;
 
 bookmarkRouter.get('/', requireAuth, getBookmarks);
 bookmarkRouter.post('/addbookmark', requireAuth, addBookmark);
+bookmarkRouter.post('/details-suggestion', requireAuth, suggestDetails);
 bookmarkRouter.get('/:bookmark_id', requireAuth, getTargetBookmark);
 bookmarkRouter.delete('/delete/:bookmark_id', requireAuth, deleteBookmark);
 

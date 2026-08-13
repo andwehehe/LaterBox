@@ -126,3 +126,16 @@ export const deleteBookmark = async (bookmark_id, tags) => {
         );
     }
 }
+
+export const fetchDetailsSuggestion = async (url) => {
+    try {
+        const res = await base.post('/bookmarks/details-suggestion', { url });
+        return res.data;
+    } catch (err) {
+        throw new Error(
+            err.response?.data?.message ||
+            "Failed to fetch suggestion",
+            { cause: err }
+        );
+    }
+}

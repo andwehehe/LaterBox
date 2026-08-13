@@ -24,11 +24,10 @@ const getTargetBookmark = async (req, res) => {
 const addBookmark = async (req, res) => {
     try {
         const user_id = req.session.userId;
-        const { title, url, platform, note, tags } = req.body;
+        const { title, url, note, tags } = req.body;
         const newBookmark = await bookmarkServices.addBookmark({ 
             title, 
             url, 
-            platform, 
             note, 
             tags, 
             user_id 
@@ -108,6 +107,19 @@ const updateIsVisited = async (req, res) => {
     }
 }
 
+const suggestDetails = async (req, res) => {
+    try {
+        const { url } = req.body;
+        if (!url) return res.status(400).json({ message: "URL missing" });
+
+        const details = await bookmarkServices.suggestDetails(url);
+        return res.status(200).json(details);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Failed to get suggestion" });
+    }
+}
+
 export const bookmarkControllers = {
     getBookmarks,
     addBookmark,
@@ -117,4 +129,5 @@ export const bookmarkControllers = {
     updateIsStarred,
     deleteBookmark,
     updateIsVisited
+    ,suggestDetails
 }

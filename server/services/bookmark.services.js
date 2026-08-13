@@ -1,5 +1,5 @@
 import db from "../config/laterbox.db.js";
-import { getMetadata } from "../utils/utility.metadata.js";
+import { getMetadata, getTitleAndDescription } from "../utils/utility.metadata.js";
 import * as bookmarkRepository from '../repositories/bookmark.repository.js';
 
 export const getBookmarks = async (user_id) => {
@@ -19,18 +19,6 @@ export const getBookmarks = async (user_id) => {
             }
         })
     );
-
-    // return bookmarks.map((bookmark) => {
-    //     // const metadata = await getMetadata(bookmark.url)
-    //     // console.log(metadata)
-    //     return {
-    //         ...bookmark,
-    //         is_visited: bookmark.is_visited === 1,
-    //         is_starred: bookmark.is_starred === 1,
-    //         is_private: bookmark.is_private === 1,
-    //         tags: bookmark.tags?.split(',')
-    //     }
-    // })
 }
 
 export const getTargetBookmark = async (bookmark_id) => {
@@ -191,4 +179,13 @@ export const deleteBookmark = async (bookmark_id, tags) => {
 
 export const updateIsVisited = async (is_visited, bookmark_id) => {
     await bookmarkRepository.updateVisitationStatus(is_visited, bookmark_id);
+}
+
+export const suggestDetails = async (url) => {
+    try {
+        const details = await getTitleAndDescription(url);
+        return details;
+    } catch (err) {
+        throw err;
+    }
 }
