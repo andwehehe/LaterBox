@@ -1,7 +1,7 @@
 import {
   ChevronLeft, Search, Plus,
   ExternalLink, Copy, Calendar,
-  CheckCircle2, Star, Pencil,
+  CheckCircle2, Star,
   Trash2
 } from "lucide-react";
 
@@ -237,6 +237,18 @@ function BookmarkDetail() {
     navigate(`/saved-links/${targetBookmark.bookmark_id}/${targetBookmark.title.replaceAll(" ", "-")}`);
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(targetBookmark.url || window.location.href);
+      setBookmarkStatus({ isSuccessful: true, message: 'Link copied to clipboard' });
+      setTimeout(() => (
+        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }))
+      ), 3000);
+    } catch {
+      setBookmarkStatus({ isSuccessful: false, message: 'Failed to copy link' });
+    }
+  }
+
   return (
     <section>
       {/* Top bar */}
@@ -394,13 +406,14 @@ function BookmarkDetail() {
             </button>
 
             <button
-              aria-label="Edit bookmark"
+              aria-label="Share bookmark"
+              onClick={copyToClipboard}
               className="
                 flex h-9 w-9 items-center justify-center rounded-lg border 
-                border-panel-border text-muted hover:text-lime-500 cursor-pointer 
+                border-panel-border text-muted hover:text-white cursor-pointer 
               "
             >
-              <Pencil size={16} />
+              <Copy size={16} />
             </button>
 
             <button
