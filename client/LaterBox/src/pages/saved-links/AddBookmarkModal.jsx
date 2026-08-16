@@ -30,18 +30,17 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
 
     lastRequestedUrlRef.current = url;
 
-    let cancelled = false;
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         setIsSuggesting(true);
         setSuggestion({ title: "", description: "" });
-        const data = await fetchDetailsSuggestion(url);
-        
-        if (cancelled) return;
+        const data = await fetchDetailsSuggestion(url, controller.signal);
+
+        if (controller.signal.aborted) return;
 
         setSuggestion({ title: data.title || "", description: data.description || "" });
 
-        // Show suggestion as placeholder instead of autofilling inputs.
         if (!title && data.title) {
           setTitleSuggested(true);
         }
@@ -51,14 +50,16 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
         }
 
       } catch (err) {
+        // ignore cancellation
+        if (err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError') return;
         console.error(err);
       } finally {
-        if (!cancelled) setIsSuggesting(false);
+        if (!controller.signal.aborted) setIsSuggesting(false);
       }
     }, 700);
 
     return () => {
-      cancelled = true;
+      controller.abort();
       clearTimeout(timer);
     };
   }, [url, title, note]);
