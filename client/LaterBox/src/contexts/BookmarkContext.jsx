@@ -30,21 +30,35 @@ function BookmarkProvider({ children }) {
     }
 
     useEffect(() => {
-        if(isUserLoading) return;
-        if(!userData) return;
+        if (isUserLoading) return;
 
-        const fetchBookmarks = async () => {
-            try {
-                const data = await getBookmarks();
-                setBookmarks(data);
-            } catch {
-                setBookmarks([]);
-            } finally {
+        if (!userData) {
+            Promise.resolve().then(() => {
                 setIsBookmarkLoading(false);
-            }
+                setBookmarks([]);
+            });
+            return;
         }
 
-        fetchBookmarks();
+        const controller = new AbortController();
+
+        Promise.resolve().then(() => {
+            if (!controller.signal.aborted) setIsBookmarkLoading(true);
+        });
+
+        (async () => {
+            try {
+                const data = await getBookmarks(controller.signal);
+                if (!controller.signal.aborted) setBookmarks(data || []);
+            } catch (err) {
+                if (err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError' || controller.signal.aborted) return;
+                if (!controller.signal.aborted) setBookmarks([]);
+            } finally {
+                if (!controller.signal.aborted) setIsBookmarkLoading(false);
+            }
+        })();
+
+        return () => { controller.abort(); }
     }, [isUserLoading, userData]);
 
     return(
