@@ -1,10 +1,11 @@
 import base from "../utils/baseURL.js";
 
-export const getBookmarks = async () => {
+export const getBookmarks = async (signal) => {
     try {
-        const res = await base.get('/bookmarks');
+        const res = await base.get('/bookmarks', { signal });
         return res.data;
     } catch(err) {
+        // If the request was cancelled, throw to be handled by caller
         throw new Error(
             err.response?.data?.message ||
             "Something went wrong",
@@ -127,9 +128,9 @@ export const deleteBookmark = async (bookmark_id, tags) => {
     }
 }
 
-export const fetchDetailsSuggestion = async (url) => {
+export const fetchDetailsSuggestion = async (url, signal) => {
     try {
-        const res = await base.post('/bookmarks/details-suggestion', { url });
+        const res = await base.post('/bookmarks/details-suggestion', { url }, { signal });
         return res.data;
     } catch (err) {
         throw new Error(
