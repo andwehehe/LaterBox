@@ -50,7 +50,6 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
         }
 
       } catch (err) {
-        // ignore cancellation
         if (err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError') return;
         console.error(err);
       } finally {
