@@ -17,16 +17,6 @@ export const getMetadata = async (url) => {
             scrape('meta[property="og:site_name"]').attr("content") ||
             scrape("title").text() ||
             null,
-        title:
-            scrape('meta[property="og:title"]').attr("content") ||
-            scrape("title").text() ||
-            null,
-
-        description:
-            scrape('meta[property="og:description"]').attr("content") ||
-            scrape('meta[name="description"]').attr("content") ||
-            null,
-
         thumbnail:
             scrape('meta[property="og:image"]').attr("content") ||
             scrape('meta[name="twitter:image"]').attr("content") ||
