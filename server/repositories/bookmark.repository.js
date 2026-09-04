@@ -2,7 +2,6 @@ import { act } from "react";
 import db from "../config/laterbox.db.js";
 
 // getBookmarks
-// try the query in mysql and experiment with joins
 export const getByUserId = async (user_id) => {
     const [bookmarks] = await db.query(
         `SELECT  
