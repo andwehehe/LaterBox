@@ -11,13 +11,10 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const [note, setNote] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
-  const { setBookmarks } = useBookmarkContext();
+  const {setBookmarks, suggestedMetadata, setSuggestedMetadata} = useBookmarkContext();
   const [isSuggesting, setIsSuggesting] = useState(false);
-  const [suggestion, setSuggestion] = useState({ title: "", description: "" });
   const [titleSuggested, setTitleSuggested] = useState(false);
   const [descriptionSuggested, setDescriptionSuggested] = useState(false);
-
-  // Suggest details when URL changes (debounced)
   const lastRequestedUrlRef = useRef(null);
 
   useEffect(() => {
@@ -34,12 +31,20 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
     const timer = setTimeout(async () => {
       try {
         setIsSuggesting(true);
-        setSuggestion({ title: "", description: "" });
+        setSuggestedMetadata({ 
+          title: "", description: "", platform: "", thumbnail: "", icon: "" 
+        });
         const data = await fetchDetailsSuggestion(url, controller.signal);
 
         if (controller.signal.aborted) return;
 
-        setSuggestion({ title: data.title || "", description: data.description || "" });
+        setSuggestedMetadata({
+          title: data.title || "", 
+          description: data.description || "",
+          platform: data.platform || "",
+          thumbnail: data.thumbnail || "",
+          icon: data.icon || ""
+        });
 
         if (!title && data.title) {
           setTitleSuggested(true);
@@ -61,7 +66,7 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
       controller.abort();
       clearTimeout(timer);
     };
-  }, [url, title, note]);
+  }, [url, title, note, setSuggestedMetadata]);
 
   if (!isModalOpen) return null;
 
@@ -106,7 +111,12 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
       is_visited: false,
       is_starred: false,
       is_private:  false,
-      tags: [...tags]
+      tags: [...tags],
+      metadata: {
+        platform: suggestedMetadata.platform || "",
+        thumbnail: suggestedMetadata.thumbnail || "",
+        icon: suggestedMetadata.icon || ""
+      }
     }]);
   }
 
@@ -125,15 +135,15 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   };
 
   const applyTitleSuggestion = () => {
-    if (suggestion.title) {
-      setTitle(suggestion.title);
+    if (suggestedMetadata.title) {
+      setTitle(suggestedMetadata.title);
       setTitleSuggested(false);
     }
   }
 
   const applyDescriptionSuggestion = () => {
-    if (suggestion.description) {
-      setNote(suggestion.description);
+    if (suggestedMetadata.description) {
+      setNote(suggestedMetadata.description);
       setDescriptionSuggested(false);
     }
   }
@@ -210,16 +220,16 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
                 const val = e.target.value;
                 setTitle(val);
 
-                if (val === "" && suggestion.title) {
+                if (val === "" && suggestedMetadata.title) {
                   setTitleSuggested(true);
                 } else {
                   setTitleSuggested(false);
                 } 
               }}
-              placeholder={title || (titleSuggested && suggestion.title) || "Enter a title for your bookmark"}
+              placeholder={title || (titleSuggested && suggestedMetadata.title) || "Enter a title for your bookmark"}
               className={`w-full rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none ${titleSuggested && !title ? 'opacity-60' : ''}`}
             />
-            {suggestion.title && !isSuggesting && !title && (
+            {suggestedMetadata.title && !isSuggesting && !title && (
               <div className="mt-1 flex items-center justify-end">
                 <button type="button" onClick={applyTitleSuggestion} className="text-xs text-accent underline">Apply title</button>
               </div>
@@ -240,16 +250,16 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
                 const val = e.target.value;
                 setNote(val);
 
-                if (val === "" && suggestion.description) {
+                if (val === "" && suggestedMetadata.description) {
                   setDescriptionSuggested(true);
                 } else {
                   setDescriptionSuggested(false);
                 }
               }}
-              placeholder={note || (descriptionSuggested && suggestion.description) || "Describe why you saved this link..."}
+              placeholder={note || (descriptionSuggested && suggestedMetadata.description) || "Describe why you saved this link..."}
               className={`w-full resize-none rounded-lg border border-panel-border bg-dark/60 px-3 py-2.5 text-sm text-white placeholder:text-muted/70 focus:border-accent focus:outline-none ${descriptionSuggested && !note ? 'opacity-60' : ''}`}
             />
-            {suggestion.description && !isSuggesting && !note && (
+            {suggestedMetadata.description && !isSuggesting && !note && (
               <div className="mt-1 flex items-center justify-end">
                 <button type="button" onClick={applyDescriptionSuggestion} className="text-xs text-accent underline">Apply description</button>
               </div>

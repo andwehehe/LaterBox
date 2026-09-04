@@ -32,7 +32,11 @@ export default function SavedLinks() {
   const [ activeFilter, setActiveFilter ] = useState("All Links");
   const [ query, setQuery ] = useState("");
   const { userData } = useUserContext();
-  const { bookmarks, setTargetBookmark, bookmarkStatus, setBookmarkStatus, isBookmarkLoading } = useBookmarkContext();
+  const { 
+    bookmarks, setTargetBookmark, 
+    bookmarkStatus, setBookmarkStatus, 
+    isBookmarkLoading, 
+  } = useBookmarkContext();
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const navigate = useNavigate();
 

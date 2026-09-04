@@ -13,6 +13,15 @@ export const getMetadata = async (url) => {
         : null;
 
     return {
+        title:
+            scrape('meta[property="og:title"]').attr("content") ||
+            scrape('meta[name="title"]').attr("content") ||
+            scrape('title').text() ||
+            null,
+        description:
+            scrape('meta[property="og:description"]').attr("content") ||
+            scrape('meta[name="description"]').attr("content") ||
+            null,
         platform: 
             scrape('meta[property="og:site_name"]').attr("content") ||
             scrape("title").text() ||
@@ -25,23 +34,4 @@ export const getMetadata = async (url) => {
         icon:
             icon || null
     };
-};
-
-export const getTitleAndDescription = async (url) => {
-    const response = await fetch(url);
-    const html = await response.text();
-    const scrape = cheerio.load(html);
-
-    const title =
-        scrape('meta[property="og:title"]').attr("content") ||
-        scrape('meta[name="title"]').attr("content") ||
-        scrape('title').text() ||
-        null;
-
-    const description =
-        scrape('meta[property="og:description"]').attr("content") ||
-        scrape('meta[name="description"]').attr("content") ||
-        null;
-
-    return { title, description };
 };

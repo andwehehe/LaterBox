@@ -15,6 +15,9 @@ function BookmarkProvider({ children }) {
     const [ isBookmarkLoading, setIsBookmarkLoading ] = useState(true);
     const [ targetBookmark, setTargetBookmark ] = useState({});
     const [ bookmarkStatus, setBookmarkStatus ] = useState({ isSuccessful: false, message: "" });
+    const [ suggestedMetadata, setSuggestedMetadata ] = useState({ 
+        title: "", description: "", platform: "", thumbnail: "", icon: "" 
+    });
     const { isUserLoading, userData } = useUserContext();
 
     const DEFAULT_BOOKMARK = {
@@ -70,7 +73,9 @@ function BookmarkProvider({ children }) {
             setTargetBookmark,
             DEFAULT_BOOKMARK,
             bookmarkStatus,
-            setBookmarkStatus
+            setBookmarkStatus,
+            suggestedMetadata,
+            setSuggestedMetadata
         }}>
             {children}
         </BookmarkContext.Provider>
