@@ -9,17 +9,33 @@ import { useUserContext } from "../../contexts/UserContext.jsx";
 
 function SignIn() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   // const [rememberMe, setRememberMe] = useState(true);
   const [status, setStatus] = useState({ loading: false, error: "" });
   const { setUserData } = useUserContext();
   const navigate = useNavigate();
 
-  const handleChange = (field) => (e) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  const handleChange = (field) => (e) => {
+    const val = e.target.value;
+    setForm((prev) => ({ ...prev, [field]: val }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validate = () => {
+    const errors = {};
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(form.email)) errors.email = "Please enter a valid email address.";
+    if (!form.password || form.password.length < 6) errors.password = "Password must be at least 6 characters.";
+    setFieldErrors({ email: errors.email || "", password: errors.password || "" });
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
+
     setStatus({ loading: true, error: "" });
 
     try {      
@@ -62,6 +78,7 @@ function SignIn() {
           value={form.email}
           onChange={handleChange("email")}
         />
+        {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p>}
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
@@ -92,6 +109,7 @@ function SignIn() {
               </button>
             }
           />
+          {fieldErrors.password && <p className="mt-1 text-sm text-red-400">{fieldErrors.password}</p>}
         </div>
           
         {/* Might use later */}
@@ -112,11 +130,17 @@ function SignIn() {
           </p>
         )}
 
-        <button
+          <button
           type="submit"
           disabled={status.loading}
-          className="w-full rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"
         >
+          {status.loading ? (
+            <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden>
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+          ) : null}
           {status.loading ? "Signing In…" : "Sign In"}
         </button>
 

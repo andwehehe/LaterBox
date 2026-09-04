@@ -39,6 +39,7 @@ function CreateAccount() {
     password: "",
     confirmPassword: "",
   });
+  const [fieldErrors, setFieldErrors] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -46,25 +47,36 @@ function CreateAccount() {
   const [registerStatus, setRegisterStatus] = useState({ isSuccessful: false, message: "" });
 
   // a function that returns a function that updates the form state for a given field
-  const handleChange = (field) => (e) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  const handleChange = (field) => (e) => {
+    const val = e.target.value;
+    setForm((prev) => ({ ...prev, [field]: val }));
+    setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validate = () => {
+    const errors = {};
+    if (!form.username || form.username.length < 3) errors.username = "Please enter a username (min 3 chars).";
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(form.email)) errors.email = "Please enter a valid email address.";
+    if (!form.password || form.password.length < 6) errors.password = "Password must be at least 6 characters.";
+    if (form.password !== form.confirmPassword) errors.confirmPassword = "Passwords do not match.";
+    if (!agreed) errors.agreed = "You must agree to the Terms of Service and Privacy Policy.";
+
+    setFieldErrors({
+      username: errors.username || "",
+      email: errors.email || "",
+      password: errors.password || "",
+      confirmPassword: errors.confirmPassword || "",
+    });
+
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus({ loading: false, error: "" });
 
-    if(!form.username || !form.email || !form.password || !form.confirmPassword) {
-      setStatus({ loading: false, error: "Please fill in all fields." });
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setStatus({ loading: false, error: "Passwords do not match." });
-      return;
-    }
-    if (!agreed) {
-      setStatus({ loading: false, error: "Please agree to the Terms of Service and Privacy Policy." });
-      return;
-    }
+    if(!validate()) return;
 
     setStatus({ loading: true, error: "" });
     
@@ -91,29 +103,31 @@ function CreateAccount() {
             id="username"
             label="Username"
             icon={<UserIcon />}
-            placeholder="Alberto Jr. Du bist gut genug"
+            placeholder="albertodoe"
             autoComplete="username"
             value={form.username}
             onChange={handleChange("username")}
           />
+          {fieldErrors.username && <p className="mt-1 text-sm text-red-400">{fieldErrors.username}</p> }
 
           <FormField
             id="email"
             label="Email Address"
             type="email"
             icon={<MailIcon />}
-            placeholder="name@gmail.com"
+            placeholder="name@example.com"
             autoComplete="email"
             value={form.email}
             onChange={handleChange("email")}
           />
+          {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p> }
 
           <FormField
             id="password"
             label="Password"
             type={showPassword ? "text" : "password"}
             icon={<LockIcon />}
-            placeholder="Enter your password"
+            placeholder="At least 6 characters"
             autoComplete="new-password"
             value={form.password}
             onChange={handleChange("password")}
@@ -128,6 +142,7 @@ function CreateAccount() {
               </button>
             }
           />
+          {fieldErrors.password && <p className="mt-1 text-sm text-red-400">{fieldErrors.password}</p> }
 
           <FormField
             id="confirmPassword"
@@ -149,6 +164,7 @@ function CreateAccount() {
               </button>
             }
           />
+          {fieldErrors.confirmPassword && <p className="mt-1 text-sm text-red-400">{fieldErrors.confirmPassword}</p> }
 
           <label className="flex items-start gap-2 text-sm text-muted">
             <input
@@ -181,6 +197,12 @@ function CreateAccount() {
             disabled={status.loading}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60"
           >
+            {status.loading ? (
+              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden>
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+            ) : null}
             {status.loading ? "Creating Account…" : "Create Account →"}
           </button>
 
