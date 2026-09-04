@@ -1,93 +1,45 @@
-const columns = [
-  {
-    title: "Product",
-    links: ["Dashboard", "Browser Extension", "Mobile Apps", "AI Summarizer"],
-  },
-  {
-    title: "Company",
-    links: ["About Us", "Blog", "Careers", "Privacy Policy"],
-  },
-];
+import { FaGithub, FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 function Footer() {
+  const contacts = [
+    { label: 'Facebook', href: 'https://www.facebook.com/andrei.gobres.5', icon: FaFacebook },
+    { label: 'GitHub', href: 'https://github.com/andwehehe', icon: FaGithub },
+    { label: 'Instagram', href: 'https://www.instagram.com/andwehehe/', icon: FaInstagram },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/andrei-gobres-7b5704325/', icon: FaLinkedin },
+  ];
+
   return (
-    <footer className="border-t border-panel-border pt-12 sm:pt-16">
-      <div className="page-container grid grid-cols-1 gap-10 pb-12 sm:grid-cols-2 md:grid-cols-4">
-        {/* Brand + blurb */}
-        <div className="sm:col-span-2 md:col-span-1">
-          <a href="#landing-page" className="flex items-center gap-2 font-semibold text-white">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-sm">
-              ⚡
-            </span>
-            LaterBox
-          </a>
-          <p className="mt-4 max-w-xs text-sm text-muted">
-            The intelligent way to organize the web. Save everything, find
-            anything, instantly.
-          </p>
-          <div className="mt-4 flex gap-3 text-muted">
-            <span>𝕏</span>
-            <span>📷</span>
-            <span>💬</span>
-          </div>
-        </div>
+    <footer className="border-t border-panel-border">
+      <div className="page-container py-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="text-sm font-semibold text-white mb-1">How to Reach Me</div>
+          <p className="text-sm text-muted mb-4">External links open in a new tab.</p>
 
-        {columns.map((col) => (
-          <div key={col.title}>
-            <h4 className="mb-4 text-sm font-semibold text-white">
-              {col.title}
-            </h4>
-            <ul className="space-y-3 text-sm text-muted">
-              {col.links.map((link) => (
-                <li key={link}>
-                  <a href="#landing-page" className="transition hover:text-white">
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="flex items-center justify-center flex-wrap gap-4">
+            {contacts.map((c) => {
+              const Icon = c.icon;
+              return (
+                <a
+                  key={c.label}
+                  href={c.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={c.label}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-muted hover:text-white transition"
+                >
+                  <Icon size={18} />
+                  <span>{c.label}</span>
+                </a>
+              );
+            })}
           </div>
-        ))}
-
-        {/* Newsletter */}
-        <div className="sm:col-span-2 md:col-span-1">
-          <h4 className="mb-4 text-sm font-semibold text-white">
-            Stay Updated
-          </h4>
-          <p className="mb-4 text-sm text-muted">
-            Join 3+ users getting our regular updates.
-          </p>
-          <form
-            className="flex flex-col gap-2 sm:flex-row"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <input
-              type="email"
-              placeholder="Enter email"
-              className="w-full min-w-0 rounded-lg border border-panel-border bg-panel px-3 py-2 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light"
-            >
-              Join
-            </button>
-          </form>
         </div>
       </div>
 
-      <div className="page-container flex flex-col items-center justify-between gap-4 border-t border-panel-border py-6 text-xs text-muted md:flex-row">
-        <p>© 2026 LaterBox Inc. All rights reserved.</p>
-        <div className="flex gap-6">
-          <a href="#top" className="hover:text-white">
-            Terms of Service
-          </a>
-          <a href="#top" className="hover:text-white">
-            Cookies
-          </a>
-          <a href="#top" className="hover:text-white">
-            Security
-          </a>
+      <div className="w-full border-t border-panel-border">
+        <div className="page-container py-4 text-xs text-muted flex items-center justify-between">
+          <span>© 2026 — Personal project</span>
+          <span>Built for personal use</span>
         </div>
       </div>
     </footer>

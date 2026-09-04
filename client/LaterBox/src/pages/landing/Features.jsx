@@ -1,33 +1,35 @@
+import { Search, Tag, Star, Link, Shield, FileText } from "lucide-react";
+
 const features = [
   {
-    icon: "🔍",
+    icon: Search,
     title: "Universal Search",
-    body: "Find any link you've ever saved in milliseconds. Our lightning-fast search indexing covers titles, notes, and tags.",
+    body: "Find any saved link instantly. Search across titles, notes, and tags with fast indexing.",
   },
   {
-    icon: "▦",
-    title: "Collections & Tags",
-    body: "Organize your way. Use nested collections for deep projects or flexible tagging for cross-cutting interests.",
+    icon: Tag,
+    title: "Organize with Tags",
+    body: "Flexible tagging to group, filter, and surface content across projects and topics.",
   },
   {
-    icon: "☆",
-    title: "Smart Favorites",
-    body: "Never lose your most important resources. AI-suggested favorites help bubble up the most relevant content.",
+    icon: Star,
+    title: "Favorites & Prioritization",
+    body: "Mark important resources and surface them where they matter most.",
   },
   {
-    icon: "🔗",
-    title: "Quick Add Anywhere",
-    body: "With our browser extensions and mobile sharesheet, saving a link is never more than a single click away.",
+    icon: Link,
+    title: "Quick Save Anywhere",
+    body: "Browser extension and mobile share integration let you save links with one click.",
   },
   {
-    icon: "🛡️",
-    title: "Privacy Focused",
-    body: "Your bookmarks are yours. End-to-end encryption options ensure your digital library stays completely private.",
+    icon: Shield,
+    title: "Privacy Controls",
+    body: "Keep your library private — controls for public sharing and access settings.",
   },
   {
-    icon: "🌐",
-    title: "Full Page Archive",
-    body: "We take a snapshot of every page you save. Even if the original site goes down, your content stays safe.",
+    icon: FileText,
+    title: "Optional Page Archive",
+    body: "Snapshot pages at save time so you can reference content even if the original changes.",
   },
 ];
 
@@ -50,12 +52,14 @@ function Features() {
             key={f.title}
             className="rounded-xl2 border border-panel-border bg-panel p-6 transition hover:border-accent/50"
           >
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/15 text-accent-light">
-              {f.icon}
+            <div className=" flex items-center gap-4">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/15 text-accent-light">
+                <f.icon size={18} />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-white">
+                {f.title}
+              </h3>
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-white">
-              {f.title}
-            </h3>
             <p className="text-sm leading-relaxed text-muted">{f.body}</p>
           </div>
         ))}

@@ -5,11 +5,10 @@ function CTA() {
     <section className="page-container pb-16 sm:pb-20 lg:pb-24" id="changelog">
       <div className="mx-auto max-w-5xl rounded-2xl bg-gradient-to-br from-accent to-[#241f6b] px-6 py-12 text-center sm:px-8 sm:py-16">
         <h2 className="text-2xl font-extrabold sm:text-3xl md:text-4xl">
-          Ready to reclaim your internet?
+          Start organizing your research and docs
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm text-white/80 sm:text-base">
-          Join thousands of researchers, designers, and developers who use
-          LaterBox every day to stay organized.
+          Save links, attach notes, and archive reference pages — deploy self-hosted or use our cloud. Integrates with browser extensions and mobile sharesheets.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
