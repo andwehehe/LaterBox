@@ -4,11 +4,7 @@ import user2 from "../../assets/images/user-2.jpg";
 import {
   LayoutDashboard,
   Bookmark,
-  Star,
-  FolderOpen,
-  Tag,
   User,
-  Settings,
   X,
 } from "lucide-react";
 
@@ -16,29 +12,10 @@ import {
 // the provided designs. Don't add extra links here unless a matching
 // page exists — the whole point is this list stays in sync with what's
 // actually built.
-const navGroups = [
-  {
-    label: "Main",
-    items: [
-      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
-      { to: "/saved-links", label: "Saved Links", icon: Bookmark },
-      { to: "/favorites", label: "Favorites", icon: Star },
-    ],
-  },
-  {
-    label: "Library",
-    items: [
-      { to: "/collections", label: "Collections", icon: FolderOpen },
-      { to: "/tags", label: "Tags", icon: Tag },
-    ],
-  },
-  {
-    label: "Account",
-    items: [
-      { to: "/profile", label: "Profile", icon: User },
-      { to: "/settings", label: "Settings", icon: Settings },
-    ],
-  },
+const navItems = [
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/saved-links", label: "Saved Links", icon: Bookmark },
+  { to: "/profile", label: "Profile", icon: User },
 ];
 
 function Sidebar({ mobileOpen, onClose }) {
@@ -79,36 +56,29 @@ function Sidebar({ mobileOpen, onClose }) {
           </button>
         </div>
 
-        {/* Nav groups */}
-        <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
-          {navGroups.map((group) => (
-            <div key={group.label}>
-              <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
-                {group.label}
-              </p>
-              <ul className="space-y-1">
-                {group.items.map(({ to, label, icon: Icon, end }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      end={end}
-                      onClick={onClose}
-                      className={({ isActive }) =>
-                        `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                          isActive
-                            ? "bg-accent text-white"
-                            : "text-muted hover:bg-dark hover:text-white"
-                        }`
-                      }
-                    >
-                      <Icon size={17} />
-                      {label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 pb-6">
+          <ul className="space-y-1">
+            {navItems.map(({ to, label, icon: Icon, end }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  end={end}
+                  onClick={onClose}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                      isActive
+                        ? "bg-accent text-white"
+                        : "text-muted hover:bg-dark hover:text-white"
+                    }`
+                  }
+                >
+                  <Icon size={17} />
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         {/* User footer */}

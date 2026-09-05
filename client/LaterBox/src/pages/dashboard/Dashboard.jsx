@@ -1,7 +1,6 @@
-import { Search, Plus, Bell, Bookmark, ArrowUpRight, Clock, Layers } from "lucide-react";
+import { Bookmark, ArrowUpRight, Clock, Layers } from "lucide-react";
 import { MobileMenuButton, StatCard } from "../../components/components.jsx";
 import { useUserContext } from "../../contexts/UserContext.jsx";
-import user2 from "../../assets/images/user-2.jpg";
 
 import {
   dashboardStats,
@@ -18,50 +17,10 @@ function Dashboard() {
   
   return (
     <div>
-        {/* Top bar */}
-        <header className="flex items-center gap-3 border-b border-panel-border px-4 py-4 sm:px-6">
-          <MobileMenuButton />
-
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
-          <input
-            type="text"
-            placeholder="Search your library..."
-            className="w-full rounded-lg border border-panel-border bg-panel py-2 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none"
-          />
-        </div>
-
-        <button className="hidden items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light sm:flex">
-          <Plus size={16} />
-          Quick Add
-        </button>
-        <button
-          aria-label="Notifications"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-muted hover:text-white"
-        >
-          <Bell size={16} />
-        </button>
-        <div className="hidden items-center gap-2 md:flex">
-          {user2 ? (
-            <img
-              src={user2}
-              alt={userData.username}
-              className="h-9 w-9 rounded-full"
-            />
-          ) : (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-              {/* {placeholder} */}
-              PH
-            </span>
-          )}
-          <div className="leading-tight">
-            <p className="text-sm font-medium text-white">{userData.username}</p>
-            <p className="text-xs text-muted">Id: {userData.id}</p>
-          </div>
-        </div>
-      </header>
-
       <main className="space-y-6 p-4 sm:p-6">
+        <div className="lg:hidden">
+          <MobileMenuButton />
+        </div>
         {/* Welcome banner + top platform */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <div className="rounded-xl2 border border-panel-border bg-gradient-to-br from-accent to-[#241f6b] p-6 lg:col-span-2">
