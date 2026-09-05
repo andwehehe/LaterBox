@@ -45,7 +45,7 @@ export default function SavedLinks() {
       const matchesQuery =
         !query ||
         b.title.toLowerCase().includes(query.toLowerCase()) ||
-        b.tags.some((t) => t.toLowerCase().includes(query.toLowerCase()));
+        b.tags?.some((t) => t.toLowerCase().includes(query.toLowerCase()));
 
       const matchesFilter =
         activeFilter === "All Links" ||
@@ -159,7 +159,9 @@ export default function SavedLinks() {
             <CardSkeleton instance={5} />
           ) : (
             filtered.map((b) => {
-              const meta = platformMeta[b.metadata?.platform] ?? {
+              const rawPlatform = b.metadata?.platform ?? "";
+              const platform = rawPlatform.charAt(0).toUpperCase() + rawPlatform.slice(1);
+              const meta = platformMeta[platform] ?? {
                 icon: FileText,
                 color: "text-muted"
               };
