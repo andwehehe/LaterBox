@@ -8,9 +8,15 @@ export const getMetadata = async (url) => {
     const iconUrl = scrape('link[rel="icon"]').attr("href") 
         || scrape('link[rel="shortcut icon"]').attr("href");
 
+    const hostname = new URL(url).hostname
+        .replace("www.", "")
+        .split(".")[0];
+
     const icon = iconUrl
         ? new URL(iconUrl, url).href
         : null;
+    
+    const favicon = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`;
 
     return {
         title:
@@ -24,14 +30,13 @@ export const getMetadata = async (url) => {
             null,
         platform: 
             scrape('meta[property="og:site_name"]').attr("content") ||
-            scrape("title").text() ||
+            hostname ||
             null,
         thumbnail:
             scrape('meta[property="og:image"]').attr("content") ||
             scrape('meta[name="twitter:image"]').attr("content") ||
             null,
-
         icon:
-            icon || null
+            icon || favicon || null
     };
 };
