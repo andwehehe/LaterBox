@@ -5,6 +5,7 @@ import FormField from "./FormField";
 import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
 import { registerAccount } from "../../services/authService.js";
 import { PopupMessage } from "../../components/components.jsx";
+import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 
 /**
  * SECURITY / DATA HANDLING NOTES — read before wiring this up
@@ -98,81 +99,92 @@ function CreateAccount() {
   return (
     <>
       <AuthLayout title="Create Account" subtitle="Start organizing your digital world today.">
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <FormField
-            id="username"
-            label="Username"
-            icon={<UserIcon />}
-            placeholder="albertodoe"
-            autoComplete="username"
-            value={form.username}
-            onChange={handleChange("username")}
-          />
-          {fieldErrors.username && <p className="mt-1 text-sm text-red-400">{fieldErrors.username}</p> }
-
-          <FormField
-            id="email"
-            label="Email Address"
-            type="email"
-            icon={<MailIcon />}
-            placeholder="name@example.com"
-            autoComplete="email"
-            value={form.email}
-            onChange={handleChange("email")}
-          />
-          {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p> }
-
-          <FormField
-            id="password"
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            icon={<LockIcon />}
-            placeholder="At least 6 characters"
-            autoComplete="new-password"
-            value={form.password}
-            onChange={handleChange("password")}
-            rightSlot={
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="text-muted hover:text-white"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            }
-          />
-          {fieldErrors.password && <p className="mt-1 text-sm text-red-400">{fieldErrors.password}</p> }
-
-          <FormField
-            id="confirmPassword"
-            label="Confirm Password"
-            type={showConfirm ? "text" : "password"}
-            icon={<LockIcon />}
-            placeholder="Confirm your password"
-            autoComplete="new-password"
-            value={form.confirmPassword}
-            onChange={handleChange("confirmPassword")}
-            rightSlot={
-              <button
-                type="button"
-                onClick={() => setShowConfirm((v) => !v)}
-                className="text-muted hover:text-white"
-                aria-label={showConfirm ? "Hide password" : "Show password"}
-              >
-                {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            }
-          />
-          {fieldErrors.confirmPassword && <p className="mt-1 text-sm text-red-400">{fieldErrors.confirmPassword}</p> }
-
-          <label className="flex items-start gap-2 text-sm text-muted">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-panel-border bg-dark accent-accent"
+        <form onSubmit={handleSubmit} className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-x-4 sm:gap-y-3 sm:space-y-0" noValidate>
+          <div>
+            <FormField
+              id="username"
+              label="Username"
+              icon={<UserIcon />}
+              placeholder="albertodoe"
+              autoComplete="username"
+              value={form.username}
+              onChange={handleChange("username")}
             />
+            {fieldErrors.username && <p className="mt-1 text-sm text-red-400">{fieldErrors.username}</p>}
+          </div>
+
+          <div>
+            <FormField
+              id="password"
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              icon={<LockIcon />}
+              placeholder="At least 6 characters"
+              autoComplete="new-password"
+              value={form.password}
+              onChange={handleChange("password")}
+              rightSlot={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="text-muted hover:text-white"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              }
+            />
+            {fieldErrors.password && <p className="mt-1 text-sm text-red-400">{fieldErrors.password}</p>}
+          </div>
+
+          <div>
+            <FormField
+              id="email"
+              label="Email Address"
+              type="email"
+              icon={<MailIcon />}
+              placeholder="name@example.com"
+              autoComplete="email"
+              value={form.email}
+              onChange={handleChange("email")}
+            />
+            {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p>}
+          </div>
+
+          <div>
+            <FormField
+              id="confirmPassword"
+              label="Confirm Password"
+              type={showConfirm ? "text" : "password"}
+              icon={<LockIcon />}
+              placeholder="Confirm your password"
+              autoComplete="new-password"
+              value={form.confirmPassword}
+              onChange={handleChange("confirmPassword")}
+              rightSlot={
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="text-muted hover:text-white"
+                  aria-label={showConfirm ? "Hide password" : "Show password"}
+                >
+                  {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              }
+            />
+            {fieldErrors.confirmPassword && <p className="mt-1 text-sm text-red-400">{fieldErrors.confirmPassword}</p>}
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-muted sm:col-span-2">
+            <span className="relative flex h-4 w-4 shrink-0 items-center justify-center">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded border border-panel-border bg-transparent checked:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              {agreed && <Check className="pointer-events-none relative z-10 h-3 w-3 text-green-500" strokeWidth={3} aria-hidden="true" />}
+            </span> 
             <span>
               I agree to the{" "}
               <a href="#terms" className="text-accent-light hover:underline">
@@ -187,7 +199,7 @@ function CreateAccount() {
           </label>
 
           {status.error && (
-            <p className="text-sm text-red-400" role="alert">
+            <p className="text-sm text-red-400 sm:col-span-2" role="alert">
               {status.error}
             </p>
           )}
@@ -195,18 +207,16 @@ function CreateAccount() {
           <button
             type="submit"
             disabled={status.loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
           >
             {status.loading ? (
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" aria-hidden>
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-              </svg>
+              <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
             ) : null}
-            {status.loading ? "Creating Account…" : "Create Account →"}
+            {status.loading ? "Creating Account..." : "Create Account"}
+            {!status.loading && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
           </button>
 
-          <div className="flex items-center gap-3 py-1">
+          <div className="flex items-center gap-3 py-1 sm:col-span-2">
             <span className="h-px flex-1 bg-panel-border" />
             <span className="text-xs font-medium tracking-wide text-muted">
               OR CONTINUE WITH
@@ -216,13 +226,13 @@ function CreateAccount() {
 
           <button
             type="button"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-panel-border bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-muted"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-panel-border bg-transparent px-6 py-2.5 text-sm font-semibold text-white transition hover:border-muted sm:col-span-2"
           >
             <GoogleIcon />
             Continue with Google
           </button>
 
-          <p className="pt-2 text-center text-sm text-muted">
+          <p className="pt-1 text-center text-sm text-muted sm:col-span-2">
             Already have an account?{" "}
             <Link to="/login" className="font-medium text-accent-light hover:underline">
               Sign In

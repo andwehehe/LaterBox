@@ -52,7 +52,7 @@ function SignIn() {
   };
 
   return (
-    <AuthLayout title="Welcome back" subtitle="Enter your credentials to access your bookmarks">
+    <AuthLayout compact title="Welcome back" subtitle="Enter your credentials to access your bookmarks">
       <button
         type="button"
         className="flex w-full items-center justify-center gap-2 rounded-lg border border-panel-border bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-muted"
@@ -141,7 +141,7 @@ function SignIn() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
             </svg>
           ) : null}
-          {status.loading ? "Signing In…" : "Sign In"}
+          {status.loading ? "Signing In..." : "Sign In"}
         </button>
 
         <p className="pt-1 text-center text-sm text-muted">
