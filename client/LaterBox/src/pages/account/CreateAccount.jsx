@@ -7,32 +7,6 @@ import { registerAccount } from "../../services/authService.js";
 import { PopupMessage } from "../../components/components.jsx";
 import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 
-/**
- * SECURITY / DATA HANDLING NOTES — read before wiring this up
- * ------------------------------------------------------------
- * - Every field below (username, email, password, confirmPassword) lives
- *   only in this component's React state (useState), for as long as the
- *   user is filling out the form. Nothing here is ever written to
- *   localStorage, sessionStorage, or a cookie by this component.
- * 
- * - On submit, the values are sent ONCE, directly to your backend over
- *   HTTPS (see the fetch call in handleSubmit). Swap the placeholder
- *   endpoint for your real registration route.
- * 
- * - Password hashing (bcrypt / argon2 / scrypt) must happen server-side.
- *   Never hash, encrypt, or "protect" the password in the browser —
- *   client-side code is visible/bypassable, so it provides zero real
- *   security and can give a false sense of safety.
- * 
- * - This component clears the password fields from state immediately
- *   after a submit attempt (success or failure) so plaintext doesn't
- *   linger in memory longer than necessary.
- * 
- * - Your backend should still independently validate everything here
- *   (uniqueness, password strength, email format) — client checks are
- *   for UX only, not a security boundary.
- */
-
 function CreateAccount() {
   const [form, setForm] = useState({
     username: "",
