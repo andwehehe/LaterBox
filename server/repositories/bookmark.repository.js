@@ -1,5 +1,5 @@
-import { act } from "react";
 import db from "../config/laterbox.db.js";
+import prisma from "../utils/prisma.js";
 
 // getBookmarks
 export const getByUserId = async (user_id) => {
@@ -70,45 +70,39 @@ export const getByBookmarkId = async (bookmark_id) => {
 }
 
 // addBookmark
-export const createBookmark = async ({ user_id, title, url, platform, note, transaction }) => {
-    const [newBookmark] = await transaction.query(
-        `INSERT INTO bookmarks (user_id, title, url, note) 
-         VALUES (?, ?, ?, ?)`,
-        [user_id, title, url, note]
-    );
+export const createBookmark = async ({ user_id, title, url, note, tx }) => {
+    const newBookmark = await tx.bookmarks.create({
+        data: {
+            user_id, 
+            title, 
+            url, 
+            note
+        }
+    })
     
-    return newBookmark.insertId;
+    return { 
+        bookmark_id: newBookmark.bookmark_id,
+        saved_on: newBookmark.saved_on
+    };
 }
 
-export const addTag = async (tag, transaction) => {
-    const [newTag] = await transaction.query(
-        `INSERT INTO tags (tag)
-         VALUES (?)
-         ON DUPLICATE KEY UPDATE
-         tag_id = LAST_INSERT_ID(tag_id)`,
-        [tag]
-    );
+export const addTag = async ({ tag, tx }) => {
+    const newTag = await tx.tags.upsert({
+        where: { tag },
+        update: {},
+        create: { tag }
+    })
 
-    return newTag.insertId;
+    return newTag.tag_id;
 }
 
-export const addBookmarkTagRelation = async (bookmark_id, tag_id, transaction) => {
-    await transaction.query(
-        `INSERT INTO bookmark_tags
-         VALUES (?, ?)`,
-         [bookmark_id, tag_id]
-    );
-}
-
-export const getSaveTime = async (bookmark_id, transaction) => {
-    const [saved_on] = await transaction.query(
-        `SELECT DATE_FORMAT(saved_on, '%M %d, %Y') AS saved_on 
-         FROM bookmarks
-         WHERE bookmark_id = ?`,
-         [bookmark_id]
-    )
-
-    return saved_on[0];
+export const addBookmarkTagRelation = async ({ bookmark_id, tag_id, tx }) => {
+    await tx.bookmark_tags.create({
+        data: {
+            bookmark_id, 
+            tag_id
+        }
+    });
 }
 
 // updateTags
@@ -185,23 +179,19 @@ export const deleteInactiveTags = async (inactiveTagsIds, transaction) => {
 }
 
 // updateNote
-export const updateNote = async (note, bookmark_id) => {
-    await db.query(
-        `UPDATE bookmarks
-         SET note = ?
-         WHERE bookmark_id = ?`,
-         [note, +bookmark_id]
-    );
+export const updateNote = async ({ note, bookmark_id }) => {
+    await prisma.bookmarks.update({
+        where: { bookmark_id: +bookmark_id },
+        data: { note }
+    })
 }
 
 // updateIsStarred
-export const updateStarredStatus = async (is_starred, bookmark_id) => {
-    await db.query(
-        `UPDATE bookmarks
-         SET is_starred = ?
-         WHERE bookmark_id = ?`,
-         [is_starred, +bookmark_id]
-    );
+export const updateStarredStatus = async ({ is_starred, bookmark_id }) => {
+    await prisma.bookmarks.update({
+        where: { bookmark_id: +bookmark_id },
+        data: { is_starred }
+    });
 }
 
 // deleteBookmark
@@ -215,10 +205,8 @@ export const deleteBookmarkById = async (bookmark_id, transaction) => {
 
 // updateIsVisited
 export const updateVisitationStatus = async (is_visited, bookmark_id) => {
-    await db.query(
-        `UPDATE bookmarks
-         SET is_visited = ?
-         WHERE bookmark_id = ?`,
-         [is_visited, +bookmark_id]
-    );
+    await prisma.bookmarks.update({
+        where: { bookmark_id: +bookmark_id },
+        data: { is_visited }
+    })
 }

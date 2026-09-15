@@ -63,9 +63,9 @@ const updateNote = async (req, res) => {
         const bookmark_id = req.params.bookmark_id;
         const note = req.body.note;
 
-        await bookmarkServices.updateNote(note, bookmark_id);
+        const { message } = await bookmarkServices.updateNote(note, bookmark_id);
 
-        return res.status(200).json({ message: "Note updated" });
+        return res.status(200).json({ message });
     } catch(err) {
         console.error(err);
         return res.status(500).json({ message: "Update failed" });
@@ -103,7 +103,7 @@ const updateIsVisited = async (req, res) => {
         await bookmarkServices.updateIsVisited(is_visited, bookmark_id);
     } catch(err) {
         console.error(err);
-        return res.status(500).json({ message: "Update failed" })
+        return res.status(500).json({ message: "Visitation failed" })
     }
 }
 

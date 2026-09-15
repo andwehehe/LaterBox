@@ -40,39 +40,38 @@ export const getTargetBookmark = async (bookmark_id) => {
     }
 }
 
-export const addBookmark = async ({ title, url, platform, note, tags, user_id }) => {
-    const transaction = await db.getConnection();
-    
-    try {
-        await transaction.beginTransaction();
-
-        const bookmark_id = await bookmarkRepository.createBookmark({ 
+export const addBookmark = async ({ title, url, note, tags, user_id }) => {
+    const bookmarkTransact = await prisma.$transaction(async (tx) => {
+        const bookmark = await bookmarkRepository.createBookmark({ 
             user_id, 
             title, 
             url, 
-            platform, 
             note, 
-            transaction 
+            tx 
         });
 
         for(const tag of tags) {
-            const tag_id = await bookmarkRepository.addTag(tag, transaction);
-            await bookmarkRepository.addBookmarkTagRelation(bookmark_id, tag_id, transaction);
+            const tag_id = await bookmarkRepository.addTag({ tag, tx });
+            await bookmarkRepository.addBookmarkTagRelation({ 
+                bookmark_id: bookmark.bookmark_id, 
+                tag_id, 
+                tx 
+            });
         }
 
-        // Fix date format later
-        const { saved_on } = await bookmarkRepository.getSaveTime(bookmark_id, transaction);
+        return {
+            bookmark_id: bookmark.bookmark_id, 
+            saved_on: bookmark.saved_on
+        }
+    })
 
-        await transaction.commit();
-        return { bookmark_id, saved_on };
-    } catch(err) {
-        await transaction.rollback();
-        throw err;
-    } finally {
-        await transaction.release();
+    return { 
+        bookmark_id: bookmarkTransact.bookmark_id, 
+        saved_on: bookmarkTransact.saved_on 
     }
 }
 
+// w/transaction
 export const updateTags = async (bookmark_id, tags) => {
     const transaction = await db.getConnection();
 
@@ -136,16 +135,18 @@ export const updateTags = async (bookmark_id, tags) => {
     }
 }
 
-export const updateNote = async (note, bookmark_id) => {
-    await bookmarkRepository.updateNote(note, bookmark_id);
+export const updateNote = async ({ note, bookmark_id }) => {
+    await bookmarkRepository.updateNote({ note, bookmark_id });
+    return { message: "Note updated" };
 }
 
-export const updateIsStarred = async (is_starred, bookmark_id) => {
+export const updateIsStarred = async ({ is_starred, bookmark_id }) => {
     const message = is_starred ? 'Added to favorites' : 'Removed from favorites';
-    await bookmarkRepository.updateStarredStatus(is_starred, bookmark_id);
+    await bookmarkRepository.updateStarredStatus({ is_starred, bookmark_id });
     return { message };
 }
 
+// w/transaction
 export const deleteBookmark = async (bookmark_id, tags) => {
     const transaction = await db.getConnection();
     
@@ -181,8 +182,8 @@ export const deleteBookmark = async (bookmark_id, tags) => {
     }
 }
 
-export const updateIsVisited = async (is_visited, bookmark_id) => {
-    await bookmarkRepository.updateVisitationStatus(is_visited, bookmark_id);
+export const updateIsVisited = async ({ is_visited, bookmark_id }) => {
+    await bookmarkRepository.updateVisitationStatus({ is_visited, bookmark_id });
 }
 
 export const suggestDetails = async (url) => {

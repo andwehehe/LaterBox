@@ -1,34 +1,38 @@
-import db from '../config/laterbox.db.js';
+import prisma from '../utils/prisma.js';
 
 export const createUser = async ({ username, email, hashedPassword }) => {
+    const newUser = await prisma.users.create({
+        data: {
+            username,
+            email,
+            hashed_password: hashedPassword
+        }
+    });
 
-    const [newUser] = await db.query(
-        `INSERT INTO users (username, email, hashed_password) 
-        VALUES (?, ?, ?)`,
-        [username, email, hashedPassword]
-    );
-
-    return newUser.insertId;
+    return newUser.user_id;
 }
 
 export const findUserByEmail = async (email) => {
+    const user = await prisma.users.findUnique({
+        where: {
+            email
+        }
+    })
 
-    const [users] = await db.query(
-        `SELECT *
-         FROM users
-         WHERE email = ?`,
-        [email]
-    );
-
-    return users[0] ?? null;
+    return user;
 };
 
 export const getUserDataById = async (userId) => {
-    const [userData] = await db.query(
-        `SELECT user_id, username, email 
-         FROM users WHERE user_id = ?`,
-        [userId]
-    );
+    const userData = await prisma.users.findMany({
+        where: {
+            user_id: userId
+        },
+        select: {
+            user_id: true,
+            username: true,
+            email: true
+        }
+    })
 
-    return userData[0] ?? null;
+    return userData;
 }
