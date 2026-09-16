@@ -28,7 +28,7 @@ function Dashboard() {
               Quick Save
             </span>
             <h1 className="mt-3 text-2xl font-bold text-white sm:text-3xl">
-              Welcome back, {userData.username.split(" ")[0]}!
+              Welcome back, {userData.username?.split(" ")[0]}!
             </h1>
             <p className="mt-1 text-sm text-white/80">
               You've saved <span className="font-semibold text-white">12 new links</span> this
