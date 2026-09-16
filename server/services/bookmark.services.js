@@ -1,6 +1,6 @@
-import db from "../config/laterbox.db.js";
 import { getMetadata } from "../utils/utility.metadata.js";
 import * as bookmarkRepository from '../repositories/bookmark.repository.js';
+import prisma from "../utils/prisma.js";
 
 export const getBookmarks = async (user_id) => {
     const bookmarks = await bookmarkRepository.getByUserId(user_id);
@@ -71,68 +71,44 @@ export const addBookmark = async ({ title, url, note, tags, user_id }) => {
     }
 }
 
-// w/transaction
-export const updateTags = async (bookmark_id, tags) => {
-    const transaction = await db.getConnection();
-
-    try {
-        await transaction.beginTransaction();
-
-        const allTags = await bookmarkRepository.getTags(bookmark_id, transaction);
-
-        if(allTags.length === 0) {
-            console.log("empty")
-            return { message: "Tags not found" };
-        }
-
-        const currentTags = allTags[0].tags?.split(',') ?? [];
-        const newTags = tags?.filter(tag =>
-            !currentTags.some(
-                current => current.toLowerCase() === tag.toLowerCase()
-            )
-        );
-
+export const updateTags = async ({ bookmark_id, tags }) => {
+    await prisma.$transaction(async (tx) => {
+        const allTags = await bookmarkRepository.getTags({ bookmark_id, tx });
+        const currentTags = allTags.map(tag => tag.tags.tag);
+        const newTags = tags.filter(t => !currentTags.includes(t));
         const removedTags = currentTags.filter(t => !tags.includes(t));
+        let tagIdsToRemove = [];
+        let inactiveTagsIds = [];
 
         for(const tag of newTags) {
-            const tag_id = await bookmarkRepository.insertNewTag(tag, transaction);
-            await bookmarkRepository.updateBookmarkTagRelation(bookmark_id, tag_id, transaction);
+            const tag_id = await bookmarkRepository.insertNewTag({ tag, tx });
+            await bookmarkRepository.updateBookmarkTagRelation({ bookmark_id, tag_id, tx });
         }
 
-        let tagIdsToRemove = [];
-
         if(removedTags.length > 0) {
-            const deletedTags = await bookmarkRepository.getTagsToRemove(removedTags, transaction);
+            const deletedTags = await bookmarkRepository.getTagsToRemove({ removedTags, tx });
             tagIdsToRemove = deletedTags.map(tag => tag.tag_id);
         }
 
-        let inactiveTagsIds = [];
-
         if(tagIdsToRemove.length > 0) {
-            await bookmarkRepository.deleteBookmarkTagsRelation(
+            await bookmarkRepository.deleteBookmarkTagsRelation({
                 bookmark_id, 
                 tagIdsToRemove, 
-                transaction
-            );
+                tx
+            });
 
-            const activeTags = await bookmarkRepository.getActiveTags(tagIdsToRemove, transaction);
+            const activeTags = await bookmarkRepository.getActiveTags({ tagIdsToRemove, tx });
             const activeTagsIds = activeTags.map(t => t.tag_id);
 
             inactiveTagsIds = tagIdsToRemove.filter(t => !activeTagsIds.includes(t));
         }
 
         if(inactiveTagsIds.length > 0) {
-            await bookmarkRepository.deleteInactiveTags(inactiveTagsIds, transaction);
+            await bookmarkRepository.deleteInactiveTags({ inactiveTagsIds, tx });
         }
+    });
 
-        await transaction.commit();
-        return { message: "Tags updated" };
-    } catch(err) {
-        await transaction.rollback();
-        throw err;
-    } finally {
-        await transaction.release();
-    }
+    return { message: "Tags updated" };
 }
 
 export const updateNote = async ({ note, bookmark_id }) => {
@@ -146,40 +122,31 @@ export const updateIsStarred = async ({ is_starred, bookmark_id }) => {
     return { message };
 }
 
-// w/transaction
-export const deleteBookmark = async (bookmark_id, tags) => {
-    const transaction = await db.getConnection();
-    
-    try {
-        await transaction.beginTransaction();
-        await bookmarkRepository.deleteBookmarkById(bookmark_id, transaction);
+export const deleteBookmark = async ({ bookmark_id, tags }) => {
+    await prisma.$transaction(async (tx) => {
+        await bookmarkRepository.deleteBookmarkById(bookmark_id, tx);
 
         let tagsIds = [];
 
         if(tags.length > 0) {
-            const ids = await bookmarkRepository.getTagsToRemove(tags, transaction);
+            const ids = await bookmarkRepository.getTagsToRemove({ tags, tx });
             tagsIds = ids.map(tag => tag.tag_id);
         }
 
         let inactiveTags = [];
 
         if(tagsIds.length > 0) {
-            const activeTags = await bookmarkRepository.getActiveTags(tags, transaction);
+            const activeTags = await bookmarkRepository.getActiveTags(tags, tx);
             const activeTagsIds = activeTags.map(tag => tag.tag_id);
             inactiveTags = tagsIds.filter(tag => !activeTagsIds.includes(tag));
         }
 
         if(inactiveTags.length > 0) {
-            await bookmarkRepository.deleteInactiveTags(inactiveTags, transaction);
+            await bookmarkRepository.deleteInactiveTags({ inactiveTags, tx });
         }
+    });
 
-        await transaction.commit();
-    } catch(err) {
-        await transaction.rollback();
-        throw err;
-    } finally {
-        await transaction.release();
-    }
+    return { message: "Bookmark Deleted." }
 }
 
 export const updateIsVisited = async ({ is_visited, bookmark_id }) => {

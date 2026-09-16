@@ -23,7 +23,7 @@ export const findUserByEmail = async (email) => {
 };
 
 export const getUserDataById = async (userId) => {
-    const userData = await prisma.users.findMany({
+    const userData = await prisma.users.findUnique({
         where: {
             user_id: userId
         },

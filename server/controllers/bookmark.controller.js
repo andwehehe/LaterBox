@@ -49,7 +49,7 @@ const updateTags = async (req, res) => {
         const tags = req.body.tags;
         const bookmark_id = req.params.bookmark_id;
 
-        const { message } = await bookmarkServices.updateTags(bookmark_id, tags);
+        const { message } = await bookmarkServices.updateTags({ bookmark_id, tags });
         
         return res.status(200).json({ message });
     } catch(err) {
@@ -88,8 +88,8 @@ const deleteBookmark = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const tags = req.body.tags;
-        await bookmarkServices.deleteBookmark(bookmark_id, tags);
-        return res.status(200).json({ message: "Bookmark deleted" });
+        const { message } = await bookmarkServices.deleteBookmark(bookmark_id, tags);
+        return res.status(200).json({ message });
     } catch(err) {
         console.error(err);
         return res.status(500).json({ message: "Delete failed" });
