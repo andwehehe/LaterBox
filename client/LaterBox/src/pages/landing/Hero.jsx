@@ -42,7 +42,7 @@ function Hero() {
   ];
 
   return (
-    <section className="page-container grid min-h-[70vh] grid-cols-1 items-center gap-12 py-20 sm:py-24 md:min-h-[78vh] md:grid-cols-[1.05fr_0.95fr] md:gap-16 md:py-20 lg:min-h-[82vh] lg:py-22 xl:gap-20">
+    <section className="page-container grid min-h-[70vh] grid-cols-1 items-center gap-12 py-20 sm:py-24 md:min-h-[78vh] md:grid-cols-[1.05fr_0.95fr] md:gap-16 md:py-20 lg:min-h-[82vh] lg:py-15 lg:mb-10 xl:gap-20">
       {/* Left: copy */}
       <div className="max-w-2xl">
         <span className="inline-flex items-center gap-2 rounded-full border border-panel-border bg-panel px-3 py-1 text-xs font-medium text-muted">
