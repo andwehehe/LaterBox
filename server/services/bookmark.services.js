@@ -1,6 +1,7 @@
 import { getMetadata } from "../utils/utility.metadata.js";
 import * as bookmarkRepository from '../repositories/bookmark.repository.js';
 import prisma from "../utils/prisma.js";
+import { formatDate } from "../utils/utility.date_formatter.js";
 
 export const getBookmarks = async (user_id) => {
     const bookmarks = await bookmarkRepository.getByUserId(user_id);
@@ -9,12 +10,19 @@ export const getBookmarks = async (user_id) => {
         bookmarks.map(async (bookmark) => {
             const metadata = await getMetadata(bookmark.url)
 
+            const tags = bookmark.bookmark_tags?.map(({ tags }) => {
+                return tags.tag;
+            });
+
+            const formattedDate = formatDate(bookmark.saved_on);
+            
             return {
                 ...bookmark,
                 is_visited: bookmark.is_visited === 1,
                 is_starred: bookmark.is_starred === 1,
                 is_private: bookmark.is_private === 1,
-                tags: bookmark.tags?.split(','),
+                saved_on: formattedDate,
+                tags,
                 metadata: {
                     platform: metadata.platform,
                     thumbnail: metadata.thumbnail,
@@ -30,12 +38,19 @@ export const getTargetBookmark = async (bookmark_id) => {
 
     const metadata = await getMetadata(targetBookmark[0].url)
 
+    const tags = targetBookmark.bookmark_tags?.map(({ tags }) => {
+        return tags.tag;
+    });
+
+    const formattedDate = formatDate(targetBookmark.saved_on);
+
     return {
         ...targetBookmark[0],
         is_visited: targetBookmark[0].is_visited === 1,
         is_starred: targetBookmark[0].is_starred === 1,
         is_private: targetBookmark[0].is_private === 1,
-        tags: targetBookmark[0].tags?.split(',') ?? [],
+        saved_on: formattedDate,
+        tags,
         metadata
     }
 }

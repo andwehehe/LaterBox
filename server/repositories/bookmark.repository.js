@@ -3,68 +3,48 @@ import prisma from "../utils/prisma.js";
 
 // getBookmarks
 export const getByUserId = async (user_id) => {
-    const [bookmarks] = await db.query(
-        `SELECT  
-            b.bookmark_id,
-            b.title,
-            b.url,
-            b.note,
-            b.is_visited,
-            b.is_starred,
-            b.is_private,
-            DATE_FORMAT(b.saved_on, '%M %d, %Y') AS saved_on,
-            GROUP_CONCAT(t.tag ORDER BY t.tag_id SEPARATOR ',') AS tags
-        FROM bookmarks b 
-        LEFT JOIN bookmark_tags bt
-            ON b.bookmark_id = bt.bookmark_id
-        LEFT JOIN tags t
-            ON bt.tag_id = t.tag_id
-        WHERE b.user_id = ?
-        GROUP BY
-            b.bookmark_id,
-            b.title,
-            b.url,
-            b.note,
-            b.is_visited,
-            b.is_starred,
-            b.is_private;
-        `,
-        [user_id]
-    );
+    const bookmarks = await prisma.bookmarks.findMany({
+        where: { user_id },
+        select: {
+            bookmark_id: true,
+            title: true,
+            url: true,
+            note: true,
+            is_visited: true,
+            is_starred: true,
+            is_private: true,
+            saved_on: true,
+            bookmark_tags: {
+                select: {
+                    tags: { select: { tag: true } }
+                }
+            }
+        }
+    })
 
     return bookmarks;
 }
 
 // getTargetBookmark
 export const getByBookmarkId = async (bookmark_id) => {
-    const [bookmark] = await db.query(
-        `SELECT  
-            b.bookmark_id,
-            b.title,
-            b.url,
-            b.note,
-            b.is_visited,
-            b.is_starred,
-            b.is_private,
-            DATE_FORMAT(b.saved_on, '%M %d, %Y') AS saved_on,
-            GROUP_CONCAT(t.tag ORDER BY t.tag_id SEPARATOR ',') AS tags
-        FROM bookmarks b 
-        LEFT JOIN bookmark_tags bt
-            ON b.bookmark_id = bt.bookmark_id
-        LEFT JOIN tags t
-            ON bt.tag_id = t.tag_id
-        WHERE b.bookmark_id = ?
-        GROUP BY
-            b.bookmark_id,
-            b.title,
-            b.url,
-            b.note,
-            b.is_visited,
-            b.is_starred,
-            b.is_private;
-        `,
-        [+bookmark_id]
-    )
+    const bookmark = await prisma.bookmarks.findMany({
+        where: { bookmark_id: +bookmark_id },
+        select: {
+            bookmark_id: true,
+            title: true,
+            url: true,
+            note: true,
+            is_visited: true,
+            is_starred: true,
+            is_private: true,
+            saved_on: true,
+            bookmark_tags: {
+                select: {
+                    tags: { select: { tag: true } }
+                }
+            }
+        }
+    })
 
     return bookmark;
 }
