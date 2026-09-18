@@ -63,7 +63,7 @@ const updateNote = async (req, res) => {
         const bookmark_id = req.params.bookmark_id;
         const note = req.body.note;
 
-        const { message } = await bookmarkServices.updateNote(note, bookmark_id);
+        const { message } = await bookmarkServices.updateNote({ note, bookmark_id });
 
         return res.status(200).json({ message });
     } catch(err) {
@@ -76,7 +76,7 @@ const updateIsStarred = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const is_starred = req.body.is_starred;
-        const { message } = await bookmarkServices.updateIsStarred(is_starred, bookmark_id);
+        const { message } = await bookmarkServices.updateIsStarred({ is_starred, bookmark_id });
         return res.status(200).json({ message });
     } catch(err) {
         console.error(err);
@@ -88,7 +88,7 @@ const deleteBookmark = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const tags = req.body.tags;
-        const { message } = await bookmarkServices.deleteBookmark(bookmark_id, tags);
+        const { message } = await bookmarkServices.deleteBookmark({ bookmark_id, tags });
         return res.status(200).json({ message });
     } catch(err) {
         console.error(err);
@@ -100,7 +100,7 @@ const updateIsVisited = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const is_visited = req.body.is_visited;
-        await bookmarkServices.updateIsVisited(is_visited, bookmark_id);
+        await bookmarkServices.updateIsVisited({ is_visited, bookmark_id });
     } catch(err) {
         console.error(err);
         return res.status(500).json({ message: "Visitation failed" })

@@ -15,12 +15,10 @@ export const getBookmarks = async (user_id) => {
             });
 
             const formattedDate = formatDate(bookmark.saved_on);
+            const { bookmark_tags, ...filtered_data } = bookmark;
             
             return {
-                ...bookmark,
-                is_visited: bookmark.is_visited === 1,
-                is_starred: bookmark.is_starred === 1,
-                is_private: bookmark.is_private === 1,
+                ...filtered_data,
                 saved_on: formattedDate,
                 tags,
                 metadata: {
@@ -34,21 +32,20 @@ export const getBookmarks = async (user_id) => {
 }
 
 export const getTargetBookmark = async (bookmark_id) => {
-    const targetBookmark = await bookmarkRepository.getByBookmarkId(bookmark_id);
+    const [targetBookmark] = await bookmarkRepository.getByBookmarkId(bookmark_id);
 
-    const metadata = await getMetadata(targetBookmark[0].url)
+    const metadata = await getMetadata(targetBookmark.url)
 
     const tags = targetBookmark.bookmark_tags?.map(({ tags }) => {
         return tags.tag;
     });
 
     const formattedDate = formatDate(targetBookmark.saved_on);
+    
+    const { bookmark_tags, ...filtered_data } = targetBookmark;
 
     return {
-        ...targetBookmark[0],
-        is_visited: targetBookmark[0].is_visited === 1,
-        is_starred: targetBookmark[0].is_starred === 1,
-        is_private: targetBookmark[0].is_private === 1,
+        ...filtered_data,
         saved_on: formattedDate,
         tags,
         metadata
@@ -74,9 +71,11 @@ export const addBookmark = async ({ title, url, note, tags, user_id }) => {
             });
         }
 
+        const formattedDate = formatDate(bookmark.saved_on)
+
         return {
             bookmark_id: bookmark.bookmark_id, 
-            saved_on: bookmark.saved_on
+            saved_on: formattedDate
         }
     })
 
