@@ -15,7 +15,7 @@ import { TagChip, PopupMessage } from "../../components/components.jsx";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { MobileMenuButton, TagBTN } from "../../components/components.jsx";
+import { TagBTN } from "../../components/components.jsx";
 import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import CardSkeleton from "../../shared/CardSkeleton.jsx";
@@ -253,8 +253,6 @@ function BookmarkDetail() {
     <section>
       {/* Top bar */}
       <header className="flex items-center gap-3 border-b border-panel-border px-4 py-4 sm:px-6">
-        <MobileMenuButton />
-
         <button
           aria-label="Back to Saved Links"
           className="hidden shrink-0 items-center gap-1 text-sm text-muted hover:text-white sm:flex"

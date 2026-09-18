@@ -3,7 +3,7 @@ import {
   Zap, Star, ExternalLink,
   Pencil, Calendar, ChevronRight,
 } from "lucide-react";
-import { MobileMenuButton, StatCard } from "../../components/components.jsx";
+import { StatCard } from "../../components/components.jsx";
 import {
   currentUser,
   profileStats,
@@ -28,8 +28,6 @@ function Profile() {
     <div>
       {/* Top bar */}
       <header className="flex items-center gap-3 border-b border-panel-border px-4 py-4 sm:px-6">
-        <MobileMenuButton />
-
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">
           Profile Overview
         </p>

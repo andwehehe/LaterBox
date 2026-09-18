@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Bookmark,
   User,
-  X,
 } from "lucide-react";
 
 // Sidebar is intentionally restricted to pages that actually appear in
@@ -18,25 +17,16 @@ const navItems = [
   { to: "/profile", label: "Profile", icon: User },
 ];
 
-function Sidebar({ mobileOpen, onClose }) {
+const mobileNavItems = [navItems[1], navItems[0], navItems[2]];
+
+function Sidebar() {
 
   const { userData } = useUserContext();
 
   return (
     <>
-      {/* Mobile backdrop */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
-          onClick={onClose}
-          aria-hidden
-        />
-      )}
-
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-panel-border bg-panel transition-transform duration-200 ease-out lg:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-panel-border bg-panel lg:flex"
       >
         {/* Logo row */}
         <div className="flex items-center justify-between px-5 py-5">
@@ -46,14 +36,6 @@ function Sidebar({ mobileOpen, onClose }) {
             </span>
             LaterBox
           </a>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close menu"
-            className="text-muted hover:text-white lg:hidden"
-          >
-            <X size={20} />
-          </button>
         </div>
 
         {/* Navigation */}
@@ -64,7 +46,6 @@ function Sidebar({ mobileOpen, onClose }) {
                 <NavLink
                   to={to}
                   end={end}
-                  onClick={onClose}
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                       isActive
@@ -103,6 +84,43 @@ function Sidebar({ mobileOpen, onClose }) {
           </div>
         </div>
       </aside>
+
+      <nav
+        aria-label="Mobile navigation"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-panel-border bg-panel/95 px-4 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur lg:hidden"
+      >
+        <ul className="mx-auto flex max-w-sm items-end justify-around">
+          {mobileNavItems.map(({ to, label, icon: Icon, end }) => (
+            <li key={to} className="flex flex-1 justify-center">
+              <NavLink
+                to={to}
+                end={end}
+                className="flex min-w-16 flex-col items-center gap-1 px-3 py-1.5 text-[11px] font-medium text-muted transition"
+              >
+                {({ isActive }) => (
+                  <>
+                    {to === "/dashboard" ? (
+                      <span
+                        className={`-mt-7 flex h-14 w-14 items-center justify-center rounded-full border-4 border-panel ${
+                          isActive ? "bg-accent text-white" : "bg-[#0d0d18] text-muted"
+                        }`}
+                      >
+                        <Icon size={21} />
+                      </span>
+                    ) : (
+                      <Icon
+                        size={18}
+                        className={isActive ? "text-accent-light" : undefined}
+                      />
+                    )}
+                    <span className={isActive ? "text-accent-light" : undefined}>{label}</span>
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </>
   );
 }

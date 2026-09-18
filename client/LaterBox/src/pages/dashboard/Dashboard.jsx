@@ -1,5 +1,5 @@
 import { Bookmark, ArrowUpRight, Clock, Layers } from "lucide-react";
-import { MobileMenuButton, StatCard } from "../../components/components.jsx";
+import { StatCard } from "../../components/components.jsx";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 
 import {
@@ -18,12 +18,9 @@ function Dashboard() {
   return (
     <div>
       <main className="space-y-6 p-4 sm:p-6">
-        <div className="lg:hidden">
-          <MobileMenuButton />
-        </div>
         {/* Welcome banner + top platform */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="rounded-xl2 border border-panel-border bg-gradient-to-br from-accent to-[#241f6b] p-6 lg:col-span-2">
+          <div className="rounded-lg border border-white/15 bg-gradient-to-br from-accent to-[#241f6b] p-6 lg:col-span-2">
             <span className="inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white">
               Quick Save
             </span>
@@ -46,7 +43,7 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-xl2 border border-panel-border bg-panel p-6">
+          <div className="rounded-lg border border-[#2a2d3a] bg-panel p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">Top Platform</p>
             <div className="mt-3 flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400">
@@ -87,7 +84,7 @@ function Dashboard() {
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {recentSaves.map((item) => (
-                <div key={item.title} className="rounded-xl2 border border-panel-border bg-panel p-4">
+                <div key={item.title} className="rounded-lg border border-[#2a2d3a] bg-panel p-4">
                   <p className="truncate text-sm font-semibold text-white">{item.title}</p>
                   <p className="mt-1 truncate text-xs text-muted">{item.url}</p>
                   <div className="mt-3 flex items-center justify-between">
@@ -110,7 +107,7 @@ function Dashboard() {
 
           <div>
             <h2 className="mb-3 text-lg font-semibold text-white">Recent Activity</h2>
-            <div className="space-y-4 rounded-xl2 border border-panel-border bg-panel p-4">
+            <div className="space-y-4 rounded-lg border border-[#2a2d3a] bg-panel p-4">
               {recentActivity.map((item, i) => (
                 <div key={item.title + i} className="flex gap-3">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
@@ -127,7 +124,7 @@ function Dashboard() {
               ))}
             </div>
 
-            <div className="mt-4 rounded-xl2 border border-panel-border bg-panel p-4">
+            <div className="mt-4 rounded-lg border border-[#2a2d3a] bg-panel p-4">
               <p className="mb-3 text-sm font-semibold text-white">Recommended Tags</p>
               <p className="mb-3 text-xs text-muted">Based on your recent saves</p>
               <div className="flex flex-wrap gap-2">

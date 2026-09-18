@@ -1,5 +1,5 @@
 import {
-  Search, Plus, ChevronDown, Star, Video,
+  Search, Plus, Star, Video,
   Code2, MessageCircle, FileText, Lock,
   ExternalLink, Clock
 } from "lucide-react";
@@ -8,9 +8,6 @@ import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa"
 
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { MobileMenuButton } from "../../components/components.jsx";
-import user2 from "../../assets/images/user-2.jpg";
-import { useUserContext } from "../../contexts/UserContext.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import AddBookmarkModal from "./AddBookmarkModal.jsx";
 import { PopupMessage } from "../../components/components.jsx";
@@ -26,12 +23,11 @@ const platformMeta = {
   Tiktok: { icon: FaTiktok, color: "text-cyan-300" }
 };
 
-const filterOptions = ["All Links", "Unvisited", "Favorites", "YouTube", "GitHub", "Twitter"];
+const filterOptions = ["All Links", "Unvisited", "Favorites"];
 
 export default function SavedLinks() {
   const [ activeFilter, setActiveFilter ] = useState("All Links");
   const [ query, setQuery ] = useState("");
-  const { userData } = useUserContext();
   const { 
     bookmarks, setTargetBookmark, 
     bookmarkStatus, setBookmarkStatus, 
@@ -71,86 +67,62 @@ export default function SavedLinks() {
 
   return (
     <div>
-      {/* Top bar */}
-      <header className="flex items-center gap-3 border-b border-panel-border px-4 py-4 sm:px-6">
-        <MobileMenuButton />
-
-        <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search bookmarks, tags, or notes..."
-            className="
-              w-full rounded-lg border border-panel-border bg-panel py-2 pl-10 pr-3 
-              text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none
-          "/>
-        </div>
-
-        <button className="
-          flex items-center gap-2 rounded-lg bg-accent px-4 py-2 
-          text-sm font-semibold text-white transition hover:bg-accent-light
-        ">
-          <Plus size={16} />
-          <span className="hidden sm:inline">Add Bookmark</span>
-        </button>
-
-        <div className="hidden items-center gap-2 md:flex">
-          {user2 ? (
-            <img
-              src={user2}
-              alt={userData.username}
-              className="h-9 w-9 rounded-full"
-            />
-          ) : (
-            <span className="
-              flex h-9 w-9 items-center justify-center rounded-full 
-              bg-accent/20 text-xs font-semibold text-accent-light
-            ">
-              {/* {placeholder} */}
-              PH
-            </span>
-          )}
+      <header className="relative overflow-hidden border-b border-panel-border bg-gradient-to-br from-[#19192d] via-panel to-dark px-4 py-7 sm:px-6 sm:py-5">
+        <div className="relative mx-auto max-w-7xl">
+          <div className="max-w-xl">
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Saved Links
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted sm:text-base">
+              Keep the ideas, tools, and references worth coming back to.
+            </p>
+          </div>
         </div>
       </header>
 
       <main className="p-4 sm:p-6">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white sm:text-3xl">Saved Links</h1>
-            <p className="mt-1 text-sm text-muted">Manage and discover your digital archive.</p>
-          </div>
-          <button className="
-            flex items-center gap-2 self-start rounded-lg border border-panel-border 
-            px-3 py-2 text-sm text-muted hover:text-white sm:self-auto
-          ">
-            Sort by: <span className="font-medium text-white">Recently Added</span>
-            <ChevronDown size={14} />
-          </button>
-        </div>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative w-full shrink-0 sm:w-72 lg:w-80">
+              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search bookmarks, tags, or notes..."
+                className="w-full rounded-lg border border-panel-border bg-panel py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+              />
+            </div>
 
-        {/* Filter chips */}
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          {filterOptions.map((label) => (
-            <button
-              key={label}
-              onClick={() => setActiveFilter(label)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                activeFilter === label
-                  ? "bg-accent text-white"
-                  : "border border-panel-border text-muted hover:text-white"
-              }`}
+            <button 
+              className="
+                flex shrink-0 items-center justify-center gap-2 rounded-lg 
+                bg-accent px-4 py-2.5 text-sm font-semibold text-white transition 
+                hover:bg-accent-light
+              "
+              onClick={() => setIsModalOpen(true)}
             >
-              {label}
+              <Plus size={16} />
+              <span>Add New Link</span>
             </button>
-          ))}
-          <button className="
-            rounded-full border border-dashed border-panel-border px-3 
-            py-1.5 text-xs font-medium text-muted hover:text-white
-          ">
-            + Add Tag
-          </button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-muted">Filters:</span>
+            {filterOptions.map((label) => (
+              <button
+                key={label}
+                onClick={() => setActiveFilter(label)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                  activeFilter === label
+                    ? "bg-accent text-white"
+                    : "border border-panel-border text-muted hover:text-white"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Bookmark grid */}

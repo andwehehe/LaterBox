@@ -1,22 +1,4 @@
-import { Menu } from "lucide-react";
-import { useMobileMenu } from "../pages/layout/AppShell";
 import { CheckMark } from "../assets/icons/icons";
-
-// Hamburger button every page header drops in on the left, hidden on
-// desktop where the sidebar is always visible.
-export function MobileMenuButton() {
-  const openMenu = useMobileMenu();
-  return (
-    <button
-      type="button"
-      onClick={openMenu}
-      aria-label="Open menu"
-      className="flex h-9 w-9 items-center justify-center rounded-lg border border-panel-border text-white lg:hidden"
-    >
-      <Menu size={18} />
-    </button>
-  );
-}
 
 export function StatCard({ label, value, delta, icon: Icon }) {
   return (
