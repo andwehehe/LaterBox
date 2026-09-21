@@ -1,7 +1,8 @@
 import { getMetadata } from "../utils/utility.metadata.js";
 import * as bookmarkRepository from '../repositories/bookmark.repository.js';
-import prisma from "../utils/prisma.js";
+import prisma from "../config/prisma.js";
 import { formatDate } from "../utils/utility.date_formatter.js";
+import { getPlatformName } from "../utils/utility.get_platform.js";
 
 export const getBookmarks = async (user_id) => {
     const bookmarks = await bookmarkRepository.getByUserId(user_id);
@@ -30,6 +31,45 @@ export const getBookmarks = async (user_id) => {
         })
     );
 }
+
+export const getDashboardData = async (user_id) => {
+    const [stats, recentBookmarks, urls] = await Promise.all([
+        bookmarkRepository.getDashboardStatsByUserId(user_id),
+        bookmarkRepository.getRecentByUserId(user_id),
+        bookmarkRepository.getUrlsByUserId(user_id)
+    ]);
+
+    const platformCounts = urls.reduce((counts, { url }) => {
+        const platform = getPlatformName(url);
+        counts[platform] = (counts[platform] ?? 0) + 1;
+        return counts;
+    }, {});
+    const topPlatform = Object.entries(platformCounts)
+        .sort(([, first], [, second]) => second - first)[0];
+
+    const recentSaves = recentBookmarks.map((bookmark) => ({
+        bookmark_id: bookmark.bookmark_id,
+        title: bookmark.title,
+        url: bookmark.url,
+        saved_on: formatDate(bookmark.saved_on),
+        is_visited: bookmark.is_visited,
+        is_starred: bookmark.is_starred,
+        tags: bookmark.bookmark_tags.map(({ tags }) => tags.tag).filter(Boolean)
+    }));
+
+    return {
+        stats,
+        latestSave: recentSaves[0] ?? null,
+        topPlatform: topPlatform
+            ? {
+                name: topPlatform[0],
+                count: topPlatform[1],
+                percentage: Math.round((topPlatform[1] / urls.length) * 100)
+            }
+            : null,
+        recentSaves
+    };
+};
 
 export const getTargetBookmark = async (bookmark_id) => {
     const [targetBookmark] = await bookmarkRepository.getByBookmarkId(bookmark_id);

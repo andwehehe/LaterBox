@@ -4,13 +4,14 @@ import { bookmarkControllers } from "../controllers/bookmark.controller.js";
 
 const bookmarkRouter = express.Router();
 const { 
-    getBookmarks, addBookmark, 
+    getBookmarks, getDashboardData, addBookmark, 
     getTargetBookmark, updateTags, 
     updateNote, updateIsStarred,
     deleteBookmark, updateIsVisited, suggestDetails
 } = bookmarkControllers;
 
 bookmarkRouter.get('/', requireAuth, getBookmarks);
+bookmarkRouter.get('/dashboard', requireAuth, getDashboardData);
 bookmarkRouter.post('/addbookmark', requireAuth, addBookmark);
 bookmarkRouter.post('/details-suggestion', requireAuth, suggestDetails);
 bookmarkRouter.get('/:bookmark_id', requireAuth, getTargetBookmark);

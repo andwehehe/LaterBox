@@ -10,6 +10,16 @@ const getBookmarks = async (req, res) => {
     }
 }
 
+const getDashboardData = async (req, res) => {
+    try {
+        const data = await bookmarkServices.getDashboardData(req.session.userId);
+        return res.status(200).json(data);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Failed to get dashboard data" });
+    }
+};
+
 const getTargetBookmark = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
@@ -122,12 +132,13 @@ const suggestDetails = async (req, res) => {
 
 export const bookmarkControllers = {
     getBookmarks,
+    getDashboardData,
     addBookmark,
     getTargetBookmark,
     updateTags,
     updateNote,
     updateIsStarred,
     deleteBookmark,
-    updateIsVisited
-    ,suggestDetails
+    updateIsVisited,
+    suggestDetails
 }
