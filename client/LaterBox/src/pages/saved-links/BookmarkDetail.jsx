@@ -16,7 +16,6 @@ import DeleteConfirmModal from "../../components/DeleteConfirmModal.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { TagBTN } from "../../components/components.jsx";
-import { bookmarkDetail as bm } from "../dashboard/mockData.js";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import CardSkeleton from "../../shared/CardSkeleton.jsx";
 
@@ -609,17 +608,17 @@ function BookmarkDetail() {
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted">Author</dt>
-                  <dd className="font-medium text-white">{bm.author}</dd>
+                  <dd className="font-medium text-white">{targetBookmark.metadata?.author || "Unknown"}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted">Reading Time</dt>
-                  <dd className="font-medium text-white">{bm.readingTime}</dd>
+                  <dd className="font-medium text-white">{targetBookmark.metadata?.readingTime || "-"}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted">Privacy:</dt>
                   <dd>
                     <span className="rounded-full bg-panel-border px-2.5 py-0.5 text-xs font-medium text-white">
-                      {bm.isPublic ? "Public" : "Private"}
+                      {targetBookmark.is_private ? "Private" : "Public"}
                     </span>
                   </dd>
                 </div>

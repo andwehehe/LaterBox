@@ -1,29 +1,37 @@
 import {
   Plus, Bookmark,
   Zap, Star, ExternalLink,
-  Pencil, Calendar, ChevronRight,
+  Pencil, Calendar,
 } from "lucide-react";
 import { StatCard } from "../../components/components.jsx";
-import {
-  currentUser,
-  profileStats,
-  profileActivity,
-  topCollections,
-  platformSplit,
-} from "../dashboard/mockData.js";
+import { useUserContext } from "../../contexts/UserContext.jsx";
+import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 
 const statIcons = [Bookmark, Zap, Star];
-
-const collectionColors = {
-  D: "bg-violet-500/20 text-violet-300",
-  C: "bg-sky-500/20 text-sky-300",
-  R: "bg-orange-500/20 text-orange-300",
-  W: "bg-emerald-500/20 text-emerald-300",
-};
 
 const barColors = ["bg-accent", "bg-sky-400", "bg-orange-400"];
 
 function Profile() {
+  const { userData } = useUserContext();
+  const { bookmarks } = useBookmarkContext();
+  const initials = userData?.username?.slice(0, 2).toUpperCase() ?? "";
+  const visitedCount = bookmarks.filter(({ is_visited }) => is_visited).length;
+  const favoriteCount = bookmarks.filter(({ is_starred }) => is_starred).length;
+  const profileStats = [
+    { label: "Total Bookmarks", value: bookmarks.length, delta: "Saved links" },
+    { label: "Visited", value: visitedCount, delta: "Opened links" },
+    { label: "Favorites", value: favoriteCount, delta: "Starred links" },
+  ];
+  const recentBookmarks = bookmarks.slice(0, 5);
+  const platformCounts = bookmarks.reduce((counts, bookmark) => {
+    const platform = bookmark.metadata?.platform || "Website";
+    counts[platform] = (counts[platform] || 0) + 1;
+    return counts;
+  }, {});
+  const platformSplit = Object.entries(platformCounts)
+    .sort(([, first], [, second]) => second - first)
+    .slice(0, 3)
+    .map(([label, count]) => ({ label, percent: bookmarks.length ? Math.round((count / bookmarks.length) * 100) : 0 }));
   return (
     <div>
       {/* Top bar */}
@@ -38,7 +46,7 @@ function Profile() {
         </button>
 
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-          {currentUser.avatarInitials}
+          {initials}
         </span>
       </header>
 
@@ -47,12 +55,12 @@ function Profile() {
         <div className="flex flex-col gap-5 rounded-xl2 border border-panel-border bg-panel p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xl font-semibold text-accent-light">
-              {currentUser.avatarInitials}
+              {initials}
             </span>
             <div>
-              <h1 className="text-xl font-bold text-white sm:text-2xl">{currentUser.name}</h1>
+              <h1 className="text-xl font-bold text-white sm:text-2xl">{userData?.username}</h1>
               <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
-                <span>{currentUser.email}</span>
+                <span>{userData?.email}</span>
                 <span className="text-panel-border">•</span>
                 <span className="flex items-center gap-1">
                   <Calendar size={12} />
@@ -91,19 +99,19 @@ function Profile() {
               </a>
             </div>
             <div className="divide-y divide-panel-border rounded-xl2 border border-panel-border bg-panel">
-              {profileActivity.map((item, i) => (
-                <div key={item.title + i} className="flex items-center justify-between gap-4 p-4">
+              {recentBookmarks.length ? recentBookmarks.map((item) => (
+                <div key={item.bookmark_id} className="flex items-center justify-between gap-4 p-4">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-white">{item.title}</p>
                     <p className="mt-0.5 text-xs text-muted">
-                      {item.action} • {item.time} •{" "}
+                      Saved {item.saved_on} •{" "}
                       <span className="rounded-md bg-dark px-1.5 py-0.5 text-[11px] text-muted">
-                        {item.source}
+                        {item.metadata?.platform || "Website"}
                       </span>
                     </p>
                   </div>
                 </div>
-              ))}
+              )) : <p className="p-4 text-sm text-muted">No saved bookmarks yet.</p>}
             </div>
           </div>
 
@@ -112,28 +120,12 @@ function Profile() {
             <div>
               <h2 className="mb-3 text-lg font-semibold text-white">Top Collections</h2>
               <div className="space-y-2 rounded-xl2 border border-panel-border bg-panel p-3">
-                {topCollections.map((col) => (
-                  <div
-                    key={col.name}
-                    className="flex items-center justify-between gap-3 rounded-lg p-2 hover:bg-dark/60"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
-                          collectionColors[col.letter] ?? "bg-panel-border text-white"
-                        }`}
-                      >
-                        {col.letter}
-                      </span>
-                      <span className="truncate text-sm font-medium text-white">{col.name}</span>
-                    </div>
-                    <span className="shrink-0 text-xs text-muted">{col.count} items</span>
+                {platformSplit.length ? platformSplit.map((platform) => (
+                  <div key={platform.label} className="flex items-center justify-between gap-3 rounded-lg p-2">
+                    <span className="truncate text-sm font-medium text-white">{platform.label}</span>
+                    <span className="shrink-0 text-xs text-muted">{platform.percent}%</span>
                   </div>
-                ))}
-                <button className="flex w-full items-center justify-center gap-1 rounded-lg border border-panel-border py-2 text-sm font-medium text-muted hover:text-white">
-                  Browse all collections
-                  <ChevronRight size={14} />
-                </button>
+                )) : <p className="p-2 text-sm text-muted">Platform insights appear after your first save.</p>}
               </div>
             </div>
 
