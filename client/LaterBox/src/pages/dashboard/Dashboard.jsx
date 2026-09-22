@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   CheckCircle2,
@@ -8,6 +9,7 @@ import {
   Star,
 } from "lucide-react";
 import { StatCard } from "../../components/components.jsx";
+import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 import { getDashboardData } from "../../services/bookmarkService.js";
 
@@ -21,7 +23,9 @@ const emptyDashboard = {
 const statIcons = [Bookmark, Star, CheckCircle2, CircleDashed];
 
 function Dashboard() {
+  const navigate = useNavigate();
   const { userData } = useUserContext();
+  const { bookmarks, setTargetBookmark } = useBookmarkContext();
   const [dashboard, setDashboard] = useState(emptyDashboard);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -53,6 +57,21 @@ function Dashboard() {
     { label: "Visited", value: dashboard.stats.visited, delta: "Opened links" },
     { label: "Unvisited", value: dashboard.stats.unvisited, delta: "Waiting to explore" },
   ];
+
+  const openSavedLinks = () => navigate("/saved-links");
+
+  const openBookmarkDetails = (bookmarkId) => {
+    const targetBookmark = bookmarks.find((bookmark) => bookmark.bookmark_id === bookmarkId);
+
+    if (!targetBookmark) {
+      navigate("/saved-links");
+      return;
+    }
+
+    setTargetBookmark((prev) => ({ ...prev, ...targetBookmark }));
+    navigate(`/saved-links/${targetBookmark.bookmark_id}/${targetBookmark.title.replaceAll(" ", "-")}`);
+  };
+
   const firstName = userData?.username?.split(" ")[0] ?? "there";
 
   return (
@@ -69,12 +88,13 @@ function Dashboard() {
             <p className="mt-1 text-sm text-white/80">
               You have <span className="font-semibold text-white">{dashboard.stats.total} saved links</span> in your collection.
             </p>
-            <a
-              href="#saved-links"
+            <button
+              type="button"
+              onClick={openSavedLinks}
               className="mt-4 inline-flex rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-dark transition hover:bg-white/90"
             >
               Browse saved links
-            </a>
+            </button>
           </section>
 
           <section className="rounded-lg border border-panel-border bg-panel p-6">
@@ -110,7 +130,9 @@ function Dashboard() {
           <section className="lg:col-span-2">
             <div className="mb-3 flex items-center justify-between gap-3">
               <h2 className="text-lg font-semibold text-white">Recent saves</h2>
-              <a href="#saved-links" className="text-sm font-medium text-accent-light hover:underline">View all</a>
+              <button type="button" onClick={openSavedLinks} className="text-sm font-medium text-accent-light hover:underline">
+                View all
+              </button>
             </div>
             {isLoading && <p className="text-sm text-muted">Loading your latest saves...</p>}
             {hasError && <p className="text-sm text-red-300">Could not load dashboard data.</p>}
@@ -120,7 +142,11 @@ function Dashboard() {
             {!isLoading && !hasError && dashboard.recentSaves.length > 0 && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {dashboard.recentSaves.map((item) => (
-                  <article key={item.bookmark_id} className="rounded-lg border border-panel-border bg-panel p-4">
+                  <article
+                    key={item.bookmark_id}
+                    onClick={() => openBookmarkDetails(item.bookmark_id)}
+                    className="cursor-pointer rounded-lg border border-panel-border bg-panel p-4 transition hover:border-accent/60 hover:bg-panel/90"
+                  >
                     <p className="truncate text-sm font-semibold text-white">{item.title}</p>
                     <p className="mt-1 truncate text-xs text-muted">{item.url}</p>
                     <div className="mt-3 flex items-center justify-between gap-3">
@@ -137,7 +163,12 @@ function Dashboard() {
 
           <section>
             <h2 className="mb-3 text-lg font-semibold text-white">Latest save</h2>
-            <div className="rounded-lg border border-panel-border bg-panel p-4">
+            <button
+              type="button"
+              onClick={() => dashboard.latestSave && openBookmarkDetails(dashboard.latestSave.bookmark_id)}
+              className="w-full rounded-lg border border-panel-border bg-panel p-4 text-left transition hover:border-accent/60 hover:bg-panel/90 disabled:cursor-default disabled:hover:border-panel-border disabled:hover:bg-panel"
+              disabled={!dashboard.latestSave}
+            >
               {dashboard.latestSave ? (
                 <>
                   <p className="truncate text-sm font-semibold text-white">{dashboard.latestSave.title}</p>
@@ -150,7 +181,7 @@ function Dashboard() {
               ) : (
                 <p className="text-sm text-muted">Your latest bookmark will appear here.</p>
               )}
-            </div>
+            </button>
           </section>
         </div>
       </main>
