@@ -68,17 +68,31 @@ function BookmarkDetail() {
     const fetchTargetBookmark = async () => {
       if(!bookmark_id) return;
 
+      const storedBookmark = bookmarks.find(
+        (bookmark) => bookmark.bookmark_id === Number(bookmark_id)
+      );
+
+      if (storedBookmark) {
+        setTargetBookmark(storedBookmark);
+        setTargetTags(storedBookmark.tags ?? []);
+        setTargetNote(storedBookmark.note ?? "");
+        return;
+      }
+
+      if (isBookmarkLoading) return;
+
       try {
           const data = await getTargetBookmark(+bookmark_id);
           setTargetBookmark(data);
-          setTargetTags(data.tags);
+          setTargetTags(data.tags ?? []);
+          setTargetNote(data.note ?? "");
       } catch {
           setTargetBookmark({});
       }
     }
 
     fetchTargetBookmark();
-  }, [bookmark_id, setTargetBookmark]);
+  }, [bookmark_id, bookmarks, isBookmarkLoading, setTargetBookmark]);
 
   const removeTag = (tagToRemove) => {
     setTargetTags(prev => prev.filter((tag) => tag !== tagToRemove));
@@ -598,21 +612,40 @@ function BookmarkDetail() {
 
             </div>
 
-            {/* Platform info (might change the infos later) */}
+            {/* Platform info comes from bookmark metadata loaded with the bookmark list. */}
             <div className="rounded-xl2 border border-panel-border bg-panel p-5">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted">Platform Details</p>
               <dl className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
                   <dt className="text-muted">Platform:</dt>
-                  <dd className="font-medium text-white">{targetBookmark.platform}</dd>
+                  <dd className="flex items-center gap-2 font-medium text-white">
+                    {targetBookmark.metadata?.icon && (
+                      <img
+                        src={targetBookmark.metadata.icon}
+                        alt=""
+                        className="h-4 w-4 rounded-full"
+                      />
+                    )}
+                    {targetBookmark.metadata?.platform || "Website"}
+                  </dd>
                 </div>
-                <div className="flex items-center justify-between">
-                  <dt className="text-muted">Author</dt>
-                  <dd className="font-medium text-white">{targetBookmark.metadata?.author || "Unknown"}</dd>
+                <div className="flex items-center justify-between gap-4">
+                  <dt className="shrink-0 text-muted">Domain:</dt>
+                  <dd className="truncate font-medium text-white">
+                    {(() => {
+                      try {
+                        return new URL(targetBookmark.url).hostname.replace(/^www\./, "");
+                      } catch {
+                        return "Unknown";
+                      }
+                    })()}
+                  </dd>
                 </div>
-                <div className="flex items-center justify-between">
-                  <dt className="text-muted">Reading Time</dt>
-                  <dd className="font-medium text-white">{targetBookmark.metadata?.readingTime || "-"}</dd>
+                <div className="flex items-center justify-between gap-4">
+                  <dt className="shrink-0 text-muted">URL:</dt>
+                  <dd className="truncate font-medium text-white" title={targetBookmark.url}>
+                    {targetBookmark.url || "Unknown"}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted">Privacy:</dt>

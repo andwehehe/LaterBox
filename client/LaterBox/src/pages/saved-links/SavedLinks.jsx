@@ -81,23 +81,27 @@ export default function SavedLinks() {
       </header>
 
       <main className="p-4 sm:p-6">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="relative w-full shrink-0 sm:w-72 lg:w-80">
+        <div className="mb-8 grid min-w-0 gap-4 md:grid-cols-[max-content_minmax(0,1fr)] md:items-end lg:gap-5">
+          <div className="grid min-w-0 gap-3 sm:flex sm:items-center md:w-max">
+            <label htmlFor="saved-links-search" className="relative block w-full min-w-0 sm:w-fit">
               <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
               <input
+                id="saved-links-search"
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search bookmarks, tags, or notes..."
-                className="w-full rounded-lg border border-panel-border bg-panel py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40"
+                size="30"
+                style={{ fieldSizing: "content" }}
+                className="w-full min-w-0 rounded-lg border border-panel-border bg-panel py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40 sm:w-auto sm:min-w-[16rem] sm:max-w-[28rem]"
               />
-            </div>
+            </label>
 
             <button 
               className="
-                flex shrink-0 items-center justify-center gap-2 rounded-lg 
-                bg-accent px-4 py-2.5 text-sm font-semibold text-white transition 
+                flex w-full items-center justify-center gap-2 rounded-lg 
+                bg-accent px-4 py-2.5 text-sm font-semibold text-white transition
+                whitespace-nowrap sm:w-auto
                 hover:bg-accent-light
               "
               onClick={() => setIsModalOpen(true)}
@@ -107,26 +111,28 @@ export default function SavedLinks() {
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-muted">Filters:</span>
-            {filterOptions.map((label) => (
-              <button
-                key={label}
-                onClick={() => setActiveFilter(label)}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                  activeFilter === label
-                    ? "bg-accent text-white"
-                    : "border border-panel-border text-muted hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-panel-border bg-panel/50 p-2 sm:w-max sm:max-w-full sm:flex-nowrap md:justify-self-end">
+            <span className="whitespace-nowrap px-1 text-xs font-medium text-muted">Filters</span>
+            <div className="flex min-w-0 flex-1 flex-wrap gap-2 sm:flex-nowrap">
+              {filterOptions.map((label) => (
+                <button
+                  key={label}
+                  onClick={() => setActiveFilter(label)}
+                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                    activeFilter === label
+                      ? "bg-accent text-white"
+                      : "border border-panel-border text-muted hover:text-white"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Bookmark grid */}
-        <div className="grid grid-cols-1 gap-5 auto-rows-fr sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 auto-rows-fr sm:grid-cols-2 xl:grid-cols-3">
           {isBookmarkLoading ? (
             <CardSkeleton instance={5} />
           ) : (
