@@ -406,7 +406,7 @@ Write honestly about what you can currently explain or implement.
 
 * Authentication and Authorization
 * Proper system architecture
-*
+* Setting up a fullstack project
 
 ### I Understand the Concept But Need More Practice Implementing It
 
