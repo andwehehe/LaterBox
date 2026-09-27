@@ -1,21 +1,16 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bookmark, Menu, X } from "lucide-react";
+import BrandLogo from "../../components/BrandLogo.jsx";
 
 
 function Navbar() {
-  const [open, setOpen] = useState(false);
 
   return (
     <header className="w-full border-b border-panel-border" id="landing-page">
       <nav className="page-container flex items-center justify-between py-4">
         {/* Logo */}
         <div className="flex gap-10 items-center">
-          <a href="/dashboard" className="flex items-center gap-2 font-semibold text-white">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-sm">
-              <Bookmark size={16} />
-            </span>
-            LaterBox
+          <a href="/dashboard" aria-label="LaterBox dashboard">
+            <BrandLogo markSize="h-8 w-8" />
           </a>
 
         </div>

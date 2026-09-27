@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+import BrandLogo from "../../components/BrandLogo.jsx";
 
 function AuthLayout({ title, subtitle, children, compact = false }) {
   return (
@@ -11,10 +11,7 @@ function AuthLayout({ title, subtitle, children, compact = false }) {
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-8 sm:pt-10 sm:pb-3">
         <div className={`w-full ${compact ? "max-w-[440px]" : "max-w-[560px]"} rounded-2xl border border-panel-border bg-panel/70 p-5 backdrop-blur sm:p-7`}>
           <div className="mb-5 flex flex-col items-center text-center">
-            <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-dark">
-              <Zap size={20} strokeWidth={2.25} aria-hidden="true" />
-            </span>
-            <p className="text-sm font-semibold text-white">LaterBox</p>
+            <BrandLogo className="mb-3" markSize="h-10 w-10" textClassName="text-sm" />
             <h1 className="mt-4 text-2xl font-bold text-white sm:text-[26px]">
               {title}
             </h1>

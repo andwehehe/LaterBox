@@ -6,6 +6,7 @@ import {
   Bookmark,
   User,
 } from "lucide-react";
+import BrandLogo from "../../components/BrandLogo.jsx";
 
 // Sidebar is intentionally restricted to pages that actually appear in
 // the provided designs. Don't add extra links here unless a matching
@@ -30,11 +31,8 @@ function Sidebar() {
       >
         {/* Logo row */}
         <div className="flex items-center justify-between px-5 py-5">
-          <a href="/" className="flex items-center gap-2 font-semibold text-white">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-sm">
-              ⚡
-            </span>
-            LaterBox
+          <a href="/" aria-label="LaterBox home">
+            <BrandLogo markSize="h-8 w-8" />
           </a>
         </div>
 
