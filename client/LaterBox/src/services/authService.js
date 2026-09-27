@@ -44,3 +44,15 @@ export const getUserData = async () => {
         )
     }
 }
+
+export const updateUsername = async (username) => {
+    try {
+        const res = await base.patch('/auth/username', { username });
+        return res.data;
+    } catch (err) {
+        throw new Error(
+            err.response?.data?.message || "Unable to update username",
+            { cause: err }
+        );
+    }
+};

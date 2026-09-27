@@ -84,8 +84,37 @@ const getUserData = async (req, res) => {
     }
 }
 
+const updateUsername = async (req, res) => {
+    try {
+        const user = await authServices.updateUsername({
+            userId: req.session.userId,
+            username: req.body.username
+        });
+
+        return res.status(200).json({
+            user_id: user.user_id,
+            username: user.username,
+            email: user.email,
+            message: "Username updated successfully"
+        });
+    } catch (err) {
+        console.error(err);
+
+        if (err.message === "Username must be between 2 and 50 characters") {
+            return res.status(400).json({ message: err.message });
+        }
+
+        if (err.code === "P2002") {
+            return res.status(409).json({ message: "Username is already taken" });
+        }
+
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
 export const authControllers = {
     registerAccount,
     loginAccount,
-    getUserData
+    getUserData,
+    updateUsername
 };

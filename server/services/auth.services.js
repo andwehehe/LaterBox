@@ -37,3 +37,13 @@ export const getUserData = async (userId) => {
 
     return userData;
 }
+
+export const updateUsername = async ({ userId, username }) => {
+    const normalizedUsername = username?.trim();
+
+    if (!normalizedUsername || normalizedUsername.length < 2 || normalizedUsername.length > 50) {
+        throw new Error("Username must be between 2 and 50 characters");
+    }
+
+    return authRepository.updateUsernameById(userId, normalizedUsername);
+};

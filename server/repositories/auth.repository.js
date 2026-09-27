@@ -36,3 +36,15 @@ export const getUserDataById = async (userId) => {
 
     return userData;
 }
+
+export const updateUsernameById = async (userId, username) => {
+    return prisma.users.update({
+        where: { user_id: userId },
+        data: { username },
+        select: {
+            user_id: true,
+            username: true,
+            email: true
+        }
+    });
+};
