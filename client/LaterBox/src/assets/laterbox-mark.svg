@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="laterbox-mark-title">
+  <title id="laterbox-mark-title">LaterBox mark</title>
+  <rect width="48" height="48" rx="14" fill="#5b52f0"/>
+  <path d="M14 11.5h20v25l-10-6-10 6v-25Z" fill="#fff"/>
+  <path d="m20.2 22.1 2.1-2.1a4.1 4.1 0 0 1 5.8 0 4.1 4.1 0 0 1 0 5.8L26 28" fill="none" stroke="#5b52f0" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="m27.8 22.9-2.1 2.1a4.1 4.1 0 0 1-5.8 0 4.1 4.1 0 0 1 0-5.8L22 17" fill="none" stroke="#8b85f7" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="m22.2 22.2 3.6 3.6" stroke="#5b52f0" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
