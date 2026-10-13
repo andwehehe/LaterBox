@@ -1,4 +1,5 @@
-import { CheckMark } from "../assets/icons/icons";
+import { Check, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function StatCard({ label, value, delta, icon: Icon }) {
   return (
@@ -53,21 +54,38 @@ export function TagChip({ children, onRemove }) {
 }
 
 export function PopupMessage({ isSuccessful, message }) {
+  const feedbackKey = `${isSuccessful}:${message}`;
+  const [dismissedFeedback, setDismissedFeedback] = useState(feedbackKey);
+
+  useEffect(() => {
+    if (!message) return;
+
+    const timeoutId = setTimeout(() => setDismissedFeedback(feedbackKey), 3000);
+    return () => clearTimeout(timeoutId);
+  }, [feedbackKey, message]);
+
+  const isVisible = Boolean(message) && dismissedFeedback !== feedbackKey;
+
   return(
     <p
+      role={isSuccessful ? "status" : "alert"}
       className={`
         fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 
         items-center gap-2 rounded-lg border border-panel-border 
         bg-panel px-4 py-3 text-sm text-white shadow-lg transition-all 
-        duration-[1000ms] 
+        duration-300
         ${
-          isSuccessful
+          isVisible
             ? "translate-y-0 opacity-100"
             : "pointer-events-none translate-y-2 opacity-0"
         }`
       }
     >
-      <CheckMark />
+      {isSuccessful ? (
+        <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+      ) : (
+        <X className="h-4 w-4 text-red-400" aria-hidden="true" />
+      )}
       {message}
     </p>
   );
