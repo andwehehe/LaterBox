@@ -17,6 +17,12 @@ const registerAccount = async (req, res) => {
         });
     } catch(err) {
         console.error(err);
+
+        if (err.code === "P2002") {
+            return res.status(409).json({
+                message: "Username or email is already in use"
+            });
+        }
         
         res.status(500).json({
             message: "Internal Server Error"

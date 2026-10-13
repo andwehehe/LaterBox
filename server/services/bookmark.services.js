@@ -71,8 +71,9 @@ export const getDashboardData = async (user_id) => {
     };
 };
 
-export const getTargetBookmark = async (bookmark_id) => {
-    const [targetBookmark] = await bookmarkRepository.getByBookmarkId(bookmark_id);
+export const getTargetBookmark = async ({ bookmark_id, user_id }) => {
+    const targetBookmark = await bookmarkRepository.getByBookmarkId({ bookmark_id, user_id });
+    if (!targetBookmark) throw new Error("Bookmark not found");
 
     const metadata = await getMetadata(targetBookmark.url)
 
@@ -125,8 +126,14 @@ export const addBookmark = async ({ title, url, note, tags, user_id }) => {
     }
 }
 
-export const updateTags = async ({ bookmark_id, tags }) => {
+export const updateTags = async ({ bookmark_id, tags, user_id }) => {
     await prisma.$transaction(async (tx) => {
+        const ownedBookmark = await tx.bookmarks.findFirst({
+            where: { bookmark_id: Number(bookmark_id), user_id },
+            select: { bookmark_id: true }
+        });
+        if (!ownedBookmark) throw new Error("Bookmark not found");
+
         const allTags = await bookmarkRepository.getTags({ bookmark_id, tx });
         const currentTags = allTags.map(tag => tag.tags.tag);
         const newTags = tags.filter(t => !currentTags.includes(t));
@@ -165,20 +172,21 @@ export const updateTags = async ({ bookmark_id, tags }) => {
     return { message: "Tags updated" };
 }
 
-export const updateNote = async ({ note, bookmark_id }) => {
-    await bookmarkRepository.updateNote({ note, bookmark_id });
+export const updateNote = async ({ note, bookmark_id, user_id }) => {
+    await bookmarkRepository.updateNote({ note, bookmark_id, user_id });
     return { message: "Note updated" };
 }
 
-export const updateIsStarred = async ({ is_starred, bookmark_id }) => {
+export const updateIsStarred = async ({ is_starred, bookmark_id, user_id }) => {
     const message = is_starred ? 'Added to favorites' : 'Removed from favorites';
-    await bookmarkRepository.updateStarredStatus({ is_starred, bookmark_id });
+    await bookmarkRepository.updateStarredStatus({ is_starred, bookmark_id, user_id });
     return { message };
 }
 
-export const deleteBookmark = async ({ bookmark_id, tags }) => {
+export const deleteBookmark = async ({ bookmark_id, tags, user_id }) => {
     await prisma.$transaction(async (tx) => {
-        await bookmarkRepository.deleteBookmarkById(bookmark_id, tx);
+        const result = await bookmarkRepository.deleteBookmarkById({ bookmark_id, user_id, tx });
+        if (result.count === 0) throw new Error("Bookmark not found");
 
         let tagsIds = [];
 
@@ -203,8 +211,8 @@ export const deleteBookmark = async ({ bookmark_id, tags }) => {
     return { message: "Bookmark Deleted." }
 }
 
-export const updateIsVisited = async ({ is_visited, bookmark_id }) => {
-    await bookmarkRepository.updateVisitationStatus({ is_visited, bookmark_id });
+export const updateIsVisited = async ({ is_visited, bookmark_id, user_id }) => {
+    await bookmarkRepository.updateVisitationStatus({ is_visited, bookmark_id, user_id });
 }
 
 export const suggestDetails = async (url) => {

@@ -23,10 +23,15 @@ const getDashboardData = async (req, res) => {
 const getTargetBookmark = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
-        const targetBookmark = await bookmarkServices.getTargetBookmark(bookmark_id);
+        const targetBookmark = await bookmarkServices.getTargetBookmark({
+            bookmark_id,
+            user_id: req.session.userId
+        });
         return res.status(200).json(targetBookmark);
     } catch(err) {
-        console.error(err);
+        if (err.message === "Bookmark not found") {
+            return res.status(404).json({ message: err.message });
+        }
         return res.status(500).json({ message: "Failed to get bookmark" });
     }
 }
@@ -59,10 +64,13 @@ const updateTags = async (req, res) => {
         const tags = req.body.tags;
         const bookmark_id = req.params.bookmark_id;
 
-        const { message } = await bookmarkServices.updateTags({ bookmark_id, tags });
+        const { message } = await bookmarkServices.updateTags({ bookmark_id, tags, user_id: req.session.userId });
         
         return res.status(200).json({ message });
     } catch(err) {
+        if (err.message === "Bookmark not found") {
+            return res.status(404).json({ message: err.message });
+        }
         console.error(err);
         return res.status(500).json({ message: "Update failed" });
     }
@@ -73,10 +81,13 @@ const updateNote = async (req, res) => {
         const bookmark_id = req.params.bookmark_id;
         const note = req.body.note;
 
-        const { message } = await bookmarkServices.updateNote({ note, bookmark_id });
+        const { message } = await bookmarkServices.updateNote({ note, bookmark_id, user_id: req.session.userId });
 
         return res.status(200).json({ message });
     } catch(err) {
+        if (err.message === "Bookmark not found") {
+            return res.status(404).json({ message: err.message });
+        }
         console.error(err);
         return res.status(500).json({ message: "Update failed" });
     }
@@ -86,9 +97,12 @@ const updateIsStarred = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const is_starred = req.body.is_starred;
-        const { message } = await bookmarkServices.updateIsStarred({ is_starred, bookmark_id });
+        const { message } = await bookmarkServices.updateIsStarred({ is_starred, bookmark_id, user_id: req.session.userId });
         return res.status(200).json({ message });
     } catch(err) {
+        if (err.message === "Bookmark not found") {
+            return res.status(404).json({ message: err.message });
+        }
         console.error(err);
         return res.status(500).json({ message: "Update failed" });
     }
@@ -98,9 +112,12 @@ const deleteBookmark = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const tags = req.body.tags;
-        const { message } = await bookmarkServices.deleteBookmark({ bookmark_id, tags });
+        const { message } = await bookmarkServices.deleteBookmark({ bookmark_id, tags, user_id: req.session.userId });
         return res.status(200).json({ message });
     } catch(err) {
+        if (err.message === "Bookmark not found") {
+            return res.status(404).json({ message: err.message });
+        }
         console.error(err);
         return res.status(500).json({ message: "Delete failed" });
     }
@@ -110,8 +127,12 @@ const updateIsVisited = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
         const is_visited = req.body.is_visited;
-        await bookmarkServices.updateIsVisited({ is_visited, bookmark_id });
+        await bookmarkServices.updateIsVisited({ is_visited, bookmark_id, user_id: req.session.userId });
+        return res.status(200).json({ message: "Visitation updated" });
     } catch(err) {
+        if (err.message === "Bookmark not found") {
+            return res.status(404).json({ message: err.message });
+        }
         console.error(err);
         return res.status(500).json({ message: "Visitation failed" })
     }

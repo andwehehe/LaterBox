@@ -62,9 +62,9 @@ export const getUrlsByUserId = async (user_id) => {
 };
 
 // getTargetBookmark
-export const getByBookmarkId = async (bookmark_id) => {
-    const bookmark = await prisma.bookmarks.findMany({
-        where: { bookmark_id: +bookmark_id },
+export const getByBookmarkId = async ({ bookmark_id, user_id }) => {
+    const bookmark = await prisma.bookmarks.findFirst({
+        where: { bookmark_id: Number(bookmark_id), user_id },
         select: {
             bookmark_id: true,
             title: true,
@@ -105,7 +105,7 @@ export const createBookmark = async ({ user_id, title, url, note, tx }) => {
 export const addTag = async ({ tag, tx }) => {
     const newTag = await tx.tags.upsert({
         where: { tag },
-        update: {},
+        update: { tag },
         create: { tag }
     })
 
@@ -124,7 +124,7 @@ export const addBookmarkTagRelation = async ({ bookmark_id, tag_id, tx }) => {
 // updateTags
 export const getTags = async ({ bookmark_id, tx }) => {
     const tags = await tx.bookmark_tags.findMany({
-        where: { bookmark_id: +bookmark_id },
+        where: { bookmark_id: Number(bookmark_id) },
         orderBy: { tag_id: "asc" },
         select: { tags: { select: { tag: true } } } 
     });
@@ -135,7 +135,7 @@ export const getTags = async ({ bookmark_id, tx }) => {
 export const insertNewTag = async ({ tag, tx }) => {
     const newTag = await tx.tags.upsert({
         where: { tag },
-        update: {},
+        update: { tag },
         create: { tag }
     })
 
@@ -145,7 +145,7 @@ export const insertNewTag = async ({ tag, tx }) => {
 export const updateBookmarkTagRelation = async ({ bookmark_id, tag_id, tx }) => {
     await tx.bookmark_tags.create({
         data: {
-            bookmark_id: +bookmark_id,
+            bookmark_id: Number(bookmark_id),
             tag_id
         }
     });
@@ -165,7 +165,7 @@ export const getTagsToRemove = async ({ removedTags, tx }) => {
 export const deleteBookmarkTagsRelation = async ({ bookmark_id, tagIdsToRemove, tx }) => {
    await tx.bookmark_tags.deleteMany({
         where: { 
-            bookmark_id: +bookmark_id,
+            bookmark_id: Number(bookmark_id),
             tag_id: { in: tagIdsToRemove }
         }
     });
@@ -191,34 +191,35 @@ export const deleteInactiveTags = async ({ inactiveTagsIds, tx }) => {
 }
 
 // updateNote
-export const updateNote = async ({ note, bookmark_id }) => {
-    await prisma.bookmarks.update({
-        where: { bookmark_id: +bookmark_id },
+export const updateNote = async ({ note, bookmark_id, user_id }) => {
+    const result = await prisma.bookmarks.updateMany({
+        where: { bookmark_id: Number(bookmark_id), user_id },
         data: { note }
-    })
+    });
+    if (result.count === 0) throw new Error("Bookmark not found");
 }
 
 // updateIsStarred
-export const updateStarredStatus = async ({ is_starred, bookmark_id }) => {
-    await prisma.bookmarks.update({
-        where: { bookmark_id: +bookmark_id },
+export const updateStarredStatus = async ({ is_starred, bookmark_id, user_id }) => {
+    const result = await prisma.bookmarks.updateMany({
+        where: { bookmark_id: Number(bookmark_id), user_id },
         data: { is_starred }
     });
+    if (result.count === 0) throw new Error("Bookmark not found");
 }
 
 // deleteBookmark
-export const deleteBookmarkById = async ({ bookmark_id, tx }) => {
-    await tx.bookmarks.delete({
-        where: {
-            bookmark_id: +bookmark_id
-        }
+export const deleteBookmarkById = async ({ bookmark_id, user_id, tx }) => {
+    return tx.bookmarks.deleteMany({
+        where: { bookmark_id: Number(bookmark_id), user_id }
     });
 }
 
 // updateIsVisited
-export const updateVisitationStatus = async ({ is_visited, bookmark_id }) => {
-    await prisma.bookmarks.update({
-        where: { bookmark_id: +bookmark_id },
+export const updateVisitationStatus = async ({ is_visited, bookmark_id, user_id }) => {
+    const result = await prisma.bookmarks.updateMany({
+        where: { bookmark_id: Number(bookmark_id), user_id },
         data: { is_visited }
-    })
+    });
+    if (result.count === 0) throw new Error("Bookmark not found");
 }
