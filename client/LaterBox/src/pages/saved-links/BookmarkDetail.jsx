@@ -152,9 +152,8 @@ function BookmarkDetail() {
     setBookmarks(updatedBookmarks);
     setIsEditingProp(false);
 
-    let result = '';
-    
     try {
+      let result = '';
       if(prop === 'tags') {
         result = await updateTags(+bookmark_id, value);
       } else if(prop === 'note') {
@@ -162,12 +161,8 @@ function BookmarkDetail() {
       }
 
       setBookmarkStatus({ isSuccessful: true, message: result.message });
-
-      setTimeout(() => {
-        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }));
-      }, 3000)
-    } catch {
-      setBookmarkStatus({ isSuccessful: false, message: result.message });
+    } catch (error) {
+      setBookmarkStatus({ isSuccessful: false, message: error.message });
     }
   }; 
 
@@ -204,12 +199,8 @@ function BookmarkDetail() {
       }
 
       setBookmarkStatus({ isSuccessful: true, message: result.message });
-
-      setTimeout(() => {
-        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }));
-      }, 3000)
-    } catch {
-      setBookmarkStatus({ isSuccessful: false, message: result.message });
+    } catch (error) {
+      setBookmarkStatus({ isSuccessful: false, message: error.message });
     }
   }
 
@@ -218,10 +209,8 @@ function BookmarkDetail() {
       return prev.filter(b => b.bookmark_id !== +bookmark_id)
     });
 
-    let result = '';
-
     try {
-      result = await deleteBookmark(bookmark_id, targetTags);
+      const result = await deleteBookmark(bookmark_id, targetTags);
 
       setBookmarkStatus({ isSuccessful: true, message: result.message });
       setTargetBookmark(DEFAULT_BOOKMARK);
@@ -229,12 +218,8 @@ function BookmarkDetail() {
       setTargetNote("");
 
       navigate('/saved-links');
-
-      setTimeout(() => {
-        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }));
-      }, 3000)
-    } catch {
-      setBookmarkStatus({ isSuccessful: false, message: result.message });
+    } catch (error) {
+      setBookmarkStatus({ isSuccessful: false, message: error.message });
     }
   }
 
@@ -254,9 +239,6 @@ function BookmarkDetail() {
     try {
       await navigator.clipboard.writeText(targetBookmark.url || window.location.href);
       setBookmarkStatus({ isSuccessful: true, message: 'Link copied to clipboard' });
-      setTimeout(() => (
-        setBookmarkStatus(prev => ({ ...prev, isSuccessful: false }))
-      ), 3000);
     } catch {
       setBookmarkStatus({ isSuccessful: false, message: 'Failed to copy link' });
     }

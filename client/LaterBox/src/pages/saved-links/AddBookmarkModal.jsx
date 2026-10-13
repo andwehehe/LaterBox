@@ -123,15 +123,15 @@ function AddBookmarkModal({ isModalOpen, setIsModalOpen, setBookmarkStatus }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const data = await addBookmark(title, url, note, tags);
-    onSave({ bookmark_id: data.bookmark_id, title, url, note, tags, saved_on: data.saved_on });
-    setBookmarkStatus({ isSuccessful: true, message: data.message });
-    resetForm();
-    onClose();
-
-    setTimeout(() => {
-      setBookmarkStatus({isAdded: false, message: data.message });
-    }, 3000)
+    try {
+      const data = await addBookmark(title, url, note, tags);
+      onSave({ bookmark_id: data.bookmark_id, title, url, note, tags, saved_on: data.saved_on });
+      setBookmarkStatus({ isSuccessful: true, message: data.message });
+      resetForm();
+      onClose();
+    } catch (error) {
+      setBookmarkStatus({ isSuccessful: false, message: error.message });
+    }
   };
 
   const applyTitleSuggestion = () => {
