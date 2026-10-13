@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Dashboard";
 import LandingPage from "./pages/landing/LandingPage";
 import CreateAccount from "./pages/account/CreateAccount";
@@ -18,6 +18,7 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/signup" element={<CreateAccount />} />
+            <Route path="/verify-email" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<SignIn />} />
             <Route element={<AppShell />}>
               <Route path="/dashboard" element={<Dashboard />} />
