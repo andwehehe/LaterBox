@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
-import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
+import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon } from "../../assets/icons/icons";
 import { registerAccount } from "../../services/authService.js";
-import { PopupMessage } from "../../components/components.jsx";
 import { ArrowRight, Check, LoaderCircle } from "lucide-react";
 
 function CreateAccount() {
@@ -14,12 +13,12 @@ function CreateAccount() {
     password: "",
     confirmPassword: "",
   });
-  const [fieldErrors, setFieldErrors] = useState({ username: "", email: "", password: "", confirmPassword: "" });
+  const [fieldErrors, setFieldErrors] = useState({ username: "", email: "", password: "", confirmPassword: "", agreed: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [status, setStatus] = useState({ loading: false, error: "" });
-  const [registerStatus, setRegisterStatus] = useState({ isSuccessful: false, message: "" });
+  const navigate = useNavigate();
 
   // a function that returns a function that updates the form state for a given field
   const handleChange = (field) => (e) => {
@@ -42,6 +41,7 @@ function CreateAccount() {
       email: errors.email || "",
       password: errors.password || "",
       confirmPassword: errors.confirmPassword || "",
+      agreed: errors.agreed || "",
     });
 
     return Object.keys(errors).length === 0;
@@ -56,12 +56,8 @@ function CreateAccount() {
     setStatus({ loading: true, error: "" });
     
     try {
-      const data = await registerAccount(form.username, form.email, form.password);
-      setRegisterStatus({ isSuccessful: true, message: data.message });
-
-      setTimeout(() => {
-        setRegisterStatus(prev => ({ ...prev, isSuccessful: false }));
-      }, 3000)
+      await registerAccount(form.username, form.email, form.password);
+      navigate("/login");
     } catch (err) {
       setStatus({ loading: false, error: err.message });
     } finally {
@@ -71,20 +67,33 @@ function CreateAccount() {
   };
 
   return (
-    <>
-      <AuthLayout title="Create Account" subtitle="Start organizing your digital world today.">
-        <form onSubmit={handleSubmit} className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-x-4 sm:gap-y-3 sm:space-y-0" noValidate>
+      <AuthLayout compact title="Create Account" subtitle="Start organizing your digital world today.">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
           <div>
             <FormField
               id="username"
               label="Username"
               icon={<UserIcon />}
-              placeholder="albertodoe"
+              placeholder="e.g. alex_dev"
               autoComplete="username"
               value={form.username}
               onChange={handleChange("username")}
             />
             {fieldErrors.username && <p className="mt-1 text-sm text-red-400">{fieldErrors.username}</p>}
+          </div>
+
+          <div>
+            <FormField
+              id="email"
+              label="Email Address"
+              type="email"
+              icon={<MailIcon />}
+              placeholder="alex@example.com"
+              autoComplete="email"
+              value={form.email}
+              onChange={handleChange("email")}
+            />
+            {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p>}
           </div>
 
           <div>
@@ -113,25 +122,11 @@ function CreateAccount() {
 
           <div>
             <FormField
-              id="email"
-              label="Email Address"
-              type="email"
-              icon={<MailIcon />}
-              placeholder="name@example.com"
-              autoComplete="email"
-              value={form.email}
-              onChange={handleChange("email")}
-            />
-            {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p>}
-          </div>
-
-          <div>
-            <FormField
               id="confirmPassword"
-              label="Confirm Password"
+              label="Re-enter Password"
               type={showConfirm ? "text" : "password"}
               icon={<LockIcon />}
-              placeholder="Confirm your password"
+              placeholder="Re-enter password"
               autoComplete="new-password"
               value={form.confirmPassword}
               onChange={handleChange("confirmPassword")}
@@ -149,12 +144,17 @@ function CreateAccount() {
             {fieldErrors.confirmPassword && <p className="mt-1 text-sm text-red-400">{fieldErrors.confirmPassword}</p>}
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-muted sm:col-span-2">
+          <label className="flex items-center gap-2 text-sm text-muted">
             <span className="relative flex h-4 w-4 shrink-0 items-center justify-center">
               <input
                 type="checkbox"
                 checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
+                onChange={(e) => {
+                  setAgreed(e.target.checked);
+                  if (e.target.checked) setFieldErrors((prev) => ({ ...prev, agreed: "" }));
+                }}
+                aria-invalid={Boolean(fieldErrors.agreed)}
+                aria-describedby={fieldErrors.agreed ? "agreed-error" : undefined}
                 className="absolute inset-0 h-4 w-4 cursor-pointer appearance-none rounded border border-panel-border bg-transparent checked:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               {agreed && <Check className="pointer-events-none relative z-10 h-3 w-3 text-green-500" strokeWidth={3} aria-hidden="true" />}
@@ -171,9 +171,14 @@ function CreateAccount() {
               .
             </span>
           </label>
+          {fieldErrors.agreed && (
+            <p id="agreed-error" className="-mt-3 text-sm text-red-400" role="alert">
+              {fieldErrors.agreed}
+            </p>
+          )}
 
           {status.error && (
-            <p className="text-sm text-red-400 sm:col-span-2" role="alert">
+            <p className="text-sm text-red-400" role="alert">
               {status.error}
             </p>
           )}
@@ -181,7 +186,7 @@ function CreateAccount() {
           <button
             type="submit"
             disabled={status.loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status.loading ? (
               <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -190,23 +195,7 @@ function CreateAccount() {
             {!status.loading && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
           </button>
 
-          <div className="flex items-center gap-3 py-1 sm:col-span-2">
-            <span className="h-px flex-1 bg-panel-border" />
-            <span className="text-xs font-medium tracking-wide text-muted">
-              OR CONTINUE WITH
-            </span>
-            <span className="h-px flex-1 bg-panel-border" />
-          </div>
-
-          <button
-            type="button"
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-panel-border bg-transparent px-6 py-2.5 text-sm font-semibold text-white transition hover:border-muted sm:col-span-2"
-          >
-            <GoogleIcon />
-            Continue with Google
-          </button>
-
-          <p className="pt-1 text-center text-sm text-muted sm:col-span-2">
+          <p className="pt-1 text-center text-sm text-muted">
             Already have an account?{" "}
             <Link to="/login" className="font-medium text-accent-light hover:underline">
               Sign In
@@ -214,12 +203,6 @@ function CreateAccount() {
           </p>
         </form>
       </AuthLayout>
-
-      <PopupMessage 
-        isSuccessful={registerStatus.isSuccessful} 
-        message={registerStatus.message}
-      />
-    </>
   );
 }
 

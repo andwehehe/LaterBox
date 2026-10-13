@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
-import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../../assets/icons/icons";
+import { MailIcon, LockIcon, EyeIcon, EyeOffIcon } from "../../assets/icons/icons";
 import { loginAccount } from "../../services/authService.js";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 
@@ -53,32 +53,20 @@ function SignIn() {
 
   return (
     <AuthLayout compact title="Welcome back" subtitle="Enter your credentials to access your bookmarks">
-      <button
-        type="button"
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-panel-border bg-transparent px-6 py-3 text-sm font-semibold text-white transition hover:border-muted"
-      >
-        <GoogleIcon />
-        Continue with Google
-      </button>
-
-      <div className="my-5 flex items-center gap-3">
-        <span className="h-px flex-1 bg-panel-border" />
-        <span className="text-xs font-medium tracking-wide text-muted">OR</span>
-        <span className="h-px flex-1 bg-panel-border" />
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        <FormField
-          id="email"
-          label="Email Address"
-          type="email"
-          icon={<MailIcon />}
-          placeholder="name@gmail.com"
-          autoComplete="email"
-          value={form.email}
-          onChange={handleChange("email")}
-        />
-        {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+        <div>
+          <FormField
+            id="email"
+            label="Email Address"
+            type="email"
+            icon={<MailIcon />}
+            placeholder="alex@example.com"
+            autoComplete="email"
+            value={form.email}
+            onChange={handleChange("email")}
+          />
+          {fieldErrors.email && <p className="mt-1 text-sm text-red-400">{fieldErrors.email}</p>}
+        </div>
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
@@ -130,7 +118,7 @@ function SignIn() {
           </p>
         )}
 
-          <button
+        <button
           type="submit"
           disabled={status.loading}
           className="w-full rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-light disabled:cursor-not-allowed disabled:opacity-60 flex items-center justify-center gap-2"

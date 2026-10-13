@@ -11,7 +11,7 @@ function AuthLayout({ title, subtitle, children, compact = false }) {
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-8 sm:pt-10 sm:pb-3">
         <div className={`w-full ${compact ? "max-w-[440px]" : "max-w-[560px]"} rounded-2xl border border-panel-border bg-panel/70 p-5 backdrop-blur sm:p-7`}>
           <div className="mb-5 flex flex-col items-center text-center">
-            <BrandLogo className="mb-3" markSize="h-10 w-10" textClassName="text-sm" />
+            <BrandLogo className="mb-3 flex-col" markSize="h-10 w-10" textClassName="text-lg" />
             <h1 className="mt-4 text-2xl font-bold text-white sm:text-[26px]">
               {title}
             </h1>
