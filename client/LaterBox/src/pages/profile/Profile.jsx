@@ -112,11 +112,11 @@ function Profile() {
           <div className="flex shrink-0 gap-2">
             <button onClick={handlePublicProfile} className="flex items-center gap-1.5 rounded-lg border border-panel-border px-4 py-2 text-sm font-medium text-white hover:border-muted">
               <ExternalLink size={14} />
-              Public Profile
+              Share Profile
             </button>
             <button onClick={() => { setUsername(userData?.username ?? ""); setIsEditModalOpen(true); }} className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light">
               <Pencil size={14} />
-              Edit Profile
+              Edit name
             </button>
           </div>
         </div>
