@@ -3,7 +3,7 @@
 2. express-session 
 3. cors 
 4. dotenv 
-5. mysql2 
+5. @prisma/adapter-pg and pg
 6. bcryptjs
 7. nodemod
 
@@ -52,14 +52,9 @@ session({
 - entry point (app.listen())
 
 >> config/ <<
-- create the database connection here
-- import mysql2 then use it to .createConnection() and fill out these properties
-    - host
-    - user
-    - password
-    - database
-- then .connect() then return if there is an error (err)
-- export the db then use it to do queries in controller/
+- Prisma connects to the Supabase PostgreSQL database using DATABASE_URL
+- Set DATABASE_URL to the connection string from the Supabase project dashboard
+- The Prisma PostgreSQL adapter is configured in config/prisma.js
 
 >> controllers/ <<
 - create async functions that handles http endpoints
@@ -75,7 +70,7 @@ session({
 >> .env <<
 - created in backend folder
 - contains some secret values
-- must contain the SESSION_SECRET, PORT, DB_INFO, NODE_ENV, etc.
+- must contain the SESSION_SECRET, PORT, DATABASE_URL, NODE_ENV, etc.
 - must be inside the .gitignore so it does not get tracked in commit
 
 >> .gitignore <<
