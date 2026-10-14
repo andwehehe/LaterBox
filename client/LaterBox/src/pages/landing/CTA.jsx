@@ -8,7 +8,7 @@ function CTA() {
           Start organizing your research and docs
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-sm text-white/80 sm:text-base">
-          Save links, attach notes, and archive reference pages — deploy self-hosted or use our cloud. Integrates with browser extensions and mobile sharesheets.
+          Save links, add notes, organize your tags, and keep the references you actually use in one personal library.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

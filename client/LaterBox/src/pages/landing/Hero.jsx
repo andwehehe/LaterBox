@@ -3,19 +3,14 @@ import { Link } from "react-router-dom";
 import image1 from '../../assets/images/random-tech-img-1.jpg';
 import image2 from '../../assets/images/random-tech-img-2.jpg';
 import image3 from '../../assets/images/random-tech-img-3.jpg';
-import user1 from '../../assets/images/user-1.jpg';
-import user2 from '../../assets/images/user-2.jpg';
-import user3 from '../../assets/images/user-3.jpg';
 
 function Hero() {
-  const avatarImages = [user1, user2, user3];
-
   const cards = [
     {
       id: "back",
       className: "mock-card--back",
-      title: "Server Components Guide",
-      url: "yourblog.dev/react",
+      title: "CSS Grid Reference",
+      url: "developer.mozilla.org/docs/Web/CSS/CSS_grid_layout",
       badge: "New",
       image: image1,
       showTags: false,
@@ -23,8 +18,8 @@ function Hero() {
     {
       id: "mid",
       className: "mock-card--mid",
-      title: "Server Components Guide",
-      url: "yourblog.dev/react",
+      title: "TypeScript Utility Types",
+      url: "www.typescriptlang.org/docs/handbook/utility-types.html",
       badge: "New",
       image: image2,
       showTags: false,
@@ -32,12 +27,12 @@ function Hero() {
     {
       id: "front",
       className: "mock-card--front",
-      title: "The Future of Developer Tools",
-      url: "laterbox.app/dev",
+      title: "System Design Notes",
+      url: "refactoring.guru/design-patterns",
       badge: null,
       image: image3,
       showTags: true,
-      tags: ["#dev", "#future"],
+      tags: ["#systems", "#architecture"],
     },
   ];
 
@@ -56,7 +51,7 @@ function Hero() {
         </h1>
 
         <p className="mt-6 max-w-xl text-lg leading-8 text-muted sm:text-xl">
-          Lightweight bookmark manager for developers and researchers: save links, attach notes, and tag content.
+          Save useful links, add your own context, and keep your research organized in one place.
         </p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -74,21 +69,6 @@ function Hero() {
           </Link>
         </div>
 
-        <div className="mt-8 flex items-center gap-3">
-          <div className="flex -space-x-2">
-            {avatarImages.map((image, index) => (
-              <img
-                key={`${image}-${index}`}
-                src={image}
-                alt="users avatars" 
-                className="h-8 w-8 rounded-full border-2 border-dark object-cover"
-              />
-            ))}
-          </div>
-          <p className="text-base text-muted">
-            <span className="font-semibold text-white">Engineers & researchers</span> using LaterBox to track documentation and references
-          </p>
-        </div>
       </div>
 
       {/* Right: layered bookmark card mockup */}

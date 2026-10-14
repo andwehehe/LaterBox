@@ -18,6 +18,7 @@ import { useState, useEffect, useRef } from "react";
 import { TagBTN } from "../../components/components.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import CardSkeleton from "../../shared/CardSkeleton.jsx";
+import AddBookmarkModal from "./AddBookmarkModal.jsx";
 
 function BookmarkDetail() {
 
@@ -41,6 +42,7 @@ function BookmarkDetail() {
   const [ tagInput, setTagInput ] = useState("");
   const { bookmark_id } = useParams();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     if(isEditingTag) {
@@ -280,7 +282,7 @@ function BookmarkDetail() {
           ml-auto flex items-center gap-2 rounded-lg bg-accent 
           px-4 py-2 text-sm font-semibold text-white transition 
           hover:bg-accent-light md:ml-0
-        ">
+        " onClick={() => setIsAddModalOpen(true)}>
           <Plus size={16} />
           <span className="hidden sm:inline">Add New</span>
         </button>
@@ -720,6 +722,13 @@ function BookmarkDetail() {
         isSuccessful={bookmarkStatus.isSuccessful} 
         message={bookmarkStatus.message}
       />
+      {isAddModalOpen && (
+        <AddBookmarkModal
+          isModalOpen={isAddModalOpen}
+          setIsModalOpen={setIsAddModalOpen}
+          setBookmarkStatus={setBookmarkStatus}
+        />
+      )}
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         title="Delete Bookmark"

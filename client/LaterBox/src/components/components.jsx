@@ -55,16 +55,21 @@ export function TagChip({ children, onRemove }) {
 
 export function PopupMessage({ isSuccessful, message }) {
   const feedbackKey = `${isSuccessful}:${message}`;
-  const [dismissedFeedback, setDismissedFeedback] = useState(feedbackKey);
+  const [visibleFeedback, setVisibleFeedback] = useState("");
 
   useEffect(() => {
-    if (!message) return;
+    if (!message) {
+      setVisibleFeedback("");
+      return;
+    }
 
-    const timeoutId = setTimeout(() => setDismissedFeedback(feedbackKey), 3000);
+    setVisibleFeedback(feedbackKey);
+
+    const timeoutId = setTimeout(() => setVisibleFeedback(""), 3000);
     return () => clearTimeout(timeoutId);
   }, [feedbackKey, message]);
 
-  const isVisible = Boolean(message) && dismissedFeedback !== feedbackKey;
+  const isVisible = Boolean(message) && visibleFeedback === feedbackKey;
 
   return(
     <p

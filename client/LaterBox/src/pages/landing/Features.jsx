@@ -1,35 +1,35 @@
-import { Search, Tag, Star, Link, Shield, FileText } from "lucide-react";
+import { Search, Tag, Star, Link, FileText, CheckCircle2 } from "lucide-react";
 
 const features = [
   {
     icon: Search,
-    title: "Universal Search",
-    body: "Find any saved link instantly. Search across titles, notes, and tags with fast indexing.",
+    title: "Search your library",
+    body: "Find saved bookmarks by title, note, tag, or saved context without digging through your history.",
   },
   {
     icon: Tag,
-    title: "Organize with Tags",
-    body: "Flexible tagging to group, filter, and surface content across projects and topics.",
-  },
-  {
-    icon: Star,
-    title: "Favorites & Prioritization",
-    body: "Mark important resources and surface them where they matter most.",
-  },
-  {
-    icon: Link,
-    title: "Quick Save Anywhere",
-    body: "Browser extension and mobile share integration let you save links with one click.",
-  },
-  {
-    icon: Shield,
-    title: "Privacy Controls",
-    body: "Keep your library private — controls for public sharing and access settings.",
+    title: "Tag for context",
+    body: "Group links by project, topic, or learning goal so the right reference is easy to find later.",
   },
   {
     icon: FileText,
-    title: "Optional Page Archive",
-    body: "Snapshot pages at save time so you can reference content even if the original changes.",
+    title: "Add notes to each link",
+    body: "Capture why you saved a page, what stood out, or which idea to revisit after reading it.",
+  },
+  {
+    icon: Star,
+    title: "Favorite what matters",
+    body: "Mark important links as favorites and keep high-priority references easy to spot in your dashboard.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Track what you have visited",
+    body: "Mark links as visited or unvisited to stay on top of what you have reviewed and what still needs attention.",
+  },
+  {
+    icon: Link,
+    title: "Save the links you need",
+    body: "Capture documentation, articles, tutorials, and references from the web and keep them organized in one place.",
   },
 ];
 
@@ -50,7 +50,7 @@ function Features() {
         {features.map((f) => (
           <div
             key={f.title}
-            className="rounded-xl2 border border-panel-border bg-panel p-6 transition hover:border-accent/50"
+            className="rounded-xl2 border border-panel-border bg-panel p-6"
           >
             <div className=" flex items-center gap-4">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/15 text-accent-light">

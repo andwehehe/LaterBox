@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { useUserContext } from "../../contexts/UserContext";
-import user2 from "../../assets/images/user-2.jpg";
 import {
   LayoutDashboard,
   Bookmark,
@@ -23,6 +22,7 @@ const mobileNavItems = [navItems[1], navItems[0], navItems[2]];
 function Sidebar() {
 
   const { userData } = useUserContext();
+  const initials = userData?.username?.slice(0, 2).toUpperCase() ?? "";
 
   return (
     <>
@@ -63,18 +63,9 @@ function Sidebar() {
         {/* User footer */}
         <div className="border-t border-panel-border p-4">
           <div className="flex items-center gap-3">
-            {user2 ? (
-              <img
-                src={user2}
-                alt={userData.username}
-                className="h-9 w-9 rounded-full"
-              />
-            ) : (
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-                {/* {placeholder} */}
-                PH
-              </span>
-            )}
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
+              {initials}
+            </span>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-white">{userData.username}</p>
               <p className="truncate text-xs text-muted">Id: {userData.id}</p>
