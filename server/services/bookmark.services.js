@@ -122,7 +122,7 @@ export const addBookmark = async ({ title, url, note, tags, user_id }) => {
 
     return { 
         bookmark_id: bookmarkTransact.bookmark_id, 
-        saved_on: bookmarkTransact.saved_on 
+        saved_on: formattedDate
     }
 }
 
@@ -183,28 +183,26 @@ export const updateIsStarred = async ({ is_starred, bookmark_id, user_id }) => {
     return { message };
 }
 
-export const deleteBookmark = async ({ bookmark_id, tags, user_id }) => {
+export const deleteBookmark = async ({ bookmark_id, tags = [], user_id }) => {
+    const bookmarkTags = Array.isArray(tags) ? tags : [];
+
     await prisma.$transaction(async (tx) => {
         const result = await bookmarkRepository.deleteBookmarkById({ bookmark_id, user_id, tx });
         if (result.count === 0) throw new Error("Bookmark not found");
 
-        let tagsIds = [];
+        if (bookmarkTags.length === 0) return;
 
-        if(tags.length > 0) {
-            const ids = await bookmarkRepository.getTagsToRemove({ tags, tx });
-            tagsIds = ids.map(tag => tag.tag_id);
-        }
+        const tagIds = await bookmarkRepository.getTagsToRemove({ removedTags: bookmarkTags, tx });
+        const tagIdsToRemove = tagIds.map(tag => tag.tag_id);
 
-        let inactiveTags = [];
+        if (tagIdsToRemove.length === 0) return;
 
-        if(tagsIds.length > 0) {
-            const activeTags = await bookmarkRepository.getActiveTags(tags, tx);
-            const activeTagsIds = activeTags.map(tag => tag.tag_id);
-            inactiveTags = tagsIds.filter(tag => !activeTagsIds.includes(tag));
-        }
+        const activeTags = await bookmarkRepository.getActiveTags({ tags: tagIdsToRemove, tx });
+        const activeTagsIds = activeTags.map(tag => tag.tag_id);
+        const inactiveTags = tagIdsToRemove.filter(tag => !activeTagsIds.includes(tag));
 
-        if(inactiveTags.length > 0) {
-            await bookmarkRepository.deleteInactiveTags({ inactiveTags, tx });
+        if (inactiveTags.length > 0) {
+            await bookmarkRepository.deleteInactiveTags({ inactiveTagsIds: inactiveTags, tx });
         }
     });
 

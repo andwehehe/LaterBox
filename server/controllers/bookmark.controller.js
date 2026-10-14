@@ -111,7 +111,7 @@ const updateIsStarred = async (req, res) => {
 const deleteBookmark = async (req, res) => {
     try {
         const bookmark_id = req.params.bookmark_id;
-        const tags = req.body.tags;
+        const tags = Array.isArray(req.body?.tags) ? req.body.tags : [];
         const { message } = await bookmarkServices.deleteBookmark({ bookmark_id, tags, user_id: req.session.userId });
         return res.status(200).json({ message });
     } catch(err) {
