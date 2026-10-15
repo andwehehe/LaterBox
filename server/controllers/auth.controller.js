@@ -4,13 +4,11 @@ const registerAccount = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        const newUserId = await authServices.registerAccount({ 
+        await authServices.registerAccount({ 
             username, 
             email, 
             password 
         });
-
-        req.session.userId = newUserId;
 
         res.status(201).json({ 
             message: "Account Created Successfully. Proceed to Login Page" 

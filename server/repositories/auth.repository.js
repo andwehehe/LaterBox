@@ -1,7 +1,7 @@
 import prisma from '../config/prisma.js';
 
 export const createUser = async ({ username, email, hashedPassword }) => {
-    const newUser = await prisma.users.create({
+    await prisma.users.create({
         data: {
             username,
             email,
@@ -9,7 +9,6 @@ export const createUser = async ({ username, email, hashedPassword }) => {
         }
     });
 
-    return newUser.user_id;
 }
 
 export const findUserByEmail = async (email) => {   

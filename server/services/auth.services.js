@@ -3,8 +3,7 @@ import * as authRepository from '../repositories/auth.repository.js';
 
 export const registerAccount = async ({ username, email, password }) => {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const createdUser = authRepository.createUser({ username, email, hashedPassword });
-    return createdUser;
+    await authRepository.createUser({ username, email, hashedPassword });
 }
 
 export const loginAccount = async ({ email, password }) => {

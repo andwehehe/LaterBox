@@ -122,7 +122,7 @@ export const addBookmark = async ({ title, url, note, tags, user_id }) => {
 
     return { 
         bookmark_id: bookmarkTransact.bookmark_id, 
-        saved_on: formattedDate
+        saved_on: bookmarkTransact.saved_on
     }
 }
 
