@@ -31,7 +31,7 @@ function Sidebar() {
       >
         {/* Logo row */}
         <div className="flex items-center justify-between px-5 py-5">
-          <a href="/" aria-label="LaterBox home">
+          <a href="/" aria-label="LaterBox home" className="flex h-8 items-center">
             <BrandLogo markSize="h-8 w-8" />
           </a>
         </div>

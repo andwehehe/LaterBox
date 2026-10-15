@@ -37,9 +37,9 @@ function Hero() {
   ];
 
   return (
-    <section className="page-container grid min-h-[70vh] grid-cols-1 items-center gap-12 py-20 sm:py-24 md:min-h-[78vh] md:grid-cols-[1.05fr_0.95fr] md:gap-16 md:py-20 lg:min-h-[82vh] lg:py-15 lg:mb-10 xl:gap-20">
+    <section className="page-container grid min-h-[70vh] grid-cols-1 items-center gap-12 py-20 sm:py-24 md:py-20 lg:min-h-[82vh] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:py-15 lg:mb-10 xl:gap-20">
       {/* Left: copy */}
-      <div className="max-w-2xl">
+      <div className="mx-auto max-w-md px-5 text-left sm:max-w-lg sm:px-6 lg:mx-0 lg:max-w-2xl lg:px-0">
         <span className="inline-flex items-center gap-2 rounded-full border border-panel-border bg-panel px-3 py-1 text-xs font-medium text-muted">
           MVP Version
         </span>
@@ -54,16 +54,16 @@ function Hero() {
           Save useful links, add your own context, and keep your research organized in one place.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <div className="mt-8 flex flex-nowrap items-center gap-2 sm:gap-4">
           <Link
             to="/signup"
-            className="rounded-lg bg-accent px-7 py-3.5 text-center text-base font-semibold text-white transition hover:bg-accent-light"
+            className="whitespace-nowrap rounded-lg bg-accent px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-accent-light sm:px-7 sm:py-3.5 sm:text-base"
           >
             Get Started
           </Link>
           <Link
             to="/login"
-            className="rounded-lg border border-panel-border px-7 py-3.5 text-center text-base font-semibold text-white transition hover:border-muted"
+            className="whitespace-nowrap rounded-lg border border-panel-border px-4 py-3 text-center text-sm font-semibold text-white transition hover:border-muted sm:px-7 sm:py-3.5 sm:text-base"
           >
             Log In
           </Link>

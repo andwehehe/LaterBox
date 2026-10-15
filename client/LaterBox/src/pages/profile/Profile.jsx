@@ -1,5 +1,5 @@
 import {
-  Plus, Bookmark,
+  Bookmark,
   Zap, Star, ExternalLink,
   Pencil, Calendar, X,
 } from "lucide-react";
@@ -10,20 +10,19 @@ import { PopupMessage } from "../../components/components.jsx";
 import { useUserContext } from "../../contexts/UserContext.jsx";
 import { useBookmarkContext } from "../../contexts/BookmarkContext.jsx";
 import { updateUsername } from "../../services/authService.js";
-import AddBookmarkModal from "../saved-links/AddBookmarkModal.jsx";
 
 const statIcons = [Bookmark, Zap, Star];
 
 const barColors = ["bg-accent", "bg-sky-400", "bg-orange-400"];
 
 function Profile() {
-  const { userData, setUserData } = useUserContext();
-  const { bookmarks, bookmarkStatus, setBookmarkStatus } = useBookmarkContext();
-  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const { userData, setUserData, isUserLoading } = useUserContext();
+  const { bookmarks, bookmarkStatus, setBookmarkStatus, isBookmarkLoading } = useBookmarkContext();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [username, setUsername] = useState(userData?.username ?? "");
   const [isSavingUsername, setIsSavingUsername] = useState(false);
   const navigate = useNavigate();
+  const isLoading = isUserLoading || isBookmarkLoading;
   const initials = userData?.username?.slice(0, 2).toUpperCase() ?? "";
   const visitedCount = bookmarks.filter(({ is_visited }) => is_visited).length;
   const favoriteCount = bookmarks.filter(({ is_starred }) => is_starred).length;
@@ -74,24 +73,29 @@ function Profile() {
   return (
     <div>
       {/* Top bar */}
-      <header className="flex items-center gap-3 border-b border-panel-border px-4 py-4 sm:px-6">
+      <header className="hidden items-center border-b border-panel-border px-4 py-4 sm:px-6 lg:flex">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">
           Profile Overview
         </p>
-
-        <button onClick={() => setIsSaveModalOpen(true)} className="ml-auto flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light">
-          <Plus size={16} />
-          <span className="hidden sm:inline">Quick Save</span>
-        </button>
-
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-          {initials}
-        </span>
       </header>
 
-      <main className="space-y-6 p-4 sm:p-6">
+      <main className="space-y-6 p-4 sm:p-6" aria-busy={isLoading}>
         {/* Profile card */}
-        <div className="flex flex-col gap-5 rounded-xl2 border border-panel-border bg-panel p-6 sm:flex-row sm:items-center sm:justify-between">
+        {isLoading ? (
+          <div className="flex animate-pulse flex-col gap-5 rounded-xl2 border border-panel-border bg-panel p-6 sm:flex-row sm:items-center sm:justify-between" aria-hidden="true">
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 shrink-0 rounded-full bg-panel-border" />
+              <div className="space-y-2">
+                <div className="h-6 w-40 rounded bg-panel-border" />
+                <div className="h-4 w-56 max-w-full rounded bg-panel-border" />
+              </div>
+            </div>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <div className="h-10 w-full rounded-lg bg-panel-border sm:w-32" />
+              <div className="h-10 w-full rounded-lg bg-panel-border sm:w-28" />
+            </div>
+          </div>
+        ) : <div className="flex flex-col gap-5 rounded-xl2 border border-panel-border bg-panel p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xl font-semibold text-accent-light">
               {initials}
@@ -100,7 +104,7 @@ function Profile() {
               <h1 className="text-xl font-bold text-white sm:text-2xl">{userData?.username}</h1>
               <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
                 <span>{userData?.email}</span>
-                <span className="text-panel-border">•</span>
+                <span className="hidden text-panel-border sm:inline">•</span>
                 <span className="flex items-center gap-1">
                   <Calendar size={12} />
                   Joined March 2023
@@ -109,21 +113,30 @@ function Profile() {
             </div>
           </div>
 
-          <div className="flex shrink-0 gap-2">
-            <button onClick={handlePublicProfile} className="flex items-center gap-1.5 rounded-lg border border-panel-border px-4 py-2 text-sm font-medium text-white hover:border-muted">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0 sm:flex-row">
+            <button onClick={handlePublicProfile} className="flex w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-panel-border px-4 py-2 text-sm font-medium text-white hover:border-muted sm:w-auto">
               <ExternalLink size={14} />
               Share Profile
             </button>
-            <button onClick={() => { setUsername(userData?.username ?? ""); setIsEditModalOpen(true); }} className="flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light">
+            <button onClick={() => { setUsername(userData?.username ?? ""); setIsEditModalOpen(true); }} className="flex w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-light sm:w-auto sm:shrink-0">
               <Pencil size={14} />
               Edit name
             </button>
           </div>
-        </div>
+        </div>}
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {profileStats.map((stat, i) => (
+          {isLoading ? Array.from({ length: 3 }, (_, index) => (
+            <div key={index} className="h-[132px] animate-pulse rounded-xl2 border border-panel-border bg-panel p-5" aria-hidden="true">
+              <div className="flex items-center justify-between">
+                <div className="h-4 w-28 rounded bg-panel-border" />
+                <div className="h-8 w-8 rounded-lg bg-panel-border" />
+              </div>
+              <div className="mt-3 h-8 w-16 rounded bg-panel-border" />
+              <div className="mt-2 h-3 w-20 rounded bg-panel-border" />
+            </div>
+          )) : profileStats.map((stat, i) => (
             <StatCard key={stat.label} {...stat} icon={statIcons[i]} />
           ))}
         </div>
@@ -137,7 +150,16 @@ function Profile() {
                 View All
               </button>
             </div>
-            <div className="divide-y divide-panel-border rounded-xl2 border border-panel-border bg-panel">
+            {isLoading ? (
+              <div className="divide-y divide-panel-border rounded-xl2 border border-panel-border bg-panel" aria-hidden="true">
+                {Array.from({ length: 4 }, (_, index) => (
+                  <div key={index} className="animate-pulse space-y-2 p-4">
+                    <div className="h-4 w-2/3 rounded bg-panel-border" />
+                    <div className="h-3 w-1/2 rounded bg-panel-border" />
+                  </div>
+                ))}
+              </div>
+            ) : <div className="divide-y divide-panel-border rounded-xl2 border border-panel-border bg-panel">
               {recentBookmarks.length ? recentBookmarks.map((item) => (
                 <div key={item.bookmark_id} className="flex items-center justify-between gap-4 p-4">
                   <div className="min-w-0">
@@ -151,27 +173,23 @@ function Profile() {
                   </div>
                 </div>
               )) : <p className="p-4 text-sm text-muted">No saved bookmarks yet.</p>}
-            </div>
+            </div>}
           </div>
 
-          {/* Sidebar: Top Collections + Platform Split */}
-          <div className="space-y-6">
-            <div>
-              <h2 className="mb-3 text-lg font-semibold text-white">Top Collections</h2>
-              <div className="space-y-2 rounded-xl2 border border-panel-border bg-panel p-3">
-                {platformSplit.length ? platformSplit.map((platform) => (
-                  <div key={platform.label} className="flex items-center justify-between gap-3 rounded-lg p-2">
-                    <span className="truncate text-sm font-medium text-white">{platform.label}</span>
-                    <span className="shrink-0 text-xs text-muted">{platform.percent}%</span>
-                  </div>
-                )) : <p className="p-2 text-sm text-muted">Platform insights appear after your first save.</p>}
-              </div>
-            </div>
-
+          {/* Sidebar: Platform Split */}
+          <div>
             <div>
               <h2 className="mb-3 text-lg font-semibold text-white">Platform Split</h2>
-              <div className="space-y-4 rounded-xl2 border border-panel-border bg-panel p-4">
-                {platformSplit.map((p, i) => (
+              <div className="space-y-4 rounded-xl2 border border-panel-border bg-panel p-4" aria-busy={isLoading}>
+                {isLoading ? Array.from({ length: 3 }, (_, index) => (
+                  <div key={index} className="animate-pulse" aria-hidden="true">
+                    <div className="mb-2 flex justify-between">
+                      <div className="h-4 w-20 rounded bg-panel-border" />
+                      <div className="h-4 w-10 rounded bg-panel-border" />
+                    </div>
+                    <div className="h-1.5 rounded-full bg-panel-border" />
+                  </div>
+                )) : platformSplit.map((p, i) => (
                   <div key={p.label}>
                     <div className="mb-1.5 flex items-center justify-between text-sm">
                       <span className="text-muted">{p.label}</span>
@@ -190,14 +208,6 @@ function Profile() {
           </div>
         </div>
       </main>
-
-      {isSaveModalOpen && (
-        <AddBookmarkModal
-          isModalOpen={isSaveModalOpen}
-          setIsModalOpen={setIsSaveModalOpen}
-          setBookmarkStatus={setBookmarkStatus}
-        />
-      )}
 
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">

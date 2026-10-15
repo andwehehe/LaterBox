@@ -67,70 +67,57 @@ export default function SavedLinks() {
 
   return (
     <div>
-      <header className="relative overflow-hidden border-b border-panel-border bg-gradient-to-br from-[#19192d] via-panel to-dark px-4 py-7 sm:px-6 sm:py-5">
-        <div className="relative mx-auto max-w-7xl">
-          <div className="max-w-xl">
-            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Saved Links
-            </h1>
-            <p className="mt-2 text-sm leading-relaxed text-muted sm:text-base">
-              Keep the ideas, tools, and references worth coming back to.
-            </p>
+      <header className="border-b border-panel-border px-4 py-3 sm:px-6 sm:py-4">
+        <div className="mx-auto max-w-7xl @container">
+          <h1 className="hidden text-xl font-semibold text-white sm:text-2xl lg:block">Saved Links</h1>
+          <div className="mt-0 grid min-w-0 gap-4 lg:mt-4 @min-[800px]:grid-cols-[max-content_minmax(0,1fr)] @min-[800px]:items-end @min-[800px]:gap-5">
+            <div className="grid min-w-0 gap-3 sm:flex sm:items-center @min-[800px]:w-max">
+              <label htmlFor="saved-links-search" className="relative block w-full min-w-0 sm:w-fit">
+                <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
+                <input
+                  id="saved-links-search"
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search bookmarks, tags, or notes..."
+                  size="30"
+                  style={{ fieldSizing: "content" }}
+                  className="w-full min-w-0 rounded-lg border border-panel-border bg-panel py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40 sm:w-auto sm:min-w-[16rem] sm:max-w-[28rem]"
+                />
+              </label>
+
+              <button
+                className="flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-light sm:w-auto"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Plus size={16} />
+                <span>Add New Link</span>
+              </button>
+            </div>
+
+            <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-panel-border bg-panel/50 p-2 sm:w-max sm:max-w-full sm:flex-nowrap @min-[800px]:justify-self-end">
+              <span className="whitespace-nowrap px-1 text-xs font-medium text-muted">Filters</span>
+              <div className="flex min-w-0 flex-1 flex-wrap gap-2 sm:flex-nowrap">
+                {filterOptions.map((label) => (
+                  <button
+                    key={label}
+                    onClick={() => setActiveFilter(label)}
+                    className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                      activeFilter === label
+                        ? "bg-accent text-white"
+                        : "border border-panel-border text-muted hover:text-white"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="p-4 sm:p-6">
-        <div className="mb-8 grid min-w-0 gap-4 md:grid-cols-[max-content_minmax(0,1fr)] md:items-end lg:gap-5">
-          <div className="grid min-w-0 gap-3 sm:flex sm:items-center md:w-max">
-            <label htmlFor="saved-links-search" className="relative block w-full min-w-0 sm:w-fit">
-              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={16} />
-              <input
-                id="saved-links-search"
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search bookmarks, tags, or notes..."
-                size="30"
-                style={{ fieldSizing: "content" }}
-                className="w-full min-w-0 rounded-lg border border-panel-border bg-panel py-2.5 pl-10 pr-3 text-sm text-white placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40 sm:w-auto sm:min-w-[16rem] sm:max-w-[28rem]"
-              />
-            </label>
-
-            <button 
-              className="
-                flex w-full items-center justify-center gap-2 rounded-lg 
-                bg-accent px-4 py-2.5 text-sm font-semibold text-white transition
-                whitespace-nowrap sm:w-auto
-                hover:bg-accent-light
-              "
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus size={16} />
-              <span>Add New Link</span>
-            </button>
-          </div>
-
-          <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-panel-border bg-panel/50 p-2 sm:w-max sm:max-w-full sm:flex-nowrap md:justify-self-end">
-            <span className="whitespace-nowrap px-1 text-xs font-medium text-muted">Filters</span>
-            <div className="flex min-w-0 flex-1 flex-wrap gap-2 sm:flex-nowrap">
-              {filterOptions.map((label) => (
-                <button
-                  key={label}
-                  onClick={() => setActiveFilter(label)}
-                  className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    activeFilter === label
-                      ? "bg-accent text-white"
-                      : "border border-panel-border text-muted hover:text-white"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Bookmark grid */}
         <div className="grid grid-cols-1 gap-5 auto-rows-fr sm:grid-cols-2 xl:grid-cols-3">
           {isBookmarkLoading ? (
@@ -196,9 +183,9 @@ export default function SavedLinks() {
                       {b.title}
                     </h3>
 
-                    <p className="bookmark-url mb-2 flex items-center gap-1 truncate text-xs text-muted">
+                    <p className="mb-2 flex min-w-0 items-center gap-1 text-xs text-muted">
                       <ExternalLink size={11} className="shrink-0" />
-                      {b.url}
+                      <span className="min-w-0 truncate">{b.url}</span>
                     </p>
 
                     <p className="bookmark-description mb-3 text-xs italic text-muted">

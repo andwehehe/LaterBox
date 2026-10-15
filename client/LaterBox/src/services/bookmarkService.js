@@ -13,19 +13,6 @@ export const getBookmarks = async (signal) => {
     }
 }
 
-// investigate what is this signal used for
-export const getDashboardData = async (signal) => {
-    try {
-        const res = await base.get('/bookmarks/dashboard', { signal });
-        return res.data;
-    } catch (err) {
-        throw new Error(
-            err.response?.data?.message || "Something went wrong",
-            { cause: err }
-        );
-    }
-};
-
 export const getTargetBookmark = async (bookmark_id) => {
     try {
         const res = await base.get(`/bookmarks/${bookmark_id}`);

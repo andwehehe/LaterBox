@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { getBookmarks } from "../services/bookmarkService.js";
 import { useUserContext } from "./UserContext.jsx";
 
@@ -64,10 +64,56 @@ function BookmarkProvider({ children }) {
         return () => { controller.abort(); }
     }, [isUserLoading, userData]);
 
+    const dashboardData = useMemo(() => {
+        const stats = bookmarks.reduce((counts, bookmark) => ({
+            total: counts.total + 1,
+            favorites: counts.favorites + Number(bookmark.is_starred),
+            visited: counts.visited + Number(bookmark.is_visited),
+            unvisited: counts.unvisited + Number(!bookmark.is_visited)
+        }), { total: 0, favorites: 0, visited: 0, unvisited: 0 });
+
+        const recentSaves = [...bookmarks]
+            .sort((first, second) => Date.parse(second.saved_on) - Date.parse(first.saved_on))
+            .slice(0, 6)
+            .map(({ bookmark_id, title, url, saved_on, is_visited, is_starred, metadata }) => ({
+                bookmark_id,
+                title,
+                url,
+                saved_on,
+                is_visited,
+                is_starred,
+                platform: metadata?.platform || "Website"
+            }));
+
+        const platformCounts = bookmarks.reduce((counts, bookmark) => {
+            const platform = bookmark.metadata?.platform || "Website";
+            counts[platform] = (counts[platform] ?? 0) + 1;
+            return counts;
+        }, {});
+
+        const topPlatforms = Object.entries(platformCounts)
+            .sort(([, first], [, second]) => second - first)
+            .slice(0, 3)
+            .map(([name, count]) => ({
+                name,
+                count,
+                percentage: Math.round((count / bookmarks.length) * 100)
+            }));
+
+        return {
+            stats,
+            latestSave: recentSaves[0] ?? null,
+            topPlatform: topPlatforms[0] ?? null,
+            topPlatforms,
+            recentSaves
+        };
+    }, [bookmarks]);
+
     return(
         <BookmarkContext.Provider value={{ 
             bookmarks, 
             setBookmarks, 
+            dashboardData,
             isBookmarkLoading,
             targetBookmark,
             setTargetBookmark,
