@@ -18,7 +18,7 @@ model bookmark_tags {
 
 model bookmarks {
   bookmark_id   Int             @id @default(autoincrement())
-  user_id       Int
+  user_id       String          @db.Uuid
   url           String          @db.VarChar(2048)
   title         String          @db.VarChar(255)
   note          String?         @db.Text
@@ -39,7 +39,8 @@ model tags {
 }
 
 model users {
-  user_id         Int         @id @default(autoincrement())
+  user_id         String      @id @default(uuid()) @db.Uuid
+  display_id      String      @unique @db.VarChar(8)
   username        String      @unique(map: "username") @db.VarChar(50)
   email           String      @unique(map: "email") @db.VarChar(255)
   hashed_password String      @db.VarChar(255)

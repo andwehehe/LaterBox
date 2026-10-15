@@ -38,14 +38,14 @@ const loginAccount = async (req, res) => {
         });
 
         req.session.regenerate((err) => {
-            if(err) return res.sendStatus(500);
+            if(err) return res.status(500);
 
             req.session.userId = user.user_id;
 
             res.status(200).json({ 
                 username: user.username, 
                 email: user.email, 
-                user_id: user.user_id 
+                user_id: user.display_id 
             });
         })
         
