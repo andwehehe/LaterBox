@@ -63,9 +63,14 @@ function Sidebar() {
         {/* User footer */}
         <div className="border-t border-panel-border p-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-semibold text-accent-light">
-              {initials}
-            </span>
+            <NavLink
+              to="/profile"
+              aria-label="Open profile"
+              title="Open profile"
+              className={({ isActive }) => `flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-light ${isActive ? "bg-accent/30 text-white" : "bg-accent/20 text-accent-light hover:bg-accent/30"}`}
+            >
+              {initials || <User size={16} />}
+            </NavLink>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-white">{userData.username}</p>
               <p className="truncate text-xs text-muted">Id: {userData.id}</p>

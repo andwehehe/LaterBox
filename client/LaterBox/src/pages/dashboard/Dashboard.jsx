@@ -138,22 +138,22 @@ function Dashboard() {
               </button>
             </div>
             {isBookmarkLoading ? (
-              <div className="space-y-4" aria-hidden="true">
-                {Array.from({ length: 3 }, (_, index) => (
-                  <div key={index} className="h-[76px] animate-pulse rounded-lg border border-panel-border bg-panel p-3">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" aria-hidden="true">
+                {Array.from({ length: 6 }, (_, index) => (
+                  <div key={index} className="h-[88px] animate-pulse rounded-lg border border-panel-border bg-panel p-3">
                     <div className="h-4 w-2/3 rounded bg-panel-border" />
                     <div className="mt-3 h-3 w-full rounded bg-panel-border" />
                   </div>
                 ))}
               </div>
             ) : dashboard.recentSaves.length ? (
-              <div className="space-y-4">
-                {dashboard.recentSaves.slice(0, 3).map((item) => (
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                {dashboard.recentSaves.slice(0, 6).map((item) => (
                   <button
                     key={item.bookmark_id}
                     type="button"
                     onClick={() => openBookmarkDetails(item.bookmark_id)}
-                    className="w-full rounded-lg border border-panel-border bg-panel p-3 text-left transition hover:border-accent/60 hover:bg-panel/90"
+                    className="h-full min-h-[88px] w-full rounded-lg border border-panel-border bg-panel p-3 text-left transition hover:border-accent/60 hover:bg-panel/90"
                   >
                     <p className="truncate text-sm font-semibold text-white">{item.title}</p>
                     <div className="mt-2 flex items-center justify-between gap-2">

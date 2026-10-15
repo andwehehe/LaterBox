@@ -100,8 +100,13 @@ function Profile() {
             <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xl font-semibold text-accent-light">
               {initials}
             </span>
-            <div>
-              <h1 className="text-xl font-bold text-white sm:text-2xl">{userData?.username}</h1>
+            <div className="min-w-0">
+              <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h1 className="min-w-0 break-words text-xl font-bold text-white sm:text-2xl">{userData?.username}</h1>
+                <span className="shrink-0 text-xs font-medium text-muted">
+                  ID: {userData?.id}
+                </span>
+              </div>
               <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
                 <span>{userData?.email}</span>
                 <span className="hidden text-panel-border sm:inline">•</span>
