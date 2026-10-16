@@ -72,8 +72,8 @@ function Sidebar() {
               {initials || <User size={16} />}
             </NavLink>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">{userData.username}</p>
-              <p className="truncate text-xs text-muted">Id: {userData.id}</p>
+              <p className="truncate text-sm font-medium text-white">{userData?.username ?? "Guest"}</p>
+              <p className="truncate text-xs text-muted">Id: {userData?.id ?? ""}</p>
             </div>
           </div>
         </div>

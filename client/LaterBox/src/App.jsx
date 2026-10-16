@@ -10,11 +10,15 @@ import UserProvider from "./contexts/UserContext";
 import BookmarkProvider from "./contexts/BookmarkContext";
 import Profile from "./pages/profile/Profile";
 
+const routerBasename = import.meta.env.BASE_URL === "/"
+  ? undefined
+  : import.meta.env.BASE_URL.replace(/\/$/, "");
+
 function App() {
   return (
     <UserProvider>
       <BookmarkProvider>
-        <BrowserRouter basename="/LaterBox">
+        <BrowserRouter basename={routerBasename}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/signup" element={<CreateAccount />} />
