@@ -32,6 +32,17 @@ export const loginAccount = async (email, password) => {
     }
 }
 
+export const logoutAccount = async () => {
+    try {
+        await base.post('/auth/logout');
+    } catch (err) {
+        throw new Error(
+            err.response?.data?.message || "Unable to log out",
+            { cause: err }
+        );
+    }
+}
+
 export const getUserData = async () => {
     try {
         const res = await base.get('/auth/me');
