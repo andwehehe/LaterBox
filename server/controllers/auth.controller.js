@@ -64,6 +64,23 @@ const loginAccount = async (req, res) => {
     }
 }
 
+const logoutAccount = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Failed to log out" });
+        }
+
+        res.clearCookie("connect.sid", {
+            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+        });
+        return res.status(204).end();
+    });
+}
+
 const getUserData = async (req, res) => {
     try {
         const { user_id, username, email } = await authServices.getUserData(req.session.userId)
@@ -119,6 +136,7 @@ const updateUsername = async (req, res) => {
 export const authControllers = {
     registerAccount,
     loginAccount,
+    logoutAccount,
     getUserData,
     updateUsername
 };
