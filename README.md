@@ -4,6 +4,7 @@ LaterBox is a personal internet vault: a place to save YouTube videos, GitHub re
 
 A full-stack bookmark manager where users can save, categorize, and revisit links from a single dashboard. Each link supports tags and a description, so users can note *why* they saved it.
 
+(This is my first fullstack project so expect a bunch of mess)
 ---
 
 ## 🛠️ Tech Stack
