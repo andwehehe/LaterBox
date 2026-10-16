@@ -4,7 +4,7 @@ import AuthLayout from "./FormLayout";
 import FormField from "./FormField";
 import { UserIcon, MailIcon, LockIcon, EyeIcon, EyeOffIcon } from "../../assets/icons/icons";
 import { registerAccount } from "../../services/authService.js";
-import { ArrowRight, Check, LoaderCircle } from "lucide-react";
+import { ArrowRight, Check, LoaderCircle, X } from "lucide-react";
 
 function CreateAccount() {
   const [form, setForm] = useState({
@@ -17,6 +17,7 @@ function CreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [activePolicy, setActivePolicy] = useState("");
   const [status, setStatus] = useState({ loading: false, error: "" });
   const navigate = useNavigate();
 
@@ -161,13 +162,13 @@ function CreateAccount() {
             </span> 
             <span>
               I agree to the{" "}
-              <a href="#terms" className="text-accent-light hover:underline">
+              <button type="button" onClick={() => setActivePolicy("Terms of Service")} className="text-accent-light hover:underline">
                 Terms of Service
-              </a>{" "}
+              </button>{" "}
               and{" "}
-              <a href="#privacy" className="text-accent-light hover:underline">
+              <button type="button" onClick={() => setActivePolicy("Privacy Policy")} className="text-accent-light hover:underline">
                 Privacy Policy
-              </a>
+              </button>
               .
             </span>
           </label>
@@ -202,6 +203,45 @@ function CreateAccount() {
             </Link>
           </p>
         </form>
+
+        {activePolicy && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+            onClick={() => setActivePolicy("")}
+          >
+            <section
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="policy-dialog-title"
+              className="w-full max-w-md rounded-xl border border-panel-border bg-panel p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <h2 id="policy-dialog-title" className="text-lg font-bold text-white">{activePolicy}</h2>
+                <button
+                  type="button"
+                  onClick={() => setActivePolicy("")}
+                  aria-label="Close"
+                  className="text-muted hover:text-white"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-muted">
+                LaterBox is a personal project. You do not need to use a real email address or an inbox you own, but it must be in a valid email format because it is used to sign in. No verification email is sent. Please avoid entering sensitive personal information or reusing an important password.
+              </p>
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setActivePolicy("")}
+                  className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-light"
+                >
+                  Got it
+                </button>
+              </div>
+            </section>
+          </div>
+        )}
       </AuthLayout>
   );
 }
